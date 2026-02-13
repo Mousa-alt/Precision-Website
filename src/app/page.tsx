@@ -1,223 +1,280 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { ArrowRight, Play, Pause } from "lucide-react";
+
+const slides = [
+  {
+    title: "Powering spaces",
+    subtitle: "Precision MEP Solutions",
+  },
+  {
+    title: "bringing space to life",
+    subtitle: "Expert Contracting Services",
+  },
+  {
+    title: "The Heart Beat Of any Project",
+    subtitle: "Reliable Engineering Excellence",
+  },
+];
 
 const services = [
-  { title: "HVAC Systems", image: "/images/hvac.jpg" },
-  { title: "Electrical Works", image: "/images/electrical.jpg" },
-  { title: "Plumbing", image: "/images/plumbing.jpg" },
-  { title: "Fire Fighting", image: "/images/firefighting.jpg" },
-  { title: "Fit-Out Contracting", image: "/images/fitout.jpg" },
-  { title: "Smart Systems", image: "/images/smart.jpg" },
+  { title: "ELECTRICAL", image: "/images/electrical.jpg" },
+  { title: "HVAC", image: "/images/hvac.jpg" },
+  { title: "AUTOMATION", image: "/images/automation.jpg" },
+  { title: "PLUMBING", image: "/images/plumbing.jpg" },
+  { title: "FIRE FIGHTING", image: "/images/firefighting.jpg" },
 ];
 
 const projects = [
-  { name: "Intelcia Head Office", location: "Ivory Business, El Sheikh Zayed", category: "Administrative" },
-  { name: "Bayer Head Office", location: "Mivida Business Park", category: "Administrative" },
-  { name: "Antoushka", location: "Mall of Egypt", category: "Retail" },
-  { name: "Decathlon", location: "Green Plaza, Alexandria", category: "Retail" },
-  { name: "Beano's", location: "U Venues Mall", category: "Food & Beverage" },
-  { name: "Muncai Medical", location: "ZED El Sheikh Zayed", category: "Medical" },
+  { name: "PALM HILLS", location: "New Cairo", category: "Residential", image: "/images/projects/palm-hills.jpg" },
+  { name: "MAVENS", location: "Park St", category: "Commercial", image: "/images/projects/mavens.jpg" },
+  { name: "WILLOW'S", location: "District 5", category: "Residential", image: "/images/projects/willows.jpg" },
+  { name: "Bouchee", location: "Heliopolis", category: "Restaurant", image: "/images/projects/bouchee.jpg" },
+  { name: "MAVENS", location: "Alex", category: "Commercial", image: "/images/projects/mavens-alex.jpg" },
+  { name: "BRGR", location: "Golf Central", category: "Restaurant", image: "/images/projects/brgr.jpg" },
 ];
 
 export default function Home() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
   return (
-    <div id="home" className="m-0 p-0">
-      {/* ===== HERO SECTION ===== */}
-      <section className="relative w-full min-h-[820px] max-[1024px]:min-h-[580px] max-[768px]:min-h-[440px] max-[480px]:min-h-[270px] flex items-center">
-        {/* Background - dark gradient placeholder (replace with video/image) */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-[#111] to-[#1a1a1a]" />
-        <div className="absolute inset-0 bg-black/20" />
+    <main className="bg-black text-white overflow-hidden">
+      {/* ===== HERO SLIDESHOW ===== */}
+      <section className="relative h-screen w-full">
+        {slides.map((slide, index) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentSlide ? "opacity-100" : "opacity-0"
+            }`}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-black via-[#111] to-[#1a1a1a]" />
+            <div className="absolute inset-0 bg-black/40" />
+          </div>
+        ))}
 
-        {/* Hero Text */}
-        <div className="absolute z-[100] text-white pl-[100px] max-w-[480px] w-full pointer-events-none max-[1024px]:pl-[60px] max-[768px]:pl-10 max-[480px]:pl-5 max-[480px]:text-center max-[480px]:max-w-full">
-          <h1 className="w-full max-w-[430px] font-bold text-[2.6rem] leading-tight mb-20 uppercase max-[1024px]:text-[2rem] max-[1024px]:mb-12 max-[768px]:text-[1.8rem] max-[768px]:mb-9 max-[480px]:text-[1.5rem] max-[480px]:mb-6 max-[480px]:max-w-full">
-            Engineering <span className="text-primary">Excellence</span> Built on Precision
+        <div className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold uppercase mb-6 tracking-tight">
+            {slides[currentSlide].title}
           </h1>
-
-          <div className="flex gap-5 flex-wrap pointer-events-auto max-[480px]:justify-center">
-            <Link href="/contact">
-              <button className="px-6 py-4 min-h-[50px] border-none text-white text-sm font-bold uppercase cursor-pointer rounded-[10px] bg-primary transition-all duration-300 hover:bg-white hover:text-primary hover:scale-110 max-[768px]:px-[18px] max-[768px]:py-2.5 max-[768px]:text-xs max-[768px]:min-h-[45px] max-[480px]:px-2.5 max-[480px]:py-1.5 max-[480px]:min-h-[30px]">
-                Get a Quote
+          <p className="text-xl md:text-2xl text-white/70 mb-12">
+            {slides[currentSlide].subtitle}
+          </p>
+          <div className="flex gap-4">
+            <Link href="/services">
+              <button className="px-8 py-4 bg-white text-black font-semibold uppercase tracking-wide hover:bg-white/90 transition-all">
+                View Services
               </button>
             </Link>
             <Link href="/projects">
-              <button className="px-6 py-4 min-h-[50px] border-none text-white text-sm font-bold uppercase cursor-pointer rounded-[10px] bg-black transition-all duration-300 hover:bg-white hover:text-black hover:scale-110 max-[768px]:px-[18px] max-[768px]:py-2.5 max-[768px]:text-xs max-[768px]:min-h-[45px] max-[480px]:px-2.5 max-[480px]:py-1.5 max-[480px]:min-h-[30px]">
+              <button className="px-8 py-4 border border-white font-semibold uppercase tracking-wide hover:bg-white hover:text-black transition-all">
                 View Projects
               </button>
             </Link>
           </div>
         </div>
-      </section>
 
-      {/* ===== ABOUT SECTION ===== */}
-      <section id="aboutMeterika" className="relative w-full overflow-hidden flex justify-center items-center flex-col bg-black">
-        {/* Background image placeholder */}
-        <div className="w-full h-[500px] max-[768px]:h-[350px] max-[480px]:h-[250px] bg-gradient-to-b from-[#1a1a1a] to-black" />
-
-        {/* Overlay text */}
-        <div className="absolute flex flex-col items-center justify-center p-5 m-auto">
-          <div className="w-[60%] max-[1200px]:w-[80%] max-[768px]:w-[85%] max-[480px]:w-full flex flex-col items-start justify-center gap-6 p-10 max-[768px]:p-5 text-white" data-aos="fade-up">
-            <h2 className="text-[1.5rem] max-[768px]:text-[1.2rem] max-[480px]:text-base font-bold uppercase">
-              About Precision
-            </h2>
-            <p className="text-[1.2rem] max-[768px]:text-[0.9rem] max-[480px]:text-[0.75rem] font-light leading-[1.8]">
-              At Precision, we are a forward-thinking contracting and MEP solutions company dedicated to innovation,
-              precision, and delivering excellence in every project. We seamlessly integrate the highest technical
-              standards with the artistic vision of our project partners.
-            </p>
-            <Link href="/about">
-              <button className="px-9 py-3 border border-white rounded-lg bg-black text-white transition-all duration-300 cursor-pointer mb-8 hover:border-black hover:bg-white hover:text-black hover:scale-105">
-                Learn More
-              </button>
-            </Link>
+        {/* Slide Controls */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-4">
+          <button
+            onClick={() => setIsPlaying(!isPlaying)}
+            className="text-white/70 hover:text-white transition-colors"
+          >
+            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+          </button>
+          <div className="flex gap-2">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-12 h-1 transition-all ${
+                  index === currentSlide ? "bg-white" : "bg-white/30"
+                }`}
+              />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ===== COMMITMENTS / STATS ===== */}
-      <section id="home-commitments" className="relative w-full py-20 bg-radial-dark flex justify-center items-center">
-        <div className="w-full max-w-[1200px] flex items-center justify-around mx-12 gap-4 flex-wrap max-[768px]:flex-col max-[768px]:mx-5">
-          {/* Text */}
-          <div className="flex flex-col text-white max-w-[600px]" data-aos="fade-right">
-            <h2 className="text-[22px] font-bold mb-8 uppercase">Our Commitment to Excellence</h2>
-            <p className="text-base leading-[40px] max-[768px]:leading-[30px] max-[480px]:leading-6">
-              In a world where time is of the essence, Precision thrives. We understand the value of
-              meeting deadlines without compromising on the quality of our work. Our efficient approach
-              ensures that projects are not only completed on time, but also uphold the highest levels
-              of craftsmanship.
-            </p>
-          </div>
-
-          {/* Stats Card */}
-          <div className="max-w-[500px] w-full relative" data-aos="fade-left">
-            <div className="w-full bg-[#111] rounded-[20px] p-8 border border-white/10">
-              <div className="grid grid-cols-2 gap-6">
-                {[
-                  { value: "75+", label: "Delivered Projects" },
-                  { value: "35,500", label: "m² Covered" },
-                  { value: "90%+", label: "Client Satisfaction" },
-                  { value: "04+", label: "Handovers" },
-                ].map((stat) => (
-                  <div key={stat.label} className="text-center text-white leading-[2.5]">
-                    <div className="text-3xl font-bold text-primary">{stat.value}</div>
-                    <div className="text-xs text-white/70">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
+      {/* ===== ABOUT SECTION ===== */}
+      <section className="py-20 md:py-32 bg-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="aspect-video bg-gradient-to-br from-[#222] to-[#111] rounded-lg" />
+            <div className="space-y-6">
+              <h2 className="text-3xl md:text-4xl font-bold uppercase">
+                ABOUT Precision
+              </h2>
+              <p className="text-white/70 leading-relaxed text-lg">
+                AT PRECISION, WE ARE AN INNOVATIVE ENGINEERING FIRM THAT SPECIALIZES IN DELIVERING 
+                EXCEPTIONAL MECHANICAL, ELECTRICAL, AND PLUMBING (MEP) SERVICES, AS WELL AS 
+                CUTTING-EDGE HEATING AND HOME AUTOMATION SOLUTIONS. OUR UNWAVERING COMMITMENT TO 
+                EXCELLENCE IS REFLECTED IN OUR ABILITY TO SEAMLESSLY INTEGRATE THE HIGHEST TECHNICAL 
+                STANDARDS WITH THE ARTISTIC VISION OF OUR PROJECT PARTNERS.
+              </p>
+              <Link href="/about">
+                <button className="px-8 py-3 border border-white font-semibold uppercase tracking-wide hover:bg-white hover:text-black transition-all">
+                  More
+                </button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ===== SERVICES ===== */}
-      <section id="home-services" className="relative w-full bg-black text-white flex justify-center items-center flex-col py-16 overflow-hidden">
-        <div className="flex flex-col items-center justify-center px-5 w-[95%]">
-          {/* Title */}
-          <div className="self-start text-left ml-10 mb-10 max-[768px]:ml-0 max-[768px]:text-center max-[768px]:self-center" data-aos="fade-up">
-            <h2 className="text-2xl font-bold mb-2.5 uppercase">Our Services</h2>
-            <p className="text-[0.8rem] text-light-gray uppercase leading-[2]">
-              Comprehensive MEP Solutions & Fit-Out Contracting
-            </p>
+      {/* ===== COMMITMENTS SECTION ===== */}
+      <section className="py-20 md:py-32 bg-[#0a0a0a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="order-2 lg:order-1 space-y-8">
+              <div className="flex items-baseline gap-2">
+                <span className="text-6xl md:text-8xl font-bold text-white">0</span>
+                <span className="text-2xl text-white/50">M2</span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-6xl md:text-8xl font-bold text-white">0</span>
+                <span className="text-2xl text-white/50">HR</span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-6xl md:text-8xl font-bold text-white">0</span>
+              </div>
+            </div>
+            <div className="order-1 lg:order-2 space-y-6">
+              <h2 className="text-3xl md:text-4xl font-bold uppercase">
+                OUR COMMITMENTS
+              </h2>
+              <p className="text-white/70 leading-relaxed text-lg">
+                WE ARE COMMITTED TO SUSTAINABILITY AND SOCIAL RESPONSIBILITY. WE RECOGNIZE OUR PIVOTAL 
+                ROLE IN SUPPORTING THE GROWTH AND DEVELOPMENT OF OUR COUNTRY, AND OUR VITAL ROLE IN 
+                PEOPLE&apos;S SAFETY, SECURITY AND ENHANCING THEIR PRODUCTIVITY AND DAILY LIVES.
+              </p>
+            </div>
           </div>
+        </div>
+      </section>
 
-          {/* Service Cards */}
-          <div className="flex flex-wrap justify-center gap-10 px-5 max-[992px]:gap-5">
-            {services.map((service) => (
-              <Link href="/services" key={service.title}>
-                <div className="max-w-[410px] max-[1460px]:max-w-[350px] max-[1300px]:max-w-[270px] max-[576px]:max-w-[350px] text-center mb-5 flex items-end justify-center relative overflow-hidden transition-all duration-300 hover:scale-105 cursor-pointer group" data-aos="zoom-in">
-                  {/* Placeholder image */}
-                  <div className="w-full h-[280px] max-[768px]:h-[220px] bg-gradient-to-t from-[#1a1a1a] to-[#333] rounded-[10px] transition-transform duration-300 group-hover:scale-105" />
-                  {/* Title overlay */}
-                  <h3 className="w-full py-6 absolute bottom-0 text-[1.2rem] m-0 text-light-gray bg-black/50">
-                    {service.title}
-                  </h3>
+      {/* ===== PROJECTS SECTION ===== */}
+      <section className="py-20 md:py-32 bg-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold uppercase text-center mb-16">
+            PROJECTS
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.map((project, index) => (
+              <Link href={`/projects/${index}`} key={index}>
+                <div className="group relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-[#222] to-[#111]">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <h3 className="text-xl font-bold uppercase mb-1">{project.name}</h3>
+                    <p className="text-white/70">{project.location}</p>
+                    <p className="text-white/50 text-sm mt-1">&quot;{String(index + 1).padStart(2, &apos;0&apos;)}&quot;</p>
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ===== PROJECTS ===== */}
-      <section id="home-projects" className="relative w-full bg-black text-white py-24 flex flex-col items-center">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#111] to-black" />
-
-        <div className="relative z-10 w-full max-w-[1200px] px-5">
-          {/* Header */}
-          <div className="text-center mb-12" data-aos="fade-up">
-            <h2 className="text-[22px] font-bold uppercase">Our Projects</h2>
-          </div>
-
-          {/* Project Cards */}
-          <div className="flex flex-col items-center gap-10">
-            {projects.map((project, i) => (
-              <div key={`${project.name}-${i}`} className="flex flex-col items-center gap-4" data-aos="fade-up" data-aos-delay={i * 100}>
-                <div className="w-[600px] max-[768px]:w-full max-w-full relative">
-                  {/* Placeholder image */}
-                  <div className="w-full h-[350px] max-[768px]:h-[220px] bg-gradient-to-br from-[#222] to-[#111] rounded-[20px] object-cover" />
-                </div>
-                <div className="w-full text-center text-white text-shadow min-h-[80px]">
-                  <h3 className="text-[1.5rem] m-0 leading-[2]">{project.name}</h3>
-                  <p className="text-[0.8rem] leading-[1.5] m-0 text-white/70">{project.location}</p>
-                </div>
-              </div>
-            ))}
-
-            <Link href="/projects" className="my-6">
-              <button className="px-9 py-3 border border-white rounded-lg bg-black text-white transition-all duration-300 cursor-pointer hover:border-black hover:bg-white hover:text-black hover:scale-105">
-                View All Projects
+          <div className="text-center mt-12">
+            <Link href="/projects">
+              <button className="px-8 py-3 border border-white font-semibold uppercase tracking-wide hover:bg-white hover:text-black transition-all">
+                More
               </button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ===== MISSION / VISION ===== */}
-      <section id="animated-section" className="w-full">
-        <div className="flex flex-col items-center gap-10 w-full cursor-pointer py-24 overflow-hidden bg-radial-dark">
-          {/* Mission */}
-          <div className="relative p-5 md:px-12 w-[80%] max-[992px]:w-[90%] max-[768px]:w-[95%] min-h-[380px] max-[992px]:min-h-[250px] max-[768px]:min-h-[200px] mb-24 overflow-hidden z-[2] flex items-center" data-aos="fade-right">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#1a1a1a] to-[#222] rounded-[20px] -z-[1]" />
-            <div className="relative leading-[40px] text-white text-shadow text-left w-full max-w-[700px]">
-              <h1 className="text-[2rem] max-[768px]:text-[1.5rem] max-[576px]:text-[1.2rem] mb-10 font-bold uppercase">Our Mission</h1>
-              <p className="text-base max-[576px]:text-[0.7rem]">
-                To streamline the construction process for our clients by delivering comprehensive
-                follow-up consultations at every stage, ensuring a seamless operation, functional space
-                with a top-notch quality that exceeds expectations.
-              </p>
-            </div>
+      {/* ===== SERVICES SECTION ===== */}
+      <section className="py-20 md:py-32 bg-[#0a0a0a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold uppercase mb-4">SERVICES</h2>
+            <p className="text-white/70 text-lg">Seamlessly Integrated</p>
           </div>
-
-          {/* Vision */}
-          <div className="relative p-5 md:px-12 w-[80%] max-[992px]:w-[90%] max-[768px]:w-[95%] min-h-[380px] max-[992px]:min-h-[250px] max-[768px]:min-h-[200px] mb-24 overflow-hidden z-[2] flex items-center justify-end" data-aos="fade-left">
-            <div className="absolute inset-0 bg-gradient-to-l from-[#1a1a1a] to-[#222] rounded-[20px] -z-[1]" />
-            <div className="relative leading-[40px] text-white text-shadow text-right w-full max-w-[700px]">
-              <h1 className="text-[2rem] max-[768px]:text-[1.5rem] max-[576px]:text-[1.2rem] mb-10 font-bold uppercase">Our Vision</h1>
-              <p className="text-base max-[576px]:text-[0.7rem]">
-                To lead as a premier contracting and MEP solutions provider, delivering innovative and
-                sustainable projects that exceed client expectations. We are committed to excellence,
-                craftsmanship, and creating lasting value through every endeavor we undertake.
-              </p>
-            </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {services.map((service, index) => (
+              <div key={index} className="group aspect-square bg-gradient-to-br from-[#222] to-[#111] flex flex-col items-center justify-center gap-4 hover:from-[#333] hover:to-[#222] transition-all cursor-pointer">
+                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center text-2xl font-bold">
+                  {String(index + 1).padStart(2, &apos;0&apos;)}
+                </div>
+                <h3 className="text-sm md:text-base font-semibold uppercase text-center">{service.title}</h3>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Link href="/services">
+              <button className="px-8 py-3 border border-white font-semibold uppercase tracking-wide hover:bg-white hover:text-black transition-all">
+                More
+              </button>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ===== CTA FOOTER BANNER ===== */}
-      <section id="home-footer" className="relative w-full h-[630px] max-[590px]:h-[220px] max-[400px]:h-[150px] bg-black bg-cover bg-center text-white flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-        <div className="relative text-center z-10" data-aos="zoom-in">
-          <h2 className="text-[2.2rem] max-[768px]:text-[1.5rem] max-[480px]:text-[1.2rem] leading-[2.5] font-bold uppercase mb-6">
-            Ready to Build Something <span className="text-primary">Exceptional?</span>
+      {/* ===== GALLERY SECTION ===== */}
+      <section className="py-20 md:py-32 bg-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold uppercase text-center mb-4">
+            Powering Your Potential
           </h2>
+          <h3 className="text-2xl md:text-3xl font-bold uppercase text-center mb-16">
+            GALLERY
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2">
+            {[...Array(10)].map((_, index) => (
+              <div key={index} className="aspect-square bg-gradient-to-br from-[#222] to-[#111] hover:from-[#333] hover:to-[#222] transition-all" />
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Link href="/gallery">
+              <button className="px-8 py-3 border border-white font-semibold uppercase tracking-wide hover:bg-white hover:text-black transition-all">
+                More
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== PARTNERS SECTION ===== */}
+      <section className="py-20 bg-[#0a0a0a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold uppercase mb-12">
+            OUR PARTNERS
+          </h2>
+          <div className="flex flex-wrap justify-center items-center gap-12 opacity-50">
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className="w-32 h-16 bg-white/20 rounded" />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== CTA / CONTACT SECTION ===== */}
+      <section className="py-32 bg-black">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-5xl font-bold uppercase mb-8">
+            WE&apos;RE HERE FOR YOU
+          </h2>
+          <p className="text-white/70 text-lg mb-8 max-w-2xl mx-auto">
+            Ready to bring your project to life? Contact us today to discuss your MEP and contracting needs.
+          </p>
           <Link href="/contact">
-            <button className="px-9 py-3 border border-white rounded-lg bg-black text-white transition-all duration-300 cursor-pointer hover:border-black hover:bg-white hover:text-black hover:scale-105">
+            <button className="px-12 py-4 bg-white text-black font-semibold uppercase tracking-wide hover:bg-white/90 transition-all">
               Contact Us
             </button>
           </Link>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
