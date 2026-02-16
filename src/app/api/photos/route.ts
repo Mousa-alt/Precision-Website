@@ -27,10 +27,12 @@ interface Project {
 const API_KEY = process.env.GOOGLE_DRIVE_API_KEY!;
 const ROOT_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID!;
 
-// Keywords that indicate a good cover/hero photo (exterior, branding, general)
-const PREFERRED_KEYWORDS = ["exterior", "front", "facade", "hero", "cover", "main", "logo", "brand", "entrance", "sign", "overview", "general", "reception", "lobby"];
-// Keywords that indicate a bad cover photo (technical/detail shots)
-const AVOID_KEYWORDS = ["electrical", "board", "panel", "interior", "detail", "mep", "pipe", "duct", "cable", "wiring", "switch", "breaker", "db", "meter", "ceiling", "ac", "chiller", "pump"];
+// Keywords that strongly indicate a good cover photo (branding, exterior, signage)
+const STRONG_PREFERRED = ["logo", "brand", "signage", "sign", "facade", "storefront", "shopfront", "entrance", "exterior", "front", "hero", "cover", "main"];
+// Keywords that mildly indicate a good cover photo
+const MILD_PREFERRED = ["overview", "general", "reception", "lobby", "opening", "render", "3d", "perspective"];
+// Keywords that indicate a bad cover photo (technical/detail/MEP shots)
+const AVOID_KEYWORDS = ["electrical", "board", "panel", "detail", "mep", "pipe", "duct", "cable", "wiring", "switch", "breaker", "db", "meter", "ceiling", "ac", "chiller", "pump", "thermostat", "valve", "riser", "shaft", "slab", "conduit", "trunking", "tray", "diffuser", "grill", "drain", "toilet", "wc", "sprinkler", "sensor"];
 
 function pickCoverIndex(photos: { name: string }[]): number {
   if (photos.length <= 1) return 0;
@@ -42,22 +44,27 @@ function pickCoverIndex(photos: { name: string }[]): number {
     const name = photos[i].name.toLowerCase();
     let score = 0;
 
-    // Boost for preferred keywords
-    for (const kw of PREFERRED_KEYWORDS) {
-      if (name.includes(kw)) { score += 10; break; }
+    // Strong boost for branding/exterior keywords
+    for (const kw of STRONG_PREFERRED) {
+      if (name.includes(kw)) { score += 20; break; }
     }
 
-    // Penalize for avoid keywords
+    // Mild boost for general/overview keywords
+    for (const kw of MILD_PREFERRED) {
+      if (name.includes(kw)) { score += 8; break; }
+    }
+
+    // Penalize technical/MEP keywords heavily
     for (const kw of AVOID_KEYWORDS) {
-      if (name.includes(kw)) { score -= 20; break; }
+      if (name.includes(kw)) { score -= 30; break; }
     }
 
     // Prefer photos with low numbers in filename (1.jpg, 01.jpg are usually hero shots)
     const numMatch = name.match(/(?:^|\D)(\d{1,2})(?:\D|$)/);
     if (numMatch) {
       const num = parseInt(numMatch[1], 10);
-      if (num === 1) score += 5;
-      else if (num <= 3) score += 2;
+      if (num === 1) score += 8;
+      else if (num <= 3) score += 4;
     }
 
     // Slight preference for earlier photos in the list

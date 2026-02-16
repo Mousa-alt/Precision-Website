@@ -195,8 +195,8 @@ export default function ProjectsPage() {
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
-                      className="w-full h-full object-contain"
-                      wrapClassName="w-full h-full flex items-center justify-center"
+                      className="w-full h-full object-cover"
+                      wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
@@ -239,8 +239,8 @@ export default function ProjectsPage() {
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
-                      className="w-full h-full object-contain"
-                      wrapClassName="w-full h-full flex items-center justify-center"
+                      className="w-full h-full object-cover"
+                      wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
                     />
                   ) : (

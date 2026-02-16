@@ -238,8 +238,8 @@ export default function Home() {
                 <RevealImage
                   src={featuredProjects[0].coverPhoto}
                   alt={featuredProjects[0].name}
-                  className="w-full h-full object-contain"
-                  wrapClassName="w-full h-full flex items-center justify-center"
+                  className="w-full h-full object-cover"
+                  wrapClassName="w-full h-full"
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
@@ -266,8 +266,8 @@ export default function Home() {
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
-                      className="w-full h-full object-contain"
-                      wrapClassName="w-full h-full flex items-center justify-center"
+                      className="w-full h-full object-cover"
+                      wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
@@ -294,8 +294,8 @@ export default function Home() {
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
-                      className="w-full h-full object-contain"
-                      wrapClassName="w-full h-full flex items-center justify-center"
+                      className="w-full h-full object-cover"
+                      wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
