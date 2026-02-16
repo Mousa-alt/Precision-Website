@@ -34,8 +34,11 @@ const servicesList = [
 interface DriveProject {
   folderName: string;
   category: string;
+  displayName?: string;
+  displayLocation?: string;
   photos: { id: string; url: string; thumbnailUrl: string; name: string }[];
   coverPosition?: string;
+  coverFit?: string;
 }
 
 export default function Home() {
@@ -43,7 +46,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [resetKey, setResetKey] = useState(0);
   const [featuredProjects, setFeaturedProjects] = useState<
-    { name: string; location: string; category: string; coverPhoto: string; photoCount: number; coverPosition: string }[]
+    { name: string; location: string; category: string; coverPhoto: string; photoCount: number; coverPosition: string; coverFit: string }[]
   >([]);
 
   useEffect(() => {
@@ -74,10 +77,10 @@ export default function Home() {
           Medical: "Medical",
         };
 
-        const toDisplay = (dp: DriveProject, overrideCover?: string, overridePosition?: string) => {
-          const parts = dp.folderName.split(/\s*[-\u2013]\s*/);
-          const name = parts[0].trim().replace(/\b\w/g, (c) => c.toUpperCase());
-          const location = parts.length > 1 ? parts.slice(1).join(", ").trim() : "";
+        const toDisplay = (dp: DriveProject, overrideCover?: string, overridePosition?: string, overrideFit?: string) => {
+          const fallbackParts = dp.folderName.split(/\s*[-\u2013]\s*/);
+          const name = dp.displayName || fallbackParts[0].trim().replace(/\b\w/g, (c) => c.toUpperCase());
+          const location = dp.displayLocation ?? (fallbackParts.length > 1 ? fallbackParts.slice(1).join(", ").trim() : "");
           const coverPhoto = overrideCover
             ? `https://lh3.googleusercontent.com/d/${overrideCover}=w1200`
             : dp.photos[0]?.url || "";
@@ -88,6 +91,7 @@ export default function Home() {
             coverPhoto,
             photoCount: dp.photos.length,
             coverPosition: overridePosition || dp.coverPosition || "center",
+            coverFit: overrideFit || dp.coverFit || "cover",
           };
         };
 
@@ -97,14 +101,14 @@ export default function Home() {
           const cfgRes = await fetch("/api/admin/homepage");
           const cfgData = await cfgRes.json();
           if (cfgData.config?.slots?.length > 0) {
-            const slots: { folderName: string; coverPhotoId: string; coverPosition: string }[] = cfgData.config.slots;
+            const slots: { folderName: string; coverPhotoId: string; coverPosition: string; coverFit?: string }[] = cfgData.config.slots;
             const results: typeof featuredProjects = [];
             for (const slot of slots) {
               const match = driveProjects.find(
                 (dp) => dp.folderName.toLowerCase() === slot.folderName.toLowerCase()
               );
               if (match) {
-                results.push(toDisplay(match, slot.coverPhotoId || undefined, slot.coverPosition || undefined));
+                results.push(toDisplay(match, slot.coverPhotoId || undefined, slot.coverPosition || undefined, slot.coverFit || undefined));
               }
             }
             if (results.length > 0) {
@@ -287,10 +291,11 @@ export default function Home() {
                 <RevealImage
                   src={featuredProjects[0].coverPhoto}
                   alt={featuredProjects[0].name}
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full ${featuredProjects[0].coverFit === "contain" ? "object-contain" : "object-cover"}`}
                   wrapClassName="w-full h-full"
                   referrerPolicy="no-referrer"
                   objectPosition={featuredProjects[0].coverPosition}
+                  objectFit={featuredProjects[0].coverFit as "cover" | "contain"}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
                 <div className="absolute bottom-0 left-0 right-0 p-8 max-[480px]:p-5">
@@ -316,10 +321,11 @@ export default function Home() {
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full ${project.coverFit === "contain" ? "object-contain" : "object-cover"}`}
                       wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
                       objectPosition={project.coverPosition}
+                      objectFit={project.coverFit as "cover" | "contain"}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
                     <div className="absolute bottom-0 left-0 right-0 p-6 max-[480px]:p-4">
@@ -345,10 +351,11 @@ export default function Home() {
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full ${project.coverFit === "contain" ? "object-contain" : "object-cover"}`}
                       wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
                       objectPosition={project.coverPosition}
+                      objectFit={project.coverFit as "cover" | "contain"}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
                     <div className="absolute bottom-0 left-0 right-0 p-5 max-[480px]:p-4">

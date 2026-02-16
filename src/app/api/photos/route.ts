@@ -1,9 +1,82 @@
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
 interface DriveFile {
   id: string;
   name: string;
   mimeType: string;
+}
+
+// AI Analysis data types
+interface AIPhotoScore {
+  id: string;
+  score: number;
+}
+
+interface AIProjectAnalysis {
+  folderName: string;
+  photos: AIPhotoScore[];
+  bestCoverId: string;
+}
+
+interface AIAnalysisResult {
+  projects: AIProjectAnalysis[];
+}
+
+// Load project name overrides
+interface ProjectNameOverride {
+  name: string;
+  location: string;
+  coverPosition?: string;
+  coverFit?: string;
+}
+
+function loadProjectNames(): Record<string, ProjectNameOverride> {
+  try {
+    const filePath = path.join(process.cwd(), "data", "project-names.json");
+    if (fs.existsSync(filePath)) {
+      return JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    }
+  } catch {
+    // No overrides available
+  }
+  return {};
+}
+
+function getDisplayName(folderName: string, overrides: Record<string, ProjectNameOverride>): { name: string; location: string } {
+  // Check exact match first
+  if (overrides[folderName]) {
+    return { name: overrides[folderName].name, location: overrides[folderName].location };
+  }
+  // Fallback: parse from folder name
+  const parts = folderName.split(/\s*[-\u2013]\s*/);
+  if (parts.length >= 2) {
+    return {
+      name: parts[0].trim().replace(/\b\w/g, (c) => c.toUpperCase()),
+      location: parts.slice(1).join(", ").trim(),
+    };
+  }
+  return { name: folderName.trim(), location: "" };
+}
+
+// Load AI analysis results if available
+function loadAIAnalysis(): Map<string, AIProjectAnalysis> {
+  const map = new Map<string, AIProjectAnalysis>();
+  try {
+    const filePath = path.join(process.cwd(), "data", "photo-analysis.json");
+    if (fs.existsSync(filePath)) {
+      const data: AIAnalysisResult = JSON.parse(
+        fs.readFileSync(filePath, "utf-8")
+      );
+      for (const project of data.projects) {
+        map.set(project.folderName.toLowerCase(), project);
+      }
+    }
+  } catch {
+    // No analysis available
+  }
+  return map;
 }
 
 interface DriveListResponse {
@@ -21,8 +94,11 @@ interface ProjectPhoto {
 interface Project {
   folderName: string;
   category: string;
+  displayName: string;
+  displayLocation: string;
   photos: ProjectPhoto[];
-  coverPosition: "top" | "center" | "bottom";
+  coverPosition: string;
+  coverFit: "cover" | "contain";
 }
 
 const API_KEY = process.env.GOOGLE_DRIVE_API_KEY!;
@@ -138,6 +214,10 @@ export async function GET() {
   }
 
   try {
+    // Load AI analysis results and project name overrides
+    const aiAnalysis = loadAIAnalysis();
+    const nameOverrides = loadProjectNames();
+
     // Level 1: Get category folders (01.Administrative, 02.Retail, etc.)
     const categoryFolders = await listFolder(ROOT_FOLDER_ID);
     const folders = categoryFolders.filter(
@@ -169,8 +249,33 @@ export async function GET() {
             name: img.name.replace(/\.[^/.]+$/, ""),
           }));
 
-          // Pick the best cover photo and put it first
-          const { index: coverIdx, position: coverPosition } = pickCover(photoList);
+          // Check if AI analysis exists for this project
+          const aiProject = aiAnalysis.get(projFolder.name.toLowerCase());
+          let coverIdx = 0;
+          let coverPosition: "top" | "center" | "bottom" = "center";
+
+          if (aiProject?.bestCoverId) {
+            // AI analysis available — use AI-selected cover
+            const aiCoverIdx = photoList.findIndex(
+              (p) => p.id === aiProject.bestCoverId
+            );
+            if (aiCoverIdx >= 0) {
+              coverIdx = aiCoverIdx;
+              coverPosition = detectPosition(photoList[aiCoverIdx].name.toLowerCase());
+            } else {
+              // AI cover not found in current photos, fall back to keyword
+              const result = pickCover(photoList);
+              coverIdx = result.index;
+              coverPosition = result.position;
+            }
+          } else {
+            // No AI analysis — use keyword-based selection
+            const result = pickCover(photoList);
+            coverIdx = result.index;
+            coverPosition = result.position;
+          }
+
+          // Put cover photo first
           if (coverIdx > 0) {
             const cover = photoList[coverIdx];
             photoList.splice(coverIdx, 1);
@@ -181,11 +286,22 @@ export async function GET() {
           const folderLower = projFolder.name.toLowerCase();
           const overridePos = Object.entries(POSITION_OVERRIDES).find(([key]) => folderLower.includes(key));
 
+          // Get display name and cover settings from overrides
+          const display = getDisplayName(projFolder.name, nameOverrides);
+          const savedSettings = nameOverrides[projFolder.name];
+
+          // Dashboard-saved position takes priority > hardcoded override > auto-detected
+          const finalPosition = savedSettings?.coverPosition || (overridePos ? overridePos[1] : coverPosition);
+          const finalFit = (savedSettings?.coverFit as "cover" | "contain") || "cover";
+
           projects.push({
             folderName: projFolder.name,
             category,
+            displayName: display.name,
+            displayLocation: display.location,
             photos: photoList,
-            coverPosition: overridePos ? overridePos[1] : coverPosition,
+            coverPosition: finalPosition,
+            coverFit: finalFit,
           });
         }
       }

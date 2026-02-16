@@ -34,8 +34,11 @@ const fallbackProjects = [
 interface DriveProject {
   folderName: string;
   category: string;
+  displayName?: string;
+  displayLocation?: string;
   photos: { id: string; url: string; thumbnailUrl: string; name: string }[];
   coverPosition?: string;
+  coverFit?: string;
 }
 
 interface ProjectDisplay {
@@ -44,6 +47,7 @@ interface ProjectDisplay {
   category: string;
   coverPhoto?: string;
   coverPosition: string;
+  coverFit: "cover" | "contain";
   photoCount: number;
 }
 
@@ -67,20 +71,42 @@ function cleanFolderName(folderName: string): { name: string; location: string }
 export default function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [projects, setProjects] = useState<ProjectDisplay[]>(
-    fallbackProjects.map((p) => ({ ...p, photoCount: 0, coverPosition: "center" }))
+    fallbackProjects.map((p) => ({ ...p, photoCount: 0, coverPosition: "center", coverFit: "cover" as const }))
   );
   const [loading, setLoading] = useState(true);
+  const [featuredCount, setFeaturedCount] = useState(2);
 
   useEffect(() => {
     async function loadPhotos() {
       try {
-        const res = await fetch("/api/photos");
-        const data = await res.json();
+        // Fetch photos and homepage config in parallel
+        const [photosRes, configRes] = await Promise.all([
+          fetch("/api/photos"),
+          fetch("/api/admin/homepage").catch(() => null),
+        ]);
+
+        const data = await photosRes.json();
         const driveProjects: DriveProject[] = data.projects || [];
 
         if (driveProjects.length > 0) {
-          const driveDisplay: ProjectDisplay[] = driveProjects.map((dp) => {
-            const { name, location } = cleanFolderName(dp.folderName);
+          // Get featured project names from homepage config
+          let featuredNames: string[] = [];
+          try {
+            if (configRes?.ok) {
+              const cfgData = await configRes.json();
+              if (cfgData.config?.slots?.length > 0) {
+                featuredNames = cfgData.config.slots.map(
+                  (s: { folderName: string }) => s.folderName.toLowerCase()
+                );
+              }
+            }
+          } catch {
+            // No config, featured stays empty
+          }
+
+          const toDisplay = (dp: DriveProject): ProjectDisplay => {
+            const name = dp.displayName || cleanFolderName(dp.folderName).name;
+            const location = dp.displayLocation ?? cleanFolderName(dp.folderName).location;
             const category = categoryMap[dp.category] || dp.category;
             return {
               name,
@@ -88,10 +114,33 @@ export default function ProjectsPage() {
               category,
               coverPhoto: dp.photos[0]?.url,
               coverPosition: dp.coverPosition || "center",
+              coverFit: (dp.coverFit as "cover" | "contain") || "cover",
               photoCount: dp.photos.length,
             };
-          });
-          setProjects(driveDisplay);
+          };
+
+          // Sort: featured first (in config order), then new/other projects
+          const featured: ProjectDisplay[] = [];
+          const rest: ProjectDisplay[] = [];
+
+          // First pass: pick featured in config order
+          for (const fname of featuredNames) {
+            const match = driveProjects.find(
+              (dp) => dp.folderName.toLowerCase() === fname
+            );
+            if (match) featured.push(toDisplay(match));
+          }
+
+          // Second pass: everything else (new projects appear here first)
+          for (const dp of driveProjects) {
+            const isFeatured = featuredNames.some(
+              (fn) => fn === dp.folderName.toLowerCase()
+            );
+            if (!isFeatured) rest.push(toDisplay(dp));
+          }
+
+          setProjects([...featured, ...rest]);
+          setFeaturedCount(featured.length > 0 ? Math.min(featured.length, 2) : 2);
         }
       } catch {
         // Keep fallback data on error
@@ -107,9 +156,9 @@ export default function ProjectsPage() {
       ? projects
       : projects.filter((p) => p.category === activeCategory);
 
-  // First 2 projects are "featured" when showing All
-  const featuredProjects = activeCategory === "All" ? filtered.slice(0, 2) : [];
-  const gridProjects = activeCategory === "All" ? filtered.slice(2) : filtered;
+  // Featured projects shown large at top when viewing All
+  const featuredDisplay = activeCategory === "All" ? filtered.slice(0, featuredCount) : [];
+  const gridProjects = activeCategory === "All" ? filtered.slice(featuredCount) : filtered;
 
   return (
     <div className="bg-black text-white">
@@ -187,9 +236,9 @@ export default function ProjectsPage() {
           )}
 
           {/* Featured projects (only when "All" is selected) */}
-          {featuredProjects.length > 0 && (
+          {featuredDisplay.length > 0 && (
             <div className="flex gap-5 mb-8 max-[768px]:flex-col" data-aos="fade-up">
-              {featuredProjects.map((project, i) => (
+              {featuredDisplay.map((project, i) => (
                 <div
                   key={`featured-${project.name}-${i}`}
                   className="project-card group flex-1 relative aspect-[16/10] bg-[#0a0a0a]"
@@ -198,10 +247,11 @@ export default function ProjectsPage() {
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full ${project.coverFit === "contain" ? "object-contain" : "object-cover"}`}
                       wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
                       objectPosition={project.coverPosition}
+                      objectFit={project.coverFit}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]" />
@@ -243,10 +293,11 @@ export default function ProjectsPage() {
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full ${project.coverFit === "contain" ? "object-contain" : "object-cover"}`}
                       wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
                       objectPosition={project.coverPosition}
+                      objectFit={project.coverFit}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]" />

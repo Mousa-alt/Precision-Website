@@ -6,14 +6,24 @@ import { DragDropContext, Droppable, Draggable, type DropResult } from "@hello-p
 interface DriveProject {
   folderName: string;
   category: string;
+  displayName?: string;
+  displayLocation?: string;
   photos: { id: string; url: string; thumbnailUrl: string; name: string }[];
   coverPosition?: string;
+}
+
+interface ProjectNameOverride {
+  name: string;
+  location: string;
+  coverPosition?: string;
+  coverFit?: string;
 }
 
 interface HomeSlot {
   folderName: string;
   coverPhotoId: string;
   coverPosition: string;
+  coverFit?: string;
 }
 
 type Tab = "home" | "projects" | "content" | "settings";
@@ -60,12 +70,17 @@ export default function AdminDashboard() {
     linkedin: "https://www.linkedin.com/company/precision-egy",
   });
 
+  // Project names state
+  const [projectNames, setProjectNames] = useState<Record<string, ProjectNameOverride>>({});
+  const [namesSaving, setNamesSaving] = useState(false);
+
   // Settings
   const [driveFolderId, setDriveFolderId] = useState("");
 
   useEffect(() => {
     loadProjects();
     loadHomeConfig();
+    loadProjectNames();
   }, []);
 
   async function loadProjects() {
@@ -95,6 +110,65 @@ export default function AdminDashboard() {
     }
     setHomeLoaded(true);
   }
+
+  async function loadProjectNames() {
+    try {
+      const res = await fetch("/api/admin/project-names");
+      const data = await res.json();
+      if (data.names) {
+        setProjectNames(data.names);
+      }
+    } catch {
+      // silent fail
+    }
+  }
+
+  async function saveProjectNames() {
+    setNamesSaving(true);
+    setStatus("");
+    try {
+      const res = await fetch("/api/admin/project-names", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ names: projectNames }),
+      });
+      if (res.ok) {
+        setStatus("Project names saved successfully!");
+      } else {
+        const data = await res.json();
+        setStatus(`Error: ${data.error || "Failed to save"}`);
+      }
+    } catch {
+      setStatus("Error: Failed to save project names");
+    }
+    setNamesSaving(false);
+    setTimeout(() => setStatus(""), 5000);
+  }
+
+  function updateProjectName(folderName: string, field: "name" | "location" | "coverPosition" | "coverFit", value: string) {
+    setProjectNames((prev) => ({
+      ...prev,
+      [folderName]: {
+        name: prev[folderName]?.name || "",
+        location: prev[folderName]?.location || "",
+        coverPosition: prev[folderName]?.coverPosition,
+        coverFit: prev[folderName]?.coverFit,
+        [field]: value,
+      },
+    }));
+  }
+
+  const POSITIONS_2D = [
+    { label: "", value: "top left" },
+    { label: "", value: "top center" },
+    { label: "", value: "top right" },
+    { label: "", value: "center left" },
+    { label: "", value: "center" },
+    { label: "", value: "center right" },
+    { label: "", value: "bottom left" },
+    { label: "", value: "bottom center" },
+    { label: "", value: "bottom right" },
+  ];
 
   async function saveHomeConfig() {
     setHomeSaving(true);
@@ -161,6 +235,12 @@ export default function AdminDashboard() {
     setHomeSlots(updated);
   }
 
+  function updateSlotFit(index: number, fit: string) {
+    const updated = [...homeSlots];
+    updated[index] = { ...updated[index], coverFit: fit };
+    setHomeSlots(updated);
+  }
+
   function getProject(folderName: string): DriveProject | undefined {
     return projects.find((p) => p.folderName === folderName);
   }
@@ -172,6 +252,9 @@ export default function AdminDashboard() {
   }
 
   function cleanName(folderName: string): string {
+    if (projectNames[folderName]?.name) return projectNames[folderName].name;
+    const project = projects.find((p) => p.folderName === folderName);
+    if (project?.displayName) return project.displayName;
     const parts = folderName.split(/\s*[-\u2013]\s*/);
     return parts[0].trim().replace(/\b\w/g, (c) => c.toUpperCase());
   }
@@ -267,7 +350,7 @@ export default function AdminDashboard() {
                                     <img
                                       src={coverUrl}
                                       alt={slot.folderName}
-                                      className="w-full h-full object-cover"
+                                      className={`w-full h-full ${(slot.coverFit || "cover") === "contain" ? "object-contain" : "object-cover"}`}
                                       style={{ objectPosition: slot.coverPosition }}
                                       referrerPolicy="no-referrer"
                                     />
@@ -296,19 +379,37 @@ export default function AdminDashboard() {
 
                                   {/* Controls row */}
                                   <div className="flex items-center gap-3 mt-2 flex-wrap">
-                                    {/* Position control */}
+                                    {/* 3x3 Position grid */}
+                                    <div>
+                                      <div className="grid grid-cols-3 gap-[3px] w-[42px]">
+                                        {POSITIONS_2D.map((pos) => (
+                                          <button
+                                            key={pos.value}
+                                            onClick={() => updatePosition(index, pos.value)}
+                                            title={pos.value}
+                                            className={`w-[12px] h-[12px] rounded-full transition-all ${
+                                              slot.coverPosition === pos.value
+                                                ? "bg-primary shadow-[0_0_6px_rgba(123,45,54,0.6)]"
+                                                : "bg-white/15 hover:bg-white/30"
+                                            }`}
+                                          />
+                                        ))}
+                                      </div>
+                                    </div>
+
+                                    {/* Cover / Contain toggle */}
                                     <div className="flex gap-1">
-                                      {["top", "center", "bottom"].map((pos) => (
+                                      {(["cover", "contain"] as const).map((fit) => (
                                         <button
-                                          key={pos}
-                                          onClick={() => updatePosition(index, pos)}
+                                          key={fit}
+                                          onClick={() => updateSlotFit(index, fit)}
                                           className={`px-2 py-0.5 text-[10px] uppercase rounded transition-all ${
-                                            slot.coverPosition === pos
+                                            (slot.coverFit || "cover") === fit
                                               ? "bg-primary text-white"
                                               : "bg-white/5 text-white/40 hover:text-white/70"
                                           }`}
                                         >
-                                          {pos}
+                                          {fit}
                                         </button>
                                       ))}
                                     </div>
@@ -447,44 +548,170 @@ export default function AdminDashboard() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {projects.map((project, idx) => (
-              <div key={`${project.folderName}-${idx}`} className="bg-[#111] rounded-xl border border-white/5 overflow-hidden">
-                <div className="relative bg-[#0a0a0a] flex items-center justify-center">
-                  {project.photos[0] ? (
-                    <img
-                      src={project.photos[0].thumbnailUrl}
-                      alt={project.folderName}
-                      className="w-full h-auto max-h-[200px] object-contain"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
-                    <div className="w-full h-[150px] flex items-center justify-center text-white/20">No photos</div>
-                  )}
-                  <span className="absolute top-2 right-2 bg-black/70 text-xs px-2 py-1 rounded">{project.photos.length} photos</span>
-                </div>
-                <div className="p-4">
-                  <p className="text-primary text-[10px] uppercase tracking-wider font-bold">{project.category}</p>
-                  <h3 className="font-bold mt-0.5 text-sm">{project.folderName}</h3>
-                  <div className="flex gap-1 mt-3 overflow-x-auto pb-1">
-                    {project.photos.slice(0, 6).map((photo, i) => (
+            {projects.map((project, idx) => {
+              const savedPos = projectNames[project.folderName]?.coverPosition || project.coverPosition || "center";
+              const savedFit = projectNames[project.folderName]?.coverFit || "cover";
+              return (
+                <div key={`${project.folderName}-${idx}`} className="bg-[#111] rounded-xl border border-white/5 overflow-hidden">
+                  {/* Cover preview with current settings applied */}
+                  <div className="relative bg-[#0a0a0a] aspect-[4/3]">
+                    {project.photos[0] ? (
                       <img
-                        key={photo.id}
-                        src={photo.thumbnailUrl}
-                        alt={photo.name}
-                        className={`w-10 h-10 object-cover rounded flex-shrink-0 ${i === 0 ? "ring-2 ring-primary" : "opacity-60"}`}
+                        src={project.photos[0].thumbnailUrl}
+                        alt={project.folderName}
+                        className={`w-full h-full ${savedFit === "contain" ? "object-contain" : "object-cover"}`}
+                        style={{ objectPosition: savedPos }}
                         referrerPolicy="no-referrer"
-                        title={`${photo.name}${i === 0 ? " (Cover)" : ""}`}
                       />
-                    ))}
-                    {project.photos.length > 6 && (
-                      <div className="w-10 h-10 rounded bg-white/5 flex items-center justify-center text-[10px] text-white/40 flex-shrink-0">
-                        +{project.photos.length - 6}
-                      </div>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white/20">No photos</div>
                     )}
+                    <span className="absolute top-2 right-2 bg-black/70 text-xs px-2 py-1 rounded">{project.photos.length} photos</span>
+                  </div>
+                  <div className="p-4">
+                    <p className="text-primary text-[10px] uppercase tracking-wider font-bold">{project.category}</p>
+                    <h3 className="font-bold mt-0.5 text-sm">{project.folderName}</h3>
+
+                    {/* Cover settings */}
+                    <div className="flex items-center gap-4 mt-3">
+                      {/* 3x3 Position grid */}
+                      <div>
+                        <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1.5">Position</p>
+                        <div className="grid grid-cols-3 gap-[3px] w-[42px]">
+                          {POSITIONS_2D.map((pos) => (
+                            <button
+                              key={pos.value}
+                              onClick={() => updateProjectName(project.folderName, "coverPosition", pos.value)}
+                              title={pos.value}
+                              className={`w-[12px] h-[12px] rounded-full transition-all ${
+                                savedPos === pos.value
+                                  ? "bg-primary shadow-[0_0_6px_rgba(123,45,54,0.6)]"
+                                  : "bg-white/15 hover:bg-white/30"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Cover / Contain toggle */}
+                      <div>
+                        <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1.5">Fit</p>
+                        <div className="flex gap-1">
+                          {(["cover", "contain"] as const).map((fit) => (
+                            <button
+                              key={fit}
+                              onClick={() => updateProjectName(project.folderName, "coverFit", fit)}
+                              className={`px-2 py-0.5 text-[10px] uppercase rounded transition-all ${
+                                savedFit === fit
+                                  ? "bg-primary text-white"
+                                  : "bg-white/5 text-white/40 hover:text-white/70"
+                              }`}
+                            >
+                              {fit}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Photo thumbnails */}
+                    <div className="flex gap-1 mt-3 overflow-x-auto pb-1">
+                      {project.photos.slice(0, 6).map((photo, i) => (
+                        <img
+                          key={photo.id}
+                          src={photo.thumbnailUrl}
+                          alt={photo.name}
+                          className={`w-10 h-10 object-cover rounded flex-shrink-0 ${i === 0 ? "ring-2 ring-primary" : "opacity-60"}`}
+                          referrerPolicy="no-referrer"
+                          title={`${photo.name}${i === 0 ? " (Cover)" : ""}`}
+                        />
+                      ))}
+                      {project.photos.length > 6 && (
+                        <div className="w-10 h-10 rounded bg-white/5 flex items-center justify-center text-[10px] text-white/40 flex-shrink-0">
+                          +{project.photos.length - 6}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
+              );
+            })}
+          </div>
+
+          {/* Project Names Editor */}
+          <div className="bg-[#111] rounded-xl border border-white/5 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="font-bold text-sm uppercase">Project Display Names</h3>
+                <p className="text-xs text-white/40 mt-1">
+                  Override how project names appear on the website. Leave blank to auto-detect from folder name.
+                </p>
               </div>
-            ))}
+              <button
+                onClick={saveProjectNames}
+                disabled={namesSaving}
+                className="px-5 py-2 rounded-lg bg-primary text-white text-sm font-bold uppercase hover:bg-white hover:text-primary transition-all disabled:opacity-50"
+              >
+                {namesSaving ? "Saving..." : "Save Names"}
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {projects.map((project) => {
+                const override = projectNames[project.folderName];
+                return (
+                  <div key={project.folderName} className="flex items-center gap-3 bg-black rounded-lg p-3 border border-white/5">
+                    {/* Thumbnail */}
+                    <div className="w-10 h-10 rounded bg-[#0a0a0a] flex-shrink-0 overflow-hidden">
+                      {project.photos[0] ? (
+                        <img
+                          src={project.photos[0].thumbnailUrl}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          referrerPolicy="no-referrer"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-white/10 text-[8px]">N/A</div>
+                      )}
+                    </div>
+
+                    {/* Folder name (read-only reference) */}
+                    <div className="w-[180px] flex-shrink-0 max-[768px]:hidden">
+                      <p className="text-[10px] text-white/30 truncate" title={project.folderName}>{project.folderName}</p>
+                    </div>
+
+                    {/* Name input */}
+                    <div className="flex-1 min-w-0">
+                      <input
+                        value={override?.name ?? ""}
+                        onChange={(e) => updateProjectName(project.folderName, "name", e.target.value)}
+                        placeholder={project.displayName || project.folderName.split(/\s*[-\u2013]\s*/)[0]}
+                        className="w-full px-2.5 py-1.5 rounded bg-[#1a1a1a] border border-white/10 text-white text-sm outline-none focus:border-primary placeholder:text-white/20"
+                      />
+                    </div>
+
+                    {/* Location input */}
+                    <div className="flex-1 min-w-0">
+                      <input
+                        value={override?.location ?? ""}
+                        onChange={(e) => updateProjectName(project.folderName, "location", e.target.value)}
+                        placeholder="Location"
+                        className="w-full px-2.5 py-1.5 rounded bg-[#1a1a1a] border border-white/10 text-white text-sm outline-none focus:border-primary placeholder:text-white/20"
+                      />
+                    </div>
+
+                    {/* Category badge */}
+                    <span className="text-[9px] text-primary uppercase tracking-wider font-bold flex-shrink-0 max-[480px]:hidden">
+                      {project.category}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {projects.length === 0 && (
+              <p className="text-sm text-white/30 text-center py-4">Load projects first to edit names.</p>
+            )}
           </div>
 
           <div className="bg-[#111] rounded-xl border border-white/5 p-6">
