@@ -1,0 +1,1338 @@
+{
+  "version": 2,
+  "analyzedAt": "2026-02-16T19:26:28.182Z",
+  "projects": [
+    {
+      "folderName": "Muncai-ZED ELSheikh Zayed",
+      "category": "Medical",
+      "photos": [
+        {
+          "id": "1t_b2s4GyUpEuwIiEaRbHhGgiat3nhV7e",
+          "name": "Muncai3",
+          "score": 7,
+          "type": "interior",
+          "description": "Clean, modern physiotherapy treatment room"
+        },
+        {
+          "id": "12dtI-L8kzxrdAhw0PecCnhqv4cRBLwti",
+          "name": "Muncai 2",
+          "score": 8,
+          "type": "interior",
+          "description": "Detailed hallway with treatment room entrances"
+        },
+        {
+          "id": "1TiElIYYqk_zd24essdW3vjKW-8XDfI0_",
+          "name": "Muncai 6",
+          "score": 7,
+          "type": "interior",
+          "description": "Open reception area with curved design elements"
+        },
+        {
+          "id": "1GqYazvAbPOc9D9OLyGZa4HIctBuLDrDq",
+          "name": "Muncai 5",
+          "score": 6,
+          "type": "interior",
+          "description": "Functional space with exercise equipment and seating"
+        },
+        {
+          "id": "1yF9XoKkU1kLwyjX-PRxKBPQWcPyHOYpk",
+          "name": "Muncai 4",
+          "score": 6,
+          "type": "interior",
+          "description": "Arched doorway with crafted woodwork detail"
+        },
+        {
+          "id": "1AdYs2itJuW02_59NCQcLVqk1ch_vIiqk",
+          "name": "Muncai 01",
+          "score": 9,
+          "type": "branding",
+          "description": "Spiral entrance with brand signage and logo"
+        }
+      ],
+      "bestCoverId": "1AdYs2itJuW02_59NCQcLVqk1ch_vIiqk",
+      "analyzedAt": "2026-02-16T19:22:22.464Z"
+    },
+    {
+      "folderName": "BOSS-CAIRO FESTIVAL CITY",
+      "category": "Retail",
+      "photos": [
+        {
+          "id": "1X9RJXcCgD5UQTyL_aUnLcWuA2V5B9Qrv",
+          "name": "3",
+          "score": 8,
+          "type": "branding",
+          "description": "Storefront with illuminated brand logo"
+        },
+        {
+          "id": "10xAJb6elz7F6eNg2cxEV3fRFOPEklHIp",
+          "name": "WhatsApp Image 2025-11-27 at 12.33.21_5fbd0652",
+          "score": 7,
+          "type": "interior",
+          "description": "Clean, modern interior with clothing displays"
+        },
+        {
+          "id": "1m-UH_ILMH0uuSPBk3lAxr83fyBP6Qusn",
+          "name": "WhatsApp Image 2025-11-27 at 12.33.21_499caa43",
+          "score": 7,
+          "type": "interior",
+          "description": "Well-lit interior with clothing racks and mirrors"
+        },
+        {
+          "id": "1SCg97UUQCy2N-SJSybwOBMKI-AcrLlzw",
+          "name": "WhatsApp Image 2025-11-27 at 08.52.56_d1b2caed",
+          "score": 7,
+          "type": "interior",
+          "description": "Interior view with brand signage and displays"
+        },
+        {
+          "id": "1lH2D8ZqavnGTkI_XivX4wAH9LKT-j2-f",
+          "name": "1",
+          "score": 7,
+          "type": "interior",
+          "description": "Wide interior shot showcasing clothing and displays"
+        },
+        {
+          "id": "1mEVzGuvQej1L8U3hzlgsfiOGbrZKcuxF",
+          "name": "2",
+          "score": 7,
+          "type": "interior",
+          "description": "Interior view with clothing racks and seating area"
+        }
+      ],
+      "bestCoverId": "1X9RJXcCgD5UQTyL_aUnLcWuA2V5B9Qrv",
+      "analyzedAt": "2026-02-16T19:23:13.333Z"
+    },
+    {
+      "folderName": "Antoushka mall of egypt",
+      "category": "Retail",
+      "photos": [
+        {
+          "id": "1xyLvHZIwKXz80ed4-faKuURxjEr961pY",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.56_6faeedfd",
+          "score": 7,
+          "type": "branding",
+          "description": "Storefront with closed shutters, brand signage"
+        },
+        {
+          "id": "1KEs8BzfWOoS9KKqXHYY6gjtXKeuqqNP1",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.55_1dcdf76a",
+          "score": 7,
+          "type": "interior",
+          "description": "Well-lit interior with clothing displays, cherry blossom"
+        },
+        {
+          "id": "1HLE-lLJd5-0UEtsskDjBR5F9yIdSbNaw",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.55_b0e1bbdb",
+          "score": 8,
+          "type": "interior",
+          "description": "Wide interior view, clothing racks, mannequins"
+        },
+        {
+          "id": "1JiLn8D0VIznD8iiwfJ44NBhlIavN2lxI",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.55_bb76c83b",
+          "score": 7,
+          "type": "interior",
+          "description": "Bright interior, clothing racks, overall store view"
+        },
+        {
+          "id": "1ZUM8LQdqlQb-n-hYe3tK_gH7TyDi2zD4",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.55_d63b9317",
+          "score": 6,
+          "type": "interior",
+          "description": "Fitting room area, decorative mural, clothing racks"
+        },
+        {
+          "id": "12NhiSdHmnA3znCU0gw_rc2sa0QNqijNG",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.55_0d51b639",
+          "score": 7,
+          "type": "interior",
+          "description": "Cashier area, mural, clothing displays, fitting rooms"
+        },
+        {
+          "id": "1UcqSUtEwKaARdB6BCiwfMZJj40Vw9Fjm",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.55_5c909cef",
+          "score": 6,
+          "type": "interior",
+          "description": "Cashier area, clothing racks, overall store view"
+        },
+        {
+          "id": "1gJ5Kr1fzVz8Lz84QQfr5YsKmSaATBJ8R",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.55_685f3e74",
+          "score": 7,
+          "type": "interior",
+          "description": "Clothing displays, accessories, overall store view"
+        },
+        {
+          "id": "1qRbHz6tg4qLZ8-6D08XAV8ssRAehOzE-",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.54_5e3017fb",
+          "score": 7,
+          "type": "interior",
+          "description": "Clothing racks, casual wear, overall store view"
+        },
+        {
+          "id": "1O3A7UMR6iBYrptQx7owGXTZLg7TAQoSR",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.54_536e9c72",
+          "score": 7,
+          "type": "interior",
+          "description": "Clothing displays, accessories, overall store view"
+        },
+        {
+          "id": "1MKYezwERKk4K0CKFKxlSHBJ9t5O5mip_",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.46_a149dd1a",
+          "score": 9,
+          "type": "branding",
+          "description": "Exterior storefront with brand logo, clean lines"
+        },
+        {
+          "id": "1LXPEoSoAVLsOjglpv6Jn5WeD1_Q9SOGz",
+          "name": "WhatsApp Image 2025-04-15 at 22.39.53_9aed06d4",
+          "score": 8,
+          "type": "interior",
+          "description": "Central display, cherry blossom tree, clothing racks"
+        }
+      ],
+      "bestCoverId": "1MKYezwERKk4K0CKFKxlSHBJ9t5O5mip_",
+      "analyzedAt": "2026-02-16T19:24:05.286Z"
+    },
+    {
+      "folderName": "Casio- Cairo fesival city",
+      "category": "Retail",
+      "photos": [
+        {
+          "id": "1C98GzwbxkghTQnOAqhwmM-VuZdVPrrLo",
+          "name": "467586749_18248574769273429_1379759173992425993_n",
+          "score": 7,
+          "type": "interior",
+          "description": "Clean interior shot showcasing watch displays"
+        },
+        {
+          "id": "1E1kFHj2RPxDFhPyMV6_ZU1CPHPH67HEJ",
+          "name": "467424474_18248575006273429_1251273667906718698_n",
+          "score": 8,
+          "type": "branding",
+          "description": "G-Shock logo and interior watch displays"
+        },
+        {
+          "id": "1Newfz7BNsloQ6YIEOuD3n3csFxDBzARp",
+          "name": "WhatsApp Image 2024-11-25 at 00.11.30_49ffa70a",
+          "score": 9,
+          "type": "branding",
+          "description": "Exterior storefront with clear branding and glass"
+        },
+        {
+          "id": "1c3zFu4G4-x2W61Vewa8eCUCX2G8ikoKH",
+          "name": "WhatsApp Image 2024-11-25 at 00.11.30_ce5fd0cb",
+          "score": 9,
+          "type": "branding",
+          "description": "Exterior storefront, showcasing brand and design"
+        }
+      ],
+      "bestCoverId": "1Newfz7BNsloQ6YIEOuD3n3csFxDBzARp",
+      "analyzedAt": "2026-02-16T19:24:20.283Z"
+    },
+    {
+      "folderName": "Dechathlon - Green Plaza - Alexandria",
+      "category": "Retail",
+      "photos": [
+        {
+          "id": "1IHjXhDO6pf_FJjeiS93xubf2xSE3mn9j",
+          "name": "WhatsApp Image 2024-12-01 at 22.02.39_014782c6",
+          "score": 2,
+          "type": "technical",
+          "description": "Electrical panels and fire extinguishers, technical detail"
+        },
+        {
+          "id": "1UbIGo1dSOT-lYK8zs1tSLYBnev4REb_6",
+          "name": "WhatsApp Image 2024-12-01 at 22.02.39_c1aad558",
+          "score": 9,
+          "type": "branding",
+          "description": "Decathlon storefront, opening soon, great branding"
+        },
+        {
+          "id": "1vwzp_xeOXhjDfFtFLAZn-wVb1uprOPOv",
+          "name": "WhatsApp Image 2024-12-01 at 22.02.38_0abb0626",
+          "score": 9,
+          "type": "branding",
+          "description": "Decathlon storefront, opening soon, clear branding"
+        }
+      ],
+      "bestCoverId": "1UbIGo1dSOT-lYK8zs1tSLYBnev4REb_6",
+      "analyzedAt": "2026-02-16T19:24:28.517Z"
+    },
+    {
+      "folderName": "KNANA - LAKE TOWN",
+      "category": "Retail",
+      "photos": [
+        {
+          "id": "1v5Lw5tLh4DuQTPPl9oie7RkdXs8w9o06",
+          "name": "1",
+          "score": 8,
+          "type": "branding",
+          "description": "Storefront with illuminated brand logo"
+        },
+        {
+          "id": "1N-p8SlibBgDerndyvkk5X_Ugj-fpVstn",
+          "name": "4",
+          "score": 4,
+          "type": "technical",
+          "description": "Exposed ductwork and ceiling details"
+        },
+        {
+          "id": "1kUZtwy_GuBevSJKALJeBPBhJQa5BLC6A",
+          "name": "3",
+          "score": 3,
+          "type": "interior",
+          "description": "Interior with exposed ductwork and merchandise"
+        },
+        {
+          "id": "1VGy9g7Y8UG08td7bMKkb-tclmgTk5Ad9",
+          "name": "WhatsApp Image 2025-11-27 at 00.05.58_79c6e999",
+          "score": 4,
+          "type": "technical",
+          "description": "Exposed ductwork and lighting details"
+        },
+        {
+          "id": "1iVEzlUs0TX5m-pXMYY9li0yMq6Ej22O6",
+          "name": "2",
+          "score": 3,
+          "type": "interior",
+          "description": "Interior with exposed ductwork and merchandise"
+        },
+        {
+          "id": "1UXcMQTX_Lh6h8QOp8XLxLvlipEgVx8Rm",
+          "name": "WhatsApp Image 2025-11-27 at 00.05.58_c86bc767",
+          "score": 4,
+          "type": "technical",
+          "description": "Exposed ductwork and lighting details"
+        }
+      ],
+      "bestCoverId": "1v5Lw5tLh4DuQTPPl9oie7RkdXs8w9o06",
+      "analyzedAt": "2026-02-16T19:24:46.037Z"
+    },
+    {
+      "folderName": "CRED DEVELOPMENT - New Cairo",
+      "category": "Administrative",
+      "photos": [
+        {
+          "id": "1u-ND3FmPYsXjzJIYS7NsJaZqHI-YknSq",
+          "name": "04",
+          "score": 7,
+          "type": "interior",
+          "description": "Modern waiting area with stylish furniture"
+        },
+        {
+          "id": "1HyP7k8SjZprR5KSe6lXw1gJSAHVT3bmU",
+          "name": "0",
+          "score": 9,
+          "type": "branding",
+          "description": "Illuminated brand signage, night exterior shot"
+        },
+        {
+          "id": "12mTpS5depTcEwm6XWiYS4LI028aSvXxZ",
+          "name": "1",
+          "score": 8,
+          "type": "interior",
+          "description": "Reception area with brand logo and design"
+        },
+        {
+          "id": "1cnWr9AA4ufag_sYVYNbjTnTWbwvCeCVT",
+          "name": "2",
+          "score": 7,
+          "type": "interior",
+          "description": "Reception and meeting area overview shot"
+        }
+      ],
+      "bestCoverId": "1HyP7k8SjZprR5KSe6lXw1gJSAHVT3bmU",
+      "analyzedAt": "2026-02-16T19:24:51.137Z"
+    },
+    {
+      "folderName": "BAYER-HEAD OFFICE-Mivida BP",
+      "category": "Administrative",
+      "photos": [
+        {
+          "id": "1vb5DmPXUJeRgCCv-DpDwKFyQOikS-dM0",
+          "name": "08",
+          "score": 6,
+          "type": "interior",
+          "description": "Recreation area with ping pong table and bar"
+        },
+        {
+          "id": "199LrMc1wFV5PIv-pWxkGuPmpTQdQwymP",
+          "name": "02",
+          "score": 7,
+          "type": "interior",
+          "description": "Modern lounge area with tree and seating"
+        },
+        {
+          "id": "1xv1USb7ItbDk_cS6xwgd3LmG822kSRxl",
+          "name": "11",
+          "score": 5,
+          "type": "interior",
+          "description": "Office hallway with private offices and plants"
+        },
+        {
+          "id": "1Z9ds0nzdN3FQwcPtCxGch4boV6pK6VIu",
+          "name": "14",
+          "score": 6,
+          "type": "interior",
+          "description": "Conference room with table and screens"
+        },
+        {
+          "id": "1_q7V2D0n-7NL94OaHgtW-6kwB1j6DuQI",
+          "name": "03",
+          "score": 7,
+          "type": "interior",
+          "description": "Open office with round tables and plants"
+        },
+        {
+          "id": "1Zmp7s03o2BePllSWL2kdJaniPjt3EQwh",
+          "name": "07",
+          "score": 6,
+          "type": "interior",
+          "description": "Open office with workstations and lockers"
+        },
+        {
+          "id": "1IvFv2oVuy1UZ0zoQKKQn_vjY0PARQN5N",
+          "name": "04",
+          "score": 7,
+          "type": "interior",
+          "description": "Open office with unique desk and plants"
+        },
+        {
+          "id": "1rUSPD60OrgiI7fU-yKlKLGUCa6Xa_l0f",
+          "name": "10",
+          "score": 5,
+          "type": "interior",
+          "description": "Small private office with desk and chairs"
+        },
+        {
+          "id": "1rl800YxtZzUSSaivocur9Jd1A0GtqTfp",
+          "name": "12",
+          "score": 6,
+          "type": "interior",
+          "description": "Office hallway with open office and plants"
+        },
+        {
+          "id": "1BgKdY45VnzEgcnRQ1FDXYCPIVZ99cqCj",
+          "name": "01",
+          "score": 8,
+          "type": "branding",
+          "description": "Reception area with brand logo and seating"
+        },
+        {
+          "id": "1dyMo0hR3d5qHpsMah7erbFfo4H1arrUq",
+          "name": "09",
+          "score": 7,
+          "type": "interior",
+          "description": "Open office with bar seating and plants"
+        },
+        {
+          "id": "1ENodvfEf510HaOGeu1ol1JXBhPHZWRHW",
+          "name": "13",
+          "score": 5,
+          "type": "interior",
+          "description": "Office hallway with lockers and artwork"
+        },
+        {
+          "id": "1BehvhhiWEHt-OpNBMWN26MO6R2SKcy5i",
+          "name": "06",
+          "score": 7,
+          "type": "interior",
+          "description": "Cafeteria with tables, chairs, and bar"
+        },
+        {
+          "id": "1_QQGWUueuMcyMoYNhDKR5HaV6vrmDvMN",
+          "name": "05",
+          "score": 6,
+          "type": "interior",
+          "description": "Open office with workstations and plants"
+        }
+      ],
+      "bestCoverId": "1BgKdY45VnzEgcnRQ1FDXYCPIVZ99cqCj",
+      "analyzedAt": "2026-02-16T19:25:00.368Z"
+    },
+    {
+      "folderName": "Cheil-District 5 Marakez",
+      "category": "Administrative",
+      "photos": [
+        {
+          "id": "1jn9baJyho2hmD2mZOQg7uOc0GKfTO1cY",
+          "name": "dd227217-166d-4a05-9115-0e52777caa04",
+          "score": 7,
+          "type": "interior",
+          "description": "Modern office space with curved desk and chairs"
+        },
+        {
+          "id": "1M1CV3HzKQyKt84vSPpCdUXEHgKkNIXZA",
+          "name": "4729a8cb-eda7-4407-a8b1-df3aba4a9712",
+          "score": 3,
+          "type": "technical",
+          "description": "Electricians working on electrical panel installation"
+        },
+        {
+          "id": "1GFNtgN1PVopWHverZpsXsYacvuZwfRKv",
+          "name": "2",
+          "score": 7,
+          "type": "interior",
+          "description": "Lobby with tree, seating, and large screen"
+        },
+        {
+          "id": "16ImSbyt5KHIpw3iKHHEoaxrcOqGbdI8r",
+          "name": "2d78b6a7-ce12-4b2c-be88-d0652ca8f9b7",
+          "score": 6,
+          "type": "interior",
+          "description": "Conference room with table and plants"
+        },
+        {
+          "id": "1FUnB7xWc-3WQQWiN1HrvNxcLJaFbIvfE",
+          "name": "f2906942-9c5d-4433-93e4-8ea13801705f",
+          "score": 6,
+          "type": "interior",
+          "description": "Office kitchen and workspace with bar seating"
+        },
+        {
+          "id": "1_-1EyFMQf21x_kOMS735hHDjFb_PhoQU",
+          "name": "efea8fe6-90d8-4287-9348-16160e750f54",
+          "score": 2,
+          "type": "technical",
+          "description": "Exposed ceiling with electrical and ductwork"
+        },
+        {
+          "id": "1RyBUNKPpQk_RvRWF9BhuXTX5vPgq5eEE",
+          "name": "124fc5f8-3c24-405d-94c3-14039603ae7c",
+          "score": 3,
+          "type": "technical",
+          "description": "Ceiling with scaffolding, ductwork, and wiring"
+        },
+        {
+          "id": "1QfBh4ms10U54IP6hPjg_hpnooIa1fYr-",
+          "name": "e6e681bb-a8dc-4bcb-ac20-2e8c575488ab",
+          "score": 6,
+          "type": "interior",
+          "description": "Modern kitchen with island and bar seating"
+        },
+        {
+          "id": "1qV2l14RCDzerH_fjE9WQvEPyeeQjSDA2",
+          "name": "04",
+          "score": 7,
+          "type": "interior",
+          "description": "Open office space with curved table and chairs"
+        },
+        {
+          "id": "1SPF5RlAHcrRExLsxbtWmCRKZsM5-YllV",
+          "name": "1",
+          "score": 9,
+          "type": "branding",
+          "description": "Exterior shot of building with Cheil signage"
+        },
+        {
+          "id": "1VwO1jtSOZZBR8CKap4QPAhkP8lU4RBOD",
+          "name": "028890cc-f875-4bbe-89b9-f0ca048e3f8b",
+          "score": 7,
+          "type": "interior",
+          "description": "Lounge area with tree and modern seating"
+        },
+        {
+          "id": "1_RKBdDbrYT0hEhW-94c7k7KxNYybok66",
+          "name": "3f9a26c9-8051-448b-ab1c-8b98002b26ca",
+          "score": 2,
+          "type": "technical",
+          "description": "Ceiling with exposed ductwork and lighting"
+        },
+        {
+          "id": "13jN_Ds_PxdcnjeW_WUSdd8c1penx6oYa",
+          "name": "72ccb234-db94-419e-9985-9708b6710749",
+          "score": 3,
+          "type": "technical",
+          "description": "Electricians working on electrical panel installation"
+        },
+        {
+          "id": "130wBFfheCR5wEv2OX4_tqcLcxK9yFbDw",
+          "name": "3",
+          "score": 6,
+          "type": "interior",
+          "description": "Lounge area with modern furniture and plants"
+        },
+        {
+          "id": "1XHIfmfxl6lxwoSdeNOyaUXSMgD1Js17a",
+          "name": "WhatsApp Image 2024-11-25 at 00.06.28_920bb0e3",
+          "score": 2,
+          "type": "technical",
+          "description": "Exposed ceiling with electrical and ductwork"
+        },
+        {
+          "id": "1_inMWnsvJgomPm6AVev24I-DuJnW9uNc",
+          "name": "WhatsApp Image 2024-11-25 at 00.06.27_7fd7b12d",
+          "score": 2,
+          "type": "technical",
+          "description": "Exposed ceiling with electrical and ductwork"
+        },
+        {
+          "id": "17kzOxpVTK5CDEPvjI_2Yv-tuk-INiRQt",
+          "name": "WhatsApp Image 2024-11-25 at 00.06.28_b4b0e5e0",
+          "score": 4,
+          "type": "technical",
+          "description": "Electrical panel with breakers and wiring"
+        }
+      ],
+      "bestCoverId": "1SPF5RlAHcrRExLsxbtWmCRKZsM5-YllV",
+      "analyzedAt": "2026-02-16T19:25:11.641Z"
+    },
+    {
+      "folderName": "Soil  Spaces -Mivida BP",
+      "category": "Administrative",
+      "photos": [
+        {
+          "id": "1f6d7772Csku_gDTZwgETS3bsEB1LYSgS",
+          "name": "497621511_1001874485485540_3921087034833202409_n",
+          "score": 7,
+          "type": "interior",
+          "description": "Modern cafe interior with curved architectural details"
+        },
+        {
+          "id": "12VUH2OClo_PCdLRa-GvPmr35yGjg4jWF",
+          "name": "495963682_1001874398818882_1428203467211701834_n",
+          "score": 6,
+          "type": "interior",
+          "description": "Co-working space with individual work pods"
+        },
+        {
+          "id": "1QCK02F88nCE8jJpvzgg6DsmY1jJlsX0T",
+          "name": "497680315_1001874445485544_545704256773990107_n",
+          "score": 6,
+          "type": "branding",
+          "description": "Branded entrance with signage and plant"
+        },
+        {
+          "id": "11GnYCyXrXesOri4sXPC-QnjD2WMpGqEu",
+          "name": "1",
+          "score": 9,
+          "type": "branding",
+          "description": "Reception area with logo and artwork"
+        },
+        {
+          "id": "1_rCBL_x5YflmFkTZdwEvvHBKc9XlO8NL",
+          "name": "497543045_1001874418818880_3439187658831439729_n",
+          "score": 5,
+          "type": "interior",
+          "description": "Open office space with desks and chairs"
+        },
+        {
+          "id": "12TnUqoLuxePxJKF6No2eHapZRRzgjCNO",
+          "name": "497514973_1001874502152205_8597095483644436100_n",
+          "score": 6,
+          "type": "interior",
+          "description": "Private meeting rooms with glass doors"
+        },
+        {
+          "id": "1tOCjuXNDIZg-0xX3zgcJuxpPwzi0hOjh",
+          "name": "497689546_1001874388818883_637172829407911687_n",
+          "score": 7,
+          "type": "interior",
+          "description": "Communal workspace with unique furniture"
+        },
+        {
+          "id": "1tEpUQhOhl1GPMHzCYqwcraLupKgat6ph",
+          "name": "497543039_1001874332152222_58667177791414532_n",
+          "score": 6,
+          "type": "branding",
+          "description": "Entrance with signage and private booths"
+        },
+        {
+          "id": "1hognSRwHTvdSUUmb4Iwqd6wPQYpyh8lk",
+          "name": "497700571_1001874345485554_7106595243359862644_n",
+          "score": 5,
+          "type": "interior",
+          "description": "Open office with green desks and chairs"
+        },
+        {
+          "id": "1kRdd_KPYp36lasCBdq6Ylb__aRXfjF-h",
+          "name": "497602782_1001874315485557_3412016568721049199_n",
+          "score": 9,
+          "type": "branding",
+          "description": "Reception area with logo and artwork"
+        },
+        {
+          "id": "13tIYWJCI9a3glz_MYut6HIfRBFV31Xoa",
+          "name": "497675105_1003150902024565_2533275997433028671_n",
+          "score": 7,
+          "type": "interior",
+          "description": "Co-working space with long wooden desk"
+        },
+        {
+          "id": "14ZaEF9cAgAY53DmbPVgQk2MxGoD4cwRL",
+          "name": "497793092_1003150888691233_4424216151049556441_n",
+          "score": 6,
+          "type": "interior",
+          "description": "Cafe seating area with round tables"
+        },
+        {
+          "id": "1DzFmbIK8pr0VyJsDY4jU5yNaB1dSnWUY",
+          "name": "497703349_1003150822024573_8650775192856835564_n",
+          "score": 5,
+          "type": "interior",
+          "description": "Private phone booth with stool"
+        },
+        {
+          "id": "1HXnsM6gF2HxbYoE9GHzKQNvJtExl788-",
+          "name": "497847706_1003150848691237_5655324050053317260_n",
+          "score": 6,
+          "type": "interior",
+          "description": "Co-working space with wooden desks"
+        },
+        {
+          "id": "1ddXoyoISJn1YzvVWrPrbc0N7XxjErjF-",
+          "name": "497594882_1003150758691246_4429992112644676303_n",
+          "score": 5,
+          "type": "interior",
+          "description": "Private meeting room with red table"
+        },
+        {
+          "id": "1oaZGYpezoI8kItebivtyI354R4o0NJVU",
+          "name": "497574553_1003150875357901_7040708026703926997_n",
+          "score": 6,
+          "type": "interior",
+          "description": "Private meeting room with green stool"
+        },
+        {
+          "id": "177d-upT0IQWWHSyXim2_K1Ah3s6CUKeo",
+          "name": "497552467_1003150808691241_9123688386526236204_n",
+          "score": 6,
+          "type": "interior",
+          "description": "Private office with two desks"
+        },
+        {
+          "id": "1PSVkSsdnTryfPBupsDSmkzD6KJrG03T1",
+          "name": "497518421_1003150768691245_1188607365635998602_n",
+          "score": 7,
+          "type": "interior",
+          "description": "Communal workspace with unique furniture"
+        },
+        {
+          "id": "1V0Nj1HO4q4R_tRwokXHLENr7RZ5uBU_V",
+          "name": "497741597_1003150718691250_1581237107373503122_n",
+          "score": 6,
+          "type": "interior",
+          "description": "Open office with desks and chairs"
+        }
+      ],
+      "bestCoverId": "11GnYCyXrXesOri4sXPC-QnjD2WMpGqEu",
+      "analyzedAt": "2026-02-16T19:25:23.211Z"
+    },
+    {
+      "folderName": "Intelicia Head Office - El Sheikh Zayed",
+      "category": "Administrative",
+      "photos": [
+        {
+          "id": "189amC50s1Y4hjhjWGTH-q8hC24IomhgT",
+          "name": "ddb5c690-5c77-4a24-adcb-6f8fd65a91e1",
+          "score": 5,
+          "type": "interior",
+          "description": "Office space with desks, under construction"
+        },
+        {
+          "id": "1LRbCsMCc8b-0TUwV3_MQpJuVogJcVypQ",
+          "name": "1de70fa6-72e0-4f07-84a6-7df5d58a4079",
+          "score": 5,
+          "type": "interior",
+          "description": "Office space with desks, under construction"
+        },
+        {
+          "id": "1eTZ7sjxuliU9sjIQ7w7tDBTNJ_09My4n",
+          "name": "6f2d95b7-69a1-4093-a67d-1802caaa232f",
+          "score": 6,
+          "type": "interior",
+          "description": "Office space with desks and windows"
+        },
+        {
+          "id": "17apHibomvvsH19HCqaCoqyAvwLpXzRec",
+          "name": "b4623ce9-3a77-4ef6-add3-8ec2463c5b77",
+          "score": 3,
+          "type": "technical",
+          "description": "Construction progress, exposed ceiling details"
+        },
+        {
+          "id": "1x-exMrrcgzrz0kOvx8bde6856UDwzp2Q",
+          "name": "4036b28c-9a73-429a-8983-511531b9b09d",
+          "score": 1,
+          "type": "technical",
+          "description": "Plumbing and electrical work in progress"
+        },
+        {
+          "id": "1Vig0OsTVEmRje8NA8SG-I_lCPWDLwISk",
+          "name": "2b3127ab-ba4e-40a3-84b2-91d67c7ffbac",
+          "score": 6,
+          "type": "interior",
+          "description": "Office space with desks and finished ceiling"
+        },
+        {
+          "id": "1xHAIbj7r5u-PStwRa6JSkMsfusEryc5H",
+          "name": "18204c4f-b1d8-497d-8335-73c76cab8297",
+          "score": 5,
+          "type": "interior",
+          "description": "Office space with desks, under construction"
+        },
+        {
+          "id": "1SGJJxRWs_hUL37SffXVb6IuuTOJQj1x5",
+          "name": "b1a8bb64-21c9-4532-8bb8-b7e42d358827",
+          "score": 5,
+          "type": "interior",
+          "description": "Office space with desks, under construction"
+        },
+        {
+          "id": "1-rEfYMUfudDQkGH4p9LljD2DLUsL2exM",
+          "name": "PHOTO-2025-06-14-14-54-25_1",
+          "score": 3,
+          "type": "other",
+          "description": "HVAC ductwork on the roof"
+        },
+        {
+          "id": "1C32ukQTR3zRZfuDF5WV8AQkFm4aKgi-W",
+          "name": "PHOTO-2025-06-14-14-54-25_2",
+          "score": 3,
+          "type": "other",
+          "description": "HVAC ductwork on the roof"
+        },
+        {
+          "id": "1kb6bijm5qAY6185TphMVcpjIXRfgz3Yw",
+          "name": "PHOTO-2025-06-14-14-54-25",
+          "score": 3,
+          "type": "other",
+          "description": "HVAC ductwork on the roof"
+        },
+        {
+          "id": "1lKE6QC2q4P11MKQH7g2F5pOwc4E_Ahe7",
+          "name": "PHOTO-2025-06-14-14-54-26_1",
+          "score": 3,
+          "type": "other",
+          "description": "HVAC piping and insulation"
+        },
+        {
+          "id": "1_tOkek9drar3i3_4I5K3zah2v1PS38Fb",
+          "name": "536590a4-cece-412e-8d47-ca1f0c325098",
+          "score": 7,
+          "type": "interior",
+          "description": "Finished office space with desks and carpet"
+        },
+        {
+          "id": "1PS-Qet8o4tc6oAsG9TU7v0NRS_Zp3gXn",
+          "name": "05f06c1b-279f-4c38-9385-a9d59677c34e",
+          "score": 6,
+          "type": "interior",
+          "description": "Finished office space with desks"
+        },
+        {
+          "id": "1tVFeJ4TsOJ3Uz9gWJ3wqJt4oSIxJrwAJ",
+          "name": "fcb67226-fd37-46df-af48-5e8141eaf7f1",
+          "score": 2,
+          "type": "technical",
+          "description": "Fire suppression system detail"
+        },
+        {
+          "id": "1ktoG6SgLLMJaaKhUvWhQUYfNbL63fJ2-",
+          "name": "616956ed-7656-4e82-98c8-c89edb366677",
+          "score": 9,
+          "type": "branding",
+          "description": "Exterior shot of the building at night"
+        },
+        {
+          "id": "1uxmW4YNnJwBmVmqMAqcvBaObJoQ8oF2J",
+          "name": "cea67327-1326-4b77-a045-d2a9cc20115e",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1c9sR9QWYgbq1gTOaLeFspoOlDAYjMVDc",
+          "name": "203b5949-bd99-41bd-b77b-4404928c1918",
+          "score": 6,
+          "type": "interior",
+          "description": "Office space with desks, under construction"
+        },
+        {
+          "id": "1aph-dbIt8junD4KoFhNWuQp1JoX9Ol51",
+          "name": "40a6ffab-2e86-4f5a-9ad7-814ba93f059f",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1-1EC5-AnhRXM9lXnAH-Tp_Cgh2HrL0bj",
+          "name": "99c81bcb-b5ba-47f7-95b5-200e05917fb3",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1y053lfcKBDFt_gNohdXNMA1LtyD8tNy1",
+          "name": "7904b10e-9238-4a45-852b-83bf1511ef99",
+          "score": 7,
+          "type": "interior",
+          "description": "Office space with glass walls and tables"
+        },
+        {
+          "id": "1AGGNh1SeFsBvWh5s-B0EAVZh-2gjiF45",
+          "name": "0340fcc3-f0e0-4931-a12e-7c413a396c7b",
+          "score": 9,
+          "type": "branding",
+          "description": "Exterior shot of the building"
+        },
+        {
+          "id": "1qilRIsiC8FanGZylxuA0TKxI2CAGmx-2",
+          "name": "fbd01a48-bcb4-443e-9963-567b3c82b968",
+          "score": 5,
+          "type": "technical",
+          "description": "Electrical and plumbing detail"
+        },
+        {
+          "id": "1GvXevYmFHY84ASyJLc-y-XEcDOO_xerx",
+          "name": "6df772b5-a1c7-4621-884c-99d1f7aa6582",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1FxK-BtU0Du8BDhFQWk0ENbEnpcVFlzPs",
+          "name": "ef229c03-1750-4d05-bae1-4e80768eae9f",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1Bt1-TAyzY4Jt0Z4b-2qPyhOcOi05BV5_",
+          "name": "bb0a9651-5aa1-43af-a90d-cddad049b7f9",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1gA0VEbvI1foztqTN4EunceRq0HuzM6GG",
+          "name": "c31a6306-004e-499b-ada5-8e509efc198e",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1OAyk4JduynVrPY3ociO-x6Dzr9yIiz94",
+          "name": "a77f21d7-c8d0-406d-beae-4b4a233f26f1",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "14Urz5vLhfb7wC9FxzH6RfnuH3tH4-waG",
+          "name": "61445bf5-a543-41ce-a1b3-df3bfbeb453a",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1jU91eF8R8HgfjAEA2pFwV7PCF0yqR7A2",
+          "name": "20540426-2411-4839-92cd-6408482b434f",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1amJSGOe6Uha5rYzo-2dJYAatmivDmauv",
+          "name": "9f27f4d9-3f2b-4858-93d6-1056d039d45a",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1w1eDdN5rbKz7PdTn5z5dj_Sge5e7MZtS",
+          "name": "c867add4-8ac7-4fd6-a934-01b513f49a25",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1WzOXt1pr2xiHPLMLHrML8tqSUUzPtbTu",
+          "name": "aa87679b-ea93-40b3-92b7-538745021fe4",
+          "score": 7,
+          "type": "interior",
+          "description": "Lobby with atrium and plants"
+        },
+        {
+          "id": "1_ualzh4ncahlCjxYTFm9xVMgvX_0YmyN",
+          "name": "e607e6ec-d627-4a45-885f-bf29551ea222",
+          "score": 7,
+          "type": "interior",
+          "description": "Lobby with atrium and plants"
+        },
+        {
+          "id": "1lvhX2inUsLdSqX-wIK4cdyumfnV56R9h",
+          "name": "8e307432-45b5-4595-8aa4-60b247979469",
+          "score": 7,
+          "type": "interior",
+          "description": "Modern bathroom with sinks and stalls"
+        },
+        {
+          "id": "1aWNChUXAbqS9P-WFRUYwgC6rf3rb0cvj",
+          "name": "0065253a-9e44-4b04-af08-b45e74a200f0",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1PJWMh5hQX3Lw-N4jQyvyU5A3KV4rhR0N",
+          "name": "0f3779d5-ce77-4def-900a-371c8f1bd539",
+          "score": 7,
+          "type": "interior",
+          "description": "Office space with desk and glass wall"
+        },
+        {
+          "id": "1NmrDNwRa3IfVOfVt_jJOiJ5VcpAuIVPv",
+          "name": "b5f96c82-ee1b-4fde-beff-eb9b2206770b",
+          "score": 7,
+          "type": "interior",
+          "description": "Lobby with atrium and plants"
+        },
+        {
+          "id": "1hvOu6dWH6LCOV5iT4V7yWRNDh_snCSXt",
+          "name": "b54d8ce0-320f-42c1-a9c5-203cab7548b1",
+          "score": 7,
+          "type": "interior",
+          "description": "Reception area with seating"
+        },
+        {
+          "id": "1WRclda2XfnXHpIb4-zAHbW5DmjB7Y_0Q",
+          "name": "97ef573c-4907-4919-8d17-29280b752136",
+          "score": 7,
+          "type": "interior",
+          "description": "Kitchenette with appliances"
+        },
+        {
+          "id": "1Fshj5GtcKXWl9-DXbec4ZuwCWWSmQtgO",
+          "name": "a3bb8400-c4f0-4b73-a5f5-9e80c47cbe86",
+          "score": 7,
+          "type": "interior",
+          "description": "Conference room with glass walls"
+        },
+        {
+          "id": "1shwmUzQtopNWIRgT93BQjJt5x6lBEDa9",
+          "name": "572269b3-a13c-4180-9d6c-2d995ecc4c56",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1e933e8S1cWZHYHIFjSlbhUfY-Z25G1S4",
+          "name": "d9048f87-38c0-42ee-a4e3-84b5590f647d",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        },
+        {
+          "id": "1W6ycgvAg4yq7JypvgFi1UqURGQWManp3",
+          "name": "f4897898-9c7d-4496-8deb-f81c5a8b79e1",
+          "score": 7,
+          "type": "interior",
+          "description": "Modern bathroom with sinks and stalls"
+        },
+        {
+          "id": "1tqnHLrEsvhkUJawMBrBp3-Stf-DnZAv4",
+          "name": "17480dc8-28a6-4853-9762-56ca89775a12",
+          "score": 5,
+          "type": "technical",
+          "description": "HVAC ductwork and ceiling details"
+        }
+      ],
+      "bestCoverId": "1ktoG6SgLLMJaaKhUvWhQUYfNbL63fJ2-",
+      "analyzedAt": "2026-02-16T19:25:47.325Z"
+    },
+    {
+      "folderName": "Raya - Crystal Plaza Maadi",
+      "category": "Administrative",
+      "photos": [
+        {
+          "id": "1X_odhaJjQzBCjx0u0h09aKeqrqyCAbBu",
+          "name": "WhatsApp Image 2025-07-16 at 15.38.01_fb8998cd",
+          "score": 7,
+          "type": "interior",
+          "description": "Modern, clean bathroom with stylish design"
+        },
+        {
+          "id": "1x-QdMtpepYLIGRmjJv2qylVU6kBIwo8S",
+          "name": "WhatsApp Image 2025-07-16 at 15.38.00_f15c8b71",
+          "score": 6,
+          "type": "interior",
+          "description": "Entrance with security turnstiles and polished floor"
+        },
+        {
+          "id": "100FQ7RRGel1tYzemDMbdRrbkxhn9y3Nx",
+          "name": "WhatsApp Image 2025-07-16 at 15.37.59_6c5ea641",
+          "score": 7,
+          "type": "interior",
+          "description": "Open office space with workstations and computers"
+        },
+        {
+          "id": "1K834KzkUzmd3CFaAn1fvbMHMexZVRI6V",
+          "name": "WhatsApp Image 2025-07-16 at 15.20.46_7050d720",
+          "score": 7,
+          "type": "interior",
+          "description": "Office space with large windows and city view"
+        },
+        {
+          "id": "1LEu9QpYlKqNLvBX7orv4FcNBXuMPDqrD",
+          "name": "WhatsApp Image 2025-07-16 at 15.20.46_ab12b48b",
+          "score": 7,
+          "type": "interior",
+          "description": "Office space with city view and workstations"
+        },
+        {
+          "id": "1jCp-4zBecfDbPgw5lODjfK_xVSiskpMH",
+          "name": "WhatsApp Image 2025-07-16 at 15.10.24_2a0cc6ed",
+          "score": 6,
+          "type": "interior",
+          "description": "Hallway with glass-walled conference room"
+        },
+        {
+          "id": "13pBIvGoV9F2HP1OmkiNXCw4PLwlXujQD",
+          "name": "WhatsApp Image 2025-07-16 at 15.07.22_0f449424",
+          "score": 7,
+          "type": "interior",
+          "description": "Large open office with many workstations"
+        },
+        {
+          "id": "1o1MaP7bim4b8Udq4qced7lJ44q8x2pV4",
+          "name": "WhatsApp Image 2025-07-16 at 15.02.27_047abd59",
+          "score": 7,
+          "type": "interior",
+          "description": "Open office space with blue dividers and desks"
+        },
+        {
+          "id": "1Ge-Mly3ivlCWchY4ksa0SGIYQsMtKyxT",
+          "name": "WhatsApp Image 2025-07-16 at 15.02.27_07357a38",
+          "score": 7,
+          "type": "interior",
+          "description": "Office space with curved dividers and desks"
+        },
+        {
+          "id": "1dunWtARfAvsV2eXy0LtzIK5LyIzlui34",
+          "name": "WhatsApp Image 2025-07-16 at 15.02.27_41e741d6",
+          "score": 7,
+          "type": "interior",
+          "description": "Office space with curved dividers and desks"
+        },
+        {
+          "id": "19wWgn8mMYzqaWq_pcewZaZemAw0rzFDH",
+          "name": "WhatsApp Image 2025-07-16 at 15.02.26_a850697a",
+          "score": 7,
+          "type": "interior",
+          "description": "Office space with many workstations and dividers"
+        },
+        {
+          "id": "1L25G3RXf_C1ztMi9V8-JaZcVje46i2Ar",
+          "name": "WhatsApp Image 2025-07-16 at 15.02.26_b07c6590",
+          "score": 7,
+          "type": "interior",
+          "description": "Large open office with many workstations"
+        }
+      ],
+      "bestCoverId": "1X_odhaJjQzBCjx0u0h09aKeqrqyCAbBu",
+      "analyzedAt": "2026-02-16T19:26:04.472Z"
+    },
+    {
+      "folderName": "Antakha",
+      "category": "F&B",
+      "photos": [
+        {
+          "id": "13uNx_qrqd4jDaobrmlP5X1Bd5XY4dT5Y",
+          "name": "WhatsApp Image 2025-11-06 at 00.59.53_61c86841",
+          "score": 8,
+          "type": "interior",
+          "description": "Spacious interior with natural light and plants"
+        },
+        {
+          "id": "1QgvRVsnaxomC1Jf0SKQHtUoel8ZN35xp",
+          "name": "WhatsApp Image 2025-11-06 at 00.59.52_16b1d37e",
+          "score": 7,
+          "type": "interior",
+          "description": "Cozy seating area with unique ceiling design"
+        },
+        {
+          "id": "1os9z5T3LxCNFg_uyImzplXrzPQwXnbTv",
+          "name": "WhatsApp Image 2025-11-06 at 00.59.52_5afa78d4",
+          "score": 8,
+          "type": "interior",
+          "description": "Well-lit interior with modern furniture and plants"
+        },
+        {
+          "id": "1RAOaLBPT5hbVkgAm5oIXG5RUyz5IjPvm",
+          "name": "WhatsApp Image 2025-11-06 at 00.59.52_f5e519f7",
+          "score": 7,
+          "type": "interior",
+          "description": "Overview of the interior with tables and sofas"
+        },
+        {
+          "id": "1GxnAMTBZLlmpY3bAbZvhz5fkUxngAI9r",
+          "name": "WhatsApp Image 2025-11-06 at 00.59.51_8b1a6b27",
+          "score": 8,
+          "type": "interior",
+          "description": "Restaurant interior with a tropical, airy feel"
+        }
+      ],
+      "bestCoverId": "13uNx_qrqd4jDaobrmlP5X1Bd5XY4dT5Y",
+      "analyzedAt": "2026-02-16T19:26:09.789Z"
+    },
+    {
+      "folderName": "Beano's Cafe - U Venues",
+      "category": "F&B",
+      "photos": [
+        {
+          "id": "1JgFSppJOmUmvFCU6VwqeWdX5ztgj1dRL",
+          "name": "WhatsApp Image 2025-11-28 at 02.06.24_e141cdc1",
+          "score": 5,
+          "type": "other",
+          "description": "Analysis failed"
+        },
+        {
+          "id": "1IpqBSj4uLcoKTTVQjb9XKSGOmMOsi0kv",
+          "name": "WhatsApp Image 2025-11-28 at 02.06.24_63482882",
+          "score": 5,
+          "type": "other",
+          "description": "Analysis failed"
+        },
+        {
+          "id": "1KcN-c4L0bTTWfSEqHH1eANjev_OTNnUq",
+          "name": "1",
+          "score": 5,
+          "type": "other",
+          "description": "Analysis failed"
+        },
+        {
+          "id": "1tkGu65Ciy8_MZ2GenLpgyzR9qV_18nDK",
+          "name": "3",
+          "score": 5,
+          "type": "other",
+          "description": "Analysis failed"
+        },
+        {
+          "id": "1Y_rYnvf4Ig-95B1RINPXWWMGfxeHBBcp",
+          "name": "2",
+          "score": 5,
+          "type": "other",
+          "description": "Analysis failed"
+        },
+        {
+          "id": "1KiTe5cGC6HJHQTajxVJYkk-PrhsnZ74N",
+          "name": "4",
+          "score": 5,
+          "type": "other",
+          "description": "Analysis failed"
+        }
+      ],
+      "bestCoverId": "1JgFSppJOmUmvFCU6VwqeWdX5ztgj1dRL",
+      "analyzedAt": "2026-02-16T19:26:13.934Z"
+    },
+    {
+      "folderName": "Beano`s - Lake Town",
+      "category": "F&B",
+      "photos": [
+        {
+          "id": "1SnKdUut7suW31HNiGyQZMToCaFgzDm4N",
+          "name": "573757237_18289394431273429_5254316871295411240_n (1)",
+          "score": 7,
+          "type": "interior",
+          "description": "Clean, modern cafe interior with seating"
+        },
+        {
+          "id": "1RSwRvVDqt-qg_Z0xaGVzrig7WBSfsZ68",
+          "name": "574248615_18289394404273429_8181983779126805830_n (1)",
+          "score": 8,
+          "type": "interior",
+          "description": "Wide angle view of cafe interior, seating, and counter"
+        },
+        {
+          "id": "1qtMYZjt962EKbD4Lb1oGzW7cfbO4Hk9f",
+          "name": "573510252_18289394440273429_910186820679922077_n",
+          "score": 7,
+          "type": "interior",
+          "description": "Cafe interior with seating and menu board"
+        },
+        {
+          "id": "1g_QTbI-s1p2cfqmolvTcEmoOPU_KHPyO",
+          "name": "573757237_18289394431273429_5254316871295411240_n",
+          "score": 7,
+          "type": "interior",
+          "description": "Clean, modern cafe interior with seating"
+        },
+        {
+          "id": "1pQsCd9JHkHOlXxagYU_S6K_iRp6eRL6f",
+          "name": "574563645_18289394422273429_5879158268174817243_n",
+          "score": 7,
+          "type": "interior",
+          "description": "Cafe interior with seating and menu board"
+        },
+        {
+          "id": "1Aph6tyM589YLzgiNZP2XPtiQpomN9QrF",
+          "name": "574248615_18289394404273429_8181983779126805830_n",
+          "score": 8,
+          "type": "interior",
+          "description": "Wide angle view of cafe interior, seating, and counter"
+        }
+      ],
+      "bestCoverId": "1RSwRvVDqt-qg_Z0xaGVzrig7WBSfsZ68",
+      "analyzedAt": "2026-02-16T19:26:19.673Z"
+    },
+    {
+      "folderName": "Odriko - Arkan plaza",
+      "category": "F&B",
+      "photos": [
+        {
+          "id": "181-hqDeQKX0tAmqRAtqYF4UNhS_Z9jeF",
+          "name": "Odriko 04",
+          "score": 7,
+          "type": "interior",
+          "description": "Elegant dining area with wooden beams and curtains"
+        },
+        {
+          "id": "1ww1XZT61e1ddnu1skdaV0fJOPo6W1pvX",
+          "name": "Odriko 07",
+          "score": 6,
+          "type": "interior",
+          "description": "Minimalist bathroom with stone sink and tree"
+        },
+        {
+          "id": "1-NMxUOix125w5qsxXI8UqTD_XiKATKi3",
+          "name": "Odriko 06",
+          "score": 5,
+          "type": "interior",
+          "description": "Curved hallway leading to the restroom"
+        },
+        {
+          "id": "16--vQkzCLQQQ9cmBPuBrNBKwskJdpnV_",
+          "name": "Odriko 05",
+          "score": 9,
+          "type": "branding",
+          "description": "Signage directing to restrooms with logo"
+        },
+        {
+          "id": "1_rdb07iPwk-NhRh57d1oaSp-zje7WPpt",
+          "name": "Odriko 03",
+          "score": 7,
+          "type": "branding",
+          "description": "Outdoor seating area with restaurant facade"
+        },
+        {
+          "id": "1XYt6JCuN1XCa2WlWuG68BWvSdk17zKtO",
+          "name": "Odriko 02",
+          "score": 9,
+          "type": "branding",
+          "description": "Restaurant exterior with brand signage"
+        },
+        {
+          "id": "1FOjxJcv4KyPOPZsCiJL-Z6vgWvXDTrvA",
+          "name": "Odriko 1",
+          "score": 9,
+          "type": "branding",
+          "description": "Restaurant facade with outdoor seating area"
+        }
+      ],
+      "bestCoverId": "16--vQkzCLQQQ9cmBPuBrNBKwskJdpnV_",
+      "analyzedAt": "2026-02-16T19:26:27.667Z"
+    }
+  ]
+}
