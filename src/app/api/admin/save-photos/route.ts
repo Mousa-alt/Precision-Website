@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFileSync } from "fs";
-import { join } from "path";
 
 interface Photo {
   id: string;
@@ -10,8 +8,9 @@ interface Photo {
   isHero: boolean;
 }
 
-// Simulated storage - in production, use a database
-let photosData: Photo[] = [];
+// In-memory store for photo ordering/hero selection
+// In production, replace with a database (PostgreSQL, MongoDB, etc.)
+let photosConfig: Photo[] = [];
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,21 +23,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    photosData = photos;
-
-    // Save to a JSON file for persistence
-    // In production, use a database like PostgreSQL, MongoDB, etc.
-    const dataPath = join(process.cwd(), "public", "data", "photos.json");
-    try {
-      writeFileSync(dataPath, JSON.stringify(photos, null, 2));
-    } catch {
-      // Directory might not exist, just log for now
-      console.log("Could not write to file, using memory storage");
-    }
+    photosConfig = photos;
 
     return NextResponse.json({
       success: true,
-      message: "Photos saved successfully",
+      message: "Photos configuration saved",
       count: photos.length,
     });
   } catch (error) {
@@ -51,7 +40,5 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  return NextResponse.json({
-    photos: photosData,
-  });
+  return NextResponse.json({ photos: photosConfig });
 }

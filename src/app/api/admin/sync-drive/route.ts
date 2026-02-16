@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 
-interface Photo {
+interface DriveFile {
   id: string;
-  url: string;
   name: string;
-  order: number;
-  isHero: boolean;
+  mimeType: string;
+  thumbnailLink?: string;
 }
 
-// Simulated storage - in production, use a database
-let photosData: Photo[] = [];
+interface DriveListResponse {
+  files: DriveFile[];
+  nextPageToken?: string;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,63 +29,67 @@ export async function POST(request: NextRequest) {
 
     if (!folderId) {
       return NextResponse.json(
-        { error: "Invalid Google Drive folder URL" },
+        { error: "Invalid Google Drive folder URL. Expected format: https://drive.google.com/drive/folders/FOLDER_ID" },
         { status: 400 }
       );
     }
 
-    // TODO: Implement actual Google Drive API integration
-    // For now, return sample data with placeholder structure
-    // In production, you would:
-    // 1. Authenticate with Google Drive API
-    // 2. List files in the folder
-    // 3. Filter for image files
-    // 4. Generate direct links or use a proxy service
-    
-    const simulatedPhotos: Photo[] = [
-      {
-        id: `gdrive-${folderId}-1`,
-        url: "/images/projects/palm-hills.jpg",
-        name: "Palm Hills Project",
-        order: 0,
-        isHero: true,
-      },
-      {
-        id: `gdrive-${folderId}-2`,
-        url: "/images/projects/mavens.jpg",
-        name: "Mavens Commercial",
-        order: 1,
-        isHero: false,
-      },
-      {
-        id: `gdrive-${folderId}-3`,
-        url: "/images/projects/willows.jpg",
-        name: "Willows District",
-        order: 2,
-        isHero: false,
-      },
-      {
-        id: `gdrive-${folderId}-4`,
-        url: "/images/projects/bouchee.jpg",
-        name: "Bouchee Restaurant",
-        order: 3,
-        isHero: false,
-      },
-      {
-        id: `gdrive-${folderId}-5`,
-        url: "/images/projects/brgr.jpg",
-        name: "BRGR Golf Central",
-        order: 4,
-        isHero: false,
-      },
-    ];
+    const apiKey = process.env.GOOGLE_DRIVE_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "Google Drive API key not configured. Set GOOGLE_DRIVE_API_KEY in .env.local" },
+        { status: 500 }
+      );
+    }
 
-    photosData = simulatedPhotos;
+    // Fetch all image files from the folder using Google Drive API v3
+    const allFiles: DriveFile[] = [];
+    let pageToken: string | undefined;
+
+    do {
+      const params = new URLSearchParams({
+        q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
+        key: apiKey,
+        fields: "files(id,name,mimeType,thumbnailLink),nextPageToken",
+        pageSize: "100",
+        orderBy: "name",
+      });
+      if (pageToken) params.set("pageToken", pageToken);
+
+      const driveRes = await fetch(
+        `https://www.googleapis.com/drive/v3/files?${params.toString()}`
+      );
+
+      if (!driveRes.ok) {
+        const errData = await driveRes.json();
+        const errMsg = errData?.error?.message || "Failed to fetch from Google Drive";
+        return NextResponse.json(
+          { error: errMsg },
+          { status: driveRes.status }
+        );
+      }
+
+      const data: DriveListResponse = await driveRes.json();
+      allFiles.push(...(data.files || []));
+      pageToken = data.nextPageToken;
+    } while (pageToken);
+
+    // Map to our photo format with direct image URLs
+    const photos = allFiles.map((file, index) => ({
+      id: file.id,
+      url: `https://drive.google.com/thumbnail?id=${file.id}&sz=w1200`,
+      thumbnailUrl: `https://drive.google.com/thumbnail?id=${file.id}&sz=w400`,
+      name: file.name.replace(/\.[^/.]+$/, ""), // strip extension
+      mimeType: file.mimeType,
+      order: index,
+      isHero: index === 0,
+    }));
 
     return NextResponse.json({
       success: true,
-      photos: simulatedPhotos,
-      message: "Photos synced successfully",
+      photos,
+      folderId,
+      message: `Synced ${photos.length} photos from Google Drive`,
     });
   } catch (error) {
     console.error("Sync error:", error);

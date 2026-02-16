@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-primary: #d63030;
-  --color-primary-dark: #b52525;
+  --color-primary: #7B2D36;
+  --color-primary-dark: #5E222A;
   --color-dark: #000000;
   --color-dark-light: #1a1a1a;
   --color-dark-gray: #3d3d3d;
@@ -57,7 +57,7 @@ a {
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #d63030;
+  background: #7B2D36;
 }
 
 /* Text shadow for overlaid text */
@@ -68,4 +68,142 @@ a {
 /* AOS animation overrides */
 [data-aos] {
   pointer-events: auto !important;
+}
+
+/* Animated grid background pattern */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(rgba(123,45,54,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123,45,54,0.08) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Glowing orb accent */
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+/* Animated border gradient */
+.border-gradient {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+.border-gradient::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #7B2D36 0%, transparent 50%, #7B2D36 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Pulse glow */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.1); }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* Slide up on reveal */
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Counter number styling */
+.stat-number {
+  background: linear-gradient(135deg, #7B2D36, #c45a65);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Service icon container */
+.service-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #7B2D36 0%, #5E222A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Horizontal line accent */
+.line-accent {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #7B2D36, transparent);
+  border-radius: 2px;
+}
+
+/* Card hover lift */
+.card-hover {
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(123,45,54,0.15);
+}
+
+/* Image overlay gradient */
+.img-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* B&W to color image reveal effect */
+.img-bw {
+  filter: grayscale(100%) brightness(0.7);
+  transition: filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.8s ease;
+}
+.img-bw:hover,
+.group:hover .img-bw,
+.img-bw.img-revealed {
+  filter: grayscale(0%) brightness(1);
+}
+
+/* Glow highlight when image reveals */
+.img-glow-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+}
+.img-glow-wrap::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  opacity: 0;
+  box-shadow: 0 0 30px rgba(123,45,54,0.4), inset 0 0 30px rgba(123,45,54,0.1);
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+}
+.img-glow-wrap:hover::after,
+.img-glow-wrap.img-glow-active::after {
+  opacity: 1;
 }
