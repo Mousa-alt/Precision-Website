@@ -88,7 +88,6 @@ export default function ProjectsPage() {
               photoCount: dp.photos.length,
             };
           });
-
           setProjects(driveDisplay);
         }
       } catch {
@@ -97,7 +96,6 @@ export default function ProjectsPage() {
         setLoading(false);
       }
     }
-
     loadPhotos();
   }, []);
 
@@ -106,111 +104,160 @@ export default function ProjectsPage() {
       ? projects
       : projects.filter((p) => p.category === activeCategory);
 
+  // First 2 projects are "featured" when showing All
+  const featuredProjects = activeCategory === "All" ? filtered.slice(0, 2) : [];
+  const gridProjects = activeCategory === "All" ? filtered.slice(2) : filtered;
+
   return (
     <div className="bg-black text-white">
       {/* Hero */}
-      <section className="relative w-full min-h-[500px] max-[768px]:min-h-[350px] flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] to-black" />
-        <div className="absolute inset-0 bg-grid-pattern opacity-30" />
-        <div className="glow-orb w-[400px] h-[400px] bg-primary top-[-50px] right-[-50px] animate-pulse-glow" />
+      <section className="relative w-full min-h-[400px] max-[768px]:min-h-[300px] flex items-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0d0d0d] to-black" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-20" />
+        <div className="glow-orb w-[400px] h-[400px] bg-primary top-[-80px] right-[-80px] animate-pulse-glow" />
 
-        <div className="relative z-10 pl-[80px] max-[768px]:pl-5 max-[480px]:text-center max-[480px]:px-5" data-aos="fade-up">
-          <div className="line-accent mb-6 max-[480px]:mx-auto" />
-          <h1 className="text-[clamp(28px,4vw,50px)] font-bold uppercase leading-[1.4] mb-6">
+        <div className="relative z-10 w-full max-w-[1440px] mx-auto px-10 max-[768px]:px-6 max-[480px]:px-5 max-[480px]:text-center" data-aos="fade-up">
+          <p className="text-primary text-[11px] font-semibold uppercase tracking-[3px] mb-3">Portfolio</p>
+          <h1 className="text-[clamp(1.8rem,4vw,3rem)] font-bold uppercase leading-[1.2] mb-4">
             Our <span className="text-primary">Projects</span>
           </h1>
-          <p className="text-base font-light text-white/80 max-w-[600px] leading-[1.8]">
-            With 75+ successfully delivered projects across Cairo&apos;s most prestigious locations,
-            our portfolio speaks to our commitment to excellence and client satisfaction.
+          <p className="text-[14px] font-light text-white/50 max-w-[500px] leading-[1.8] max-[480px]:mx-auto">
+            75+ successfully delivered projects across Cairo&apos;s most prestigious locations.
           </p>
 
-          <div className="flex gap-12 mt-8 max-[480px]:justify-center max-[480px]:gap-6">
+          <div className="flex gap-10 mt-8 max-[480px]:justify-center max-[480px]:gap-6">
             {[
               { value: "75+", label: "Projects" },
-              { value: "35,500", label: "m\u00B2 Covered" },
+              { value: "35,500", label: "m² Covered" },
               { value: "90%+", label: "Satisfaction" },
             ].map((stat) => (
               <div key={stat.label}>
-                <div className="text-2xl font-bold stat-number">{stat.value}</div>
-                <div className="text-xs text-white/60">{stat.label}</div>
+                <div className="text-xl font-bold stat-number">{stat.value}</div>
+                <div className="text-[10px] text-white/40 uppercase tracking-[2px]">{stat.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Projects Grid */}
+      {/* Projects */}
       <section className="relative w-full bg-black py-16">
-        <div className="max-w-[1200px] mx-auto px-5">
+        <div className="max-w-[1440px] mx-auto px-10 max-[768px]:px-6">
           {/* Category filters */}
-          <div className="flex flex-wrap gap-3 mb-12 justify-center" data-aos="fade-up">
+          <div className="flex flex-wrap gap-2 mb-12 max-[480px]:justify-center" data-aos="fade-up">
             {categories.map((cat) => {
               const count =
                 cat === "All"
                   ? projects.length
                   : projects.filter((p) => p.category === cat).length;
 
+              if (count === 0 && cat !== "All") return null;
+
               return (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-5 py-2.5 max-[480px]:px-3 max-[480px]:py-2 text-sm max-[480px]:text-xs font-bold uppercase cursor-pointer transition-all duration-300 rounded-lg border ${
+                  className={`px-4 py-2 text-[11px] font-semibold uppercase tracking-[1.5px] cursor-pointer transition-all duration-300 rounded-full border ${
                     activeCategory === cat
                       ? "bg-primary border-primary text-white"
-                      : "bg-transparent border-white/20 text-white/70 hover:border-white hover:text-white"
+                      : "bg-transparent border-white/10 text-white/50 hover:border-white/30 hover:text-white"
                   }`}
                 >
                   {cat}
                   {count > 0 && (
-                    <span className="ml-1.5 text-xs opacity-60">({count})</span>
+                    <span className="ml-1.5 text-[10px] opacity-50">({count})</span>
                   )}
                 </button>
               );
             })}
           </div>
 
-          {/* Loading indicator */}
+          {/* Loading */}
           {loading && (
-            <div className="flex justify-center py-12">
+            <div className="flex justify-center py-16">
               <div className="flex gap-2">
                 {[0, 1, 2].map((i) => (
-                  <div key={i} className="w-3 h-3 rounded-full bg-primary animate-pulse" style={{ animationDelay: `${i * 200}ms` }} />
+                  <div key={i} className="w-2 h-2 rounded-full bg-primary animate-pulse" style={{ animationDelay: `${i * 200}ms` }} />
                 ))}
               </div>
             </div>
           )}
 
-          {/* Projects Grid */}
-          <div className="flex flex-wrap justify-center gap-8 max-[768px]:gap-4">
-            {filtered.map((project, index) => (
-              <div
-                key={`${project.name}-${project.location}-${index}`}
-                className="w-[370px] max-[768px]:w-[calc(50%-16px)] max-[480px]:w-full group"
-                data-aos="fade-up"
-                data-aos-delay={(index % 3) * 100}
-              >
-                <div className="relative overflow-hidden rounded-[20px] card-hover bg-[#0a0a0a]">
+          {/* Featured projects (only when "All" is selected) */}
+          {featuredProjects.length > 0 && (
+            <div className="flex gap-5 mb-8 max-[768px]:flex-col" data-aos="fade-up">
+              {featuredProjects.map((project, i) => (
+                <div
+                  key={`featured-${project.name}-${i}`}
+                  className="project-card group flex-1 relative aspect-[16/10] bg-[#0a0a0a]"
+                >
                   {project.coverPhoto ? (
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
-                      className="w-full h-auto max-h-[320px] max-[768px]:max-h-[240px] object-contain transition-transform duration-500 group-hover:scale-105"
-                      wrapClassName="w-full flex items-center justify-center"
+                      className="w-full h-full object-contain"
+                      wrapClassName="w-full h-full flex items-center justify-center"
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="w-full h-[280px] bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d] border border-white/5 transition-transform duration-300 group-hover:scale-105" />
+                    <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                  <div className="absolute top-5 left-5">
+                    <span className="inline-block px-3 py-1 text-[9px] font-semibold uppercase tracking-[1.5px] bg-primary/80 backdrop-blur-sm text-white rounded-full">
+                      Featured
+                    </span>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-7 max-[480px]:p-5">
+                    <span className="inline-block px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[1.5px] bg-white/10 backdrop-blur-sm text-white/80 rounded-full mb-2">
+                      {project.category}
+                    </span>
+                    <h3 className="text-xl max-[480px]:text-lg font-bold">{project.name}</h3>
+                    {project.location && (
+                      <p className="text-[12px] text-white/50 mt-1">{project.location}</p>
+                    )}
+                    {project.photoCount > 0 && (
+                      <p className="text-[11px] text-white/30 mt-1">{project.photoCount} photos</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Grid */}
+          <div className="flex flex-wrap gap-5 max-[768px]:gap-4">
+            {gridProjects.map((project, index) => (
+              <div
+                key={`${project.name}-${project.location}-${index}`}
+                className="w-[calc(33.33%-14px)] max-[950px]:w-[calc(50%-10px)] max-[480px]:w-full group"
+                data-aos="fade-up"
+                data-aos-delay={(index % 3) * 80}
+              >
+                <div className="project-card relative bg-[#0a0a0a] aspect-[4/3]">
+                  {project.coverPhoto ? (
+                    <RevealImage
+                      src={project.coverPhoto}
+                      alt={project.name}
+                      className="w-full h-full object-contain"
+                      wrapClassName="w-full h-full flex items-center justify-center"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                 </div>
                 <div className="mt-4 px-1">
-                  <p className="text-primary text-xs uppercase tracking-wider font-bold">{project.category}</p>
-                  <h3 className="text-lg font-bold mt-1 group-hover:text-primary transition-colors duration-300">{project.name}</h3>
+                  <span className="inline-block px-2 py-0.5 text-[8px] font-semibold uppercase tracking-wider bg-primary/15 text-primary rounded-full mb-1.5">
+                    {project.category}
+                  </span>
+                  <h3 className="text-[15px] font-semibold group-hover:text-primary transition-colors duration-300">{project.name}</h3>
                   {project.location && (
-                    <p className="text-[0.8rem] text-white/50 mt-0.5">{project.location}</p>
+                    <p className="text-[12px] text-white/40 mt-0.5">{project.location}</p>
                   )}
                   {project.photoCount > 0 && (
-                    <p className="text-[0.7rem] text-white/30 mt-1">{project.photoCount} photos</p>
+                    <p className="text-[10px] text-white/25 mt-1">{project.photoCount} photos</p>
                   )}
                 </div>
               </div>
@@ -219,31 +266,31 @@ export default function ProjectsPage() {
 
           {/* Empty state */}
           {filtered.length === 0 && !loading && (
-            <div className="text-center py-20 text-white/40">
-              <svg className="w-16 h-16 mx-auto mb-4 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center py-20 text-white/30">
+              <svg className="w-14 h-14 mx-auto mb-4 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
-              <p className="text-lg mb-2">No projects in this category yet</p>
-              <p className="text-sm">Projects will appear here once added to the Drive folder.</p>
+              <p className="text-base mb-2">No projects in this category yet</p>
+              <p className="text-[13px] text-white/20">Projects will appear here once added to the Drive folder.</p>
             </div>
           )}
         </div>
       </section>
 
       {/* CTA */}
-      <section className="relative w-full py-24 bg-black overflow-hidden">
-        <div className="absolute inset-0 bg-grid-pattern opacity-20" />
-        <div className="glow-orb w-[500px] h-[500px] bg-primary top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse-glow" />
+      <section className="relative w-full py-20 bg-black overflow-hidden border-t border-white/[0.03]">
+        <div className="absolute inset-0 bg-grid-pattern opacity-15" />
+        <div className="glow-orb w-[400px] h-[400px] bg-primary top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse-glow" />
 
-        <div className="relative z-10 text-center" data-aos="zoom-in">
-          <h2 className="text-[2rem] max-[768px]:text-[1.5rem] font-bold uppercase mb-4">
+        <div className="relative z-10 text-center px-6" data-aos="zoom-in">
+          <h2 className="text-[clamp(1.2rem,2.5vw,1.8rem)] font-bold uppercase mb-3">
             Your Project Could Be <span className="text-primary">Next</span>
           </h2>
-          <p className="text-white/50 text-sm mb-8 max-w-[400px] mx-auto">
+          <p className="text-white/40 text-[13px] mb-8 max-w-[400px] mx-auto leading-[1.7]">
             Let&apos;s discuss how we can bring your vision to life with precision and excellence.
           </p>
           <Link href="/contact">
-            <button className="px-10 py-4 border-none rounded-[10px] bg-primary text-white text-sm font-bold uppercase transition-all duration-300 cursor-pointer hover:bg-white hover:text-primary hover:scale-105">
+            <button className="px-8 py-3.5 border-none rounded-full bg-primary text-white text-[13px] font-semibold uppercase tracking-[1.5px] transition-all duration-300 cursor-pointer hover:bg-white hover:text-primary hover:scale-105 hover:shadow-[0_0_30px_rgba(123,45,54,0.4)]">
               Start Your Project
             </button>
           </Link>
