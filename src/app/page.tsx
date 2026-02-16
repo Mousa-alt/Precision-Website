@@ -42,7 +42,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [resetKey, setResetKey] = useState(0);
   const [featuredProjects, setFeaturedProjects] = useState<
-    { name: string; location: string; category: string; coverPhoto: string; photoCount: number }[]
+    { name: string; location: string; category: string; coverPhoto: string; photoCount: number; coverPosition: string }[]
   >([]);
 
   useEffect(() => {
@@ -81,6 +81,7 @@ export default function Home() {
               category: categoryMap[dp.category] || dp.category,
               coverPhoto: dp.photos[0]?.url || "",
               photoCount: dp.photos.length,
+              coverPosition: dp.coverPosition || "center",
             };
           });
           setFeaturedProjects(featured);
@@ -241,6 +242,7 @@ export default function Home() {
                   className="w-full h-full object-cover"
                   wrapClassName="w-full h-full"
                   referrerPolicy="no-referrer"
+                  objectPosition={featuredProjects[0].coverPosition}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
                 <div className="absolute bottom-0 left-0 right-0 p-8 max-[480px]:p-5">
@@ -269,6 +271,7 @@ export default function Home() {
                       className="w-full h-full object-cover"
                       wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
+                      objectPosition={project.coverPosition}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
                     <div className="absolute bottom-0 left-0 right-0 p-6 max-[480px]:p-4">
@@ -297,6 +300,7 @@ export default function Home() {
                       className="w-full h-full object-cover"
                       wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
+                      objectPosition={project.coverPosition}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
                     <div className="absolute bottom-0 left-0 right-0 p-5 max-[480px]:p-4">

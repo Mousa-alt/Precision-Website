@@ -8,9 +8,10 @@ interface RevealImageProps {
   className?: string;
   wrapClassName?: string;
   referrerPolicy?: React.HTMLAttributeReferrerPolicy;
+  objectPosition?: string;
 }
 
-export default function RevealImage({ src, alt, className = "", wrapClassName = "", referrerPolicy }: RevealImageProps) {
+export default function RevealImage({ src, alt, className = "", wrapClassName = "", referrerPolicy, objectPosition }: RevealImageProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
 
@@ -37,6 +38,7 @@ export default function RevealImage({ src, alt, className = "", wrapClassName = 
         alt={alt}
         className={`img-bw ${revealed ? "img-revealed" : ""} ${className}`}
         referrerPolicy={referrerPolicy}
+        style={objectPosition ? { objectPosition } : undefined}
       />
     </div>
   );

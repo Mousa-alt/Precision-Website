@@ -121,8 +121,8 @@ export default function AdminDashboard() {
           </div>
 
           <p className="text-sm text-white/50">
-            Photos are automatically pulled from your Google Drive folder. Organize your Drive folders to control what appears on the site.
-            The first image in each folder (or one with keywords like &quot;exterior&quot;, &quot;front&quot;, &quot;logo&quot;) is used as the cover photo.
+            Photos are automatically pulled from your Google Drive folder. The cover photo is chosen automatically based on filename keywords,
+            or you can force one by prefixing it with <code className="bg-white/10 px-1 py-0.5 rounded text-white/70">cover-</code>. See naming guide below.
           </p>
 
           {projects.length === 0 && !loading && (
@@ -182,9 +182,43 @@ export default function AdminDashboard() {
               <li>Create category folders (e.g., &quot;01.Administrative&quot;, &quot;02.Retail&quot;)</li>
               <li>Inside each category, create project folders (e.g., &quot;Boss - City Center Almaza&quot;)</li>
               <li>Upload project photos into each folder</li>
-              <li>Name your best photo with &quot;1&quot; or &quot;exterior&quot; to set it as cover</li>
               <li>Click &quot;Refresh&quot; above to pull latest changes</li>
             </ol>
+          </div>
+
+          <div className="bg-[#111] rounded-xl border border-white/5 p-6">
+            <h3 className="font-bold text-sm uppercase mb-3">Cover Photo Control</h3>
+            <p className="text-sm text-white/50 mb-4">
+              Control which photo appears as the project cover and how it&apos;s cropped by renaming files in Google Drive:
+            </p>
+            <div className="space-y-3">
+              <div className="bg-black rounded-lg p-4 border border-white/5">
+                <p className="text-primary text-xs uppercase tracking-wider font-bold mb-2">Force a specific cover photo</p>
+                <p className="text-sm text-white/60">
+                  Prefix the filename with <code className="bg-white/10 px-1.5 py-0.5 rounded text-white/80">cover-</code> or <code className="bg-white/10 px-1.5 py-0.5 rounded text-white/80">00-</code>
+                </p>
+                <p className="text-xs text-white/30 mt-1">Example: <code className="text-white/50">cover-storefront.jpg</code> or <code className="text-white/50">00-brand-logo.jpg</code></p>
+              </div>
+              <div className="bg-black rounded-lg p-4 border border-white/5">
+                <p className="text-primary text-xs uppercase tracking-wider font-bold mb-2">Control image crop position</p>
+                <p className="text-sm text-white/60">
+                  If the logo/branding is at the top or bottom, add <code className="bg-white/10 px-1.5 py-0.5 rounded text-white/80">-top</code> or <code className="bg-white/10 px-1.5 py-0.5 rounded text-white/80">-bottom</code> to the filename
+                </p>
+                <p className="text-xs text-white/30 mt-1">Example: <code className="text-white/50">cover-facade-top.jpg</code> (keeps the top of the image visible)</p>
+              </div>
+              <div className="bg-black rounded-lg p-4 border border-white/5">
+                <p className="text-primary text-xs uppercase tracking-wider font-bold mb-2">Auto-detection keywords</p>
+                <p className="text-sm text-white/60">
+                  Photos with these words in the filename are auto-prioritized as covers:
+                </p>
+                <p className="text-xs text-white/40 mt-1">
+                  <span className="text-green-400/60">Preferred:</span> logo, brand, facade, entrance, exterior, front, signage, storefront
+                </p>
+                <p className="text-xs text-white/40 mt-0.5">
+                  <span className="text-red-400/60">Avoided:</span> electrical, panel, pipe, duct, cable, ceiling, chiller, pump, drain
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}

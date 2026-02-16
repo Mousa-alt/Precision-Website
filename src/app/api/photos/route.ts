@@ -22,6 +22,7 @@ interface Project {
   folderName: string;
   category: string;
   photos: ProjectPhoto[];
+  coverPosition: "top" | "center" | "bottom";
 }
 
 const API_KEY = process.env.GOOGLE_DRIVE_API_KEY!;
@@ -34,9 +35,20 @@ const MILD_PREFERRED = ["overview", "general", "reception", "lobby", "opening", 
 // Keywords that indicate a bad cover photo (technical/detail/MEP shots)
 const AVOID_KEYWORDS = ["electrical", "board", "panel", "detail", "mep", "pipe", "duct", "cable", "wiring", "switch", "breaker", "db", "meter", "ceiling", "ac", "chiller", "pump", "thermostat", "valve", "riser", "shaft", "slab", "conduit", "trunking", "tray", "diffuser", "grill", "drain", "toilet", "wc", "sprinkler", "sensor"];
 
-function pickCoverIndex(photos: { name: string }[]): number {
-  if (photos.length <= 1) return 0;
+function pickCover(photos: { name: string }[]): { index: number; position: "top" | "center" | "bottom" } {
+  if (photos.length === 0) return { index: 0, position: "center" };
 
+  // First pass: check for explicit "cover" or "00" prefix override
+  for (let i = 0; i < photos.length; i++) {
+    const name = photos[i].name.toLowerCase();
+    if (/^(cover|00[-_ ])/.test(name)) {
+      return { index: i, position: detectPosition(name) };
+    }
+  }
+
+  if (photos.length === 1) return { index: 0, position: detectPosition(photos[0].name.toLowerCase()) };
+
+  // Second pass: scoring algorithm
   let bestIdx = 0;
   let bestScore = -100;
 
@@ -76,7 +88,14 @@ function pickCoverIndex(photos: { name: string }[]): number {
     }
   }
 
-  return bestIdx;
+  return { index: bestIdx, position: detectPosition(photos[bestIdx].name.toLowerCase()) };
+}
+
+// Detect focal point from filename hints: "top", "bottom", or default "center"
+function detectPosition(name: string): "top" | "center" | "bottom" {
+  if (/[-_ ](top|upper)/.test(name)) return "top";
+  if (/[-_ ](bottom|lower)/.test(name)) return "bottom";
+  return "center";
 }
 
 async function listFolder(folderId: string): Promise<DriveFile[]> {
@@ -145,7 +164,7 @@ export async function GET() {
           }));
 
           // Pick the best cover photo and put it first
-          const coverIdx = pickCoverIndex(photoList);
+          const { index: coverIdx, position: coverPosition } = pickCover(photoList);
           if (coverIdx > 0) {
             const cover = photoList[coverIdx];
             photoList.splice(coverIdx, 1);
@@ -156,6 +175,7 @@ export async function GET() {
             folderName: projFolder.name,
             category,
             photos: photoList,
+            coverPosition,
           });
         }
       }

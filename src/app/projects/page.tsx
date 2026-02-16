@@ -35,6 +35,7 @@ interface DriveProject {
   folderName: string;
   category: string;
   photos: { id: string; url: string; thumbnailUrl: string; name: string }[];
+  coverPosition?: string;
 }
 
 interface ProjectDisplay {
@@ -42,6 +43,7 @@ interface ProjectDisplay {
   location: string;
   category: string;
   coverPhoto?: string;
+  coverPosition: string;
   photoCount: number;
 }
 
@@ -65,7 +67,7 @@ function cleanFolderName(folderName: string): { name: string; location: string }
 export default function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [projects, setProjects] = useState<ProjectDisplay[]>(
-    fallbackProjects.map((p) => ({ ...p, photoCount: 0 }))
+    fallbackProjects.map((p) => ({ ...p, photoCount: 0, coverPosition: "center" }))
   );
   const [loading, setLoading] = useState(true);
 
@@ -85,6 +87,7 @@ export default function ProjectsPage() {
               location,
               category,
               coverPhoto: dp.photos[0]?.url,
+              coverPosition: dp.coverPosition || "center",
               photoCount: dp.photos.length,
             };
           });
@@ -198,6 +201,7 @@ export default function ProjectsPage() {
                       className="w-full h-full object-cover"
                       wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
+                      objectPosition={project.coverPosition}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]" />
@@ -242,6 +246,7 @@ export default function ProjectsPage() {
                       className="w-full h-full object-cover"
                       wrapClassName="w-full h-full"
                       referrerPolicy="no-referrer"
+                      objectPosition={project.coverPosition}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]" />
