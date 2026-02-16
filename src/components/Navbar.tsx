@@ -27,6 +27,12 @@ export default function Navbar() {
     setMobileOpen(false);
   }, [pathname]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
   return (
     <header
       className={`fixed top-0 left-0 w-full z-[1000] transition-all duration-500 ${
@@ -85,8 +91,8 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu — full screen overlay */}
-      <div className={`fixed inset-0 top-[56px] max-[950px]:top-[64px] bg-black/98 backdrop-blur-xl transition-all duration-500 ${mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
-        <nav className="flex flex-col items-center justify-center h-full gap-2 -mt-16">
+      <div className={`fixed left-0 right-0 bottom-0 top-[64px] max-[480px]:top-[56px] bg-black z-[999] transition-all duration-500 ${mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+        <nav className="flex flex-col items-center justify-center h-full gap-4">
           {[...navLinks, { href: "/contact", label: "Contact" }].map((link, i) => (
             <Link
               key={link.href}

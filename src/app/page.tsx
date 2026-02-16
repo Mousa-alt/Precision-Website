@@ -65,31 +65,60 @@ export default function Home() {
         const res = await fetch("/api/photos");
         const data = await res.json();
         const driveProjects: DriveProject[] = data.projects || [];
-        if (driveProjects.length > 0) {
-          // Curated homepage projects in order: hero first, then 2 medium, then 3 small
+        if (driveProjects.length === 0) return;
+
+        const categoryMap: Record<string, string> = {
+          Administrative: "Administrative",
+          Retail: "Retail",
+          "F&B": "Food & Beverage",
+          Medical: "Medical",
+        };
+
+        const toDisplay = (dp: DriveProject, overrideCover?: string, overridePosition?: string) => {
+          const parts = dp.folderName.split(/\s*[-\u2013]\s*/);
+          const name = parts[0].trim().replace(/\b\w/g, (c) => c.toUpperCase());
+          const location = parts.length > 1 ? parts.slice(1).join(", ").trim() : "";
+          const coverPhoto = overrideCover
+            ? `https://lh3.googleusercontent.com/d/${overrideCover}=w1200`
+            : dp.photos[0]?.url || "";
+          return {
+            name,
+            location,
+            category: categoryMap[dp.category] || dp.category,
+            coverPhoto,
+            photoCount: dp.photos.length,
+            coverPosition: overridePosition || dp.coverPosition || "center",
+          };
+        };
+
+        // Try admin-saved config first
+        let usedSavedConfig = false;
+        try {
+          const cfgRes = await fetch("/api/admin/homepage");
+          const cfgData = await cfgRes.json();
+          if (cfgData.config?.slots?.length > 0) {
+            const slots: { folderName: string; coverPhotoId: string; coverPosition: string }[] = cfgData.config.slots;
+            const results: typeof featuredProjects = [];
+            for (const slot of slots) {
+              const match = driveProjects.find(
+                (dp) => dp.folderName.toLowerCase() === slot.folderName.toLowerCase()
+              );
+              if (match) {
+                results.push(toDisplay(match, slot.coverPhotoId || undefined, slot.coverPosition || undefined));
+              }
+            }
+            if (results.length > 0) {
+              setFeaturedProjects(results.slice(0, 6));
+              usedSavedConfig = true;
+            }
+          }
+        } catch {
+          // Config not available, fall back to defaults
+        }
+
+        if (!usedSavedConfig) {
+          // Fallback: curated order
           const FEATURED_ORDER = ["soil spaces", "cheil", "beano", "cred", "bayer", "odoriko"];
-          const categoryMap: Record<string, string> = {
-            Administrative: "Administrative",
-            Retail: "Retail",
-            "F&B": "Food & Beverage",
-            Medical: "Medical",
-          };
-
-          const toDisplay = (dp: DriveProject) => {
-            const parts = dp.folderName.split(/\s*[-\u2013]\s*/);
-            const name = parts[0].trim().replace(/\b\w/g, (c) => c.toUpperCase());
-            const location = parts.length > 1 ? parts.slice(1).join(", ").trim() : "";
-            return {
-              name,
-              location,
-              category: categoryMap[dp.category] || dp.category,
-              coverPhoto: dp.photos[0]?.url || "",
-              photoCount: dp.photos.length,
-              coverPosition: dp.coverPosition || "center",
-            };
-          };
-
-          // Pick curated projects in order, fall back to first 6 if not found
           const picked: typeof driveProjects = [];
           for (const keyword of FEATURED_ORDER) {
             const match = driveProjects.find(
@@ -97,15 +126,13 @@ export default function Home() {
             );
             if (match) picked.push(match);
           }
-          // Fill remaining slots if less than 6 matched
           if (picked.length < 6) {
             for (const dp of driveProjects) {
               if (!picked.includes(dp)) picked.push(dp);
               if (picked.length >= 6) break;
             }
           }
-
-          setFeaturedProjects(picked.slice(0, 6).map(toDisplay));
+          setFeaturedProjects(picked.slice(0, 6).map((dp) => toDisplay(dp)));
         }
       } catch {
         // silent fail

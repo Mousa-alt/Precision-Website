@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import SideLinks from "@/components/SideLinks";
+import LayoutShell from "@/components/LayoutShell";
 import AOSProvider from "@/components/AOSProvider";
 
 const montserrat = Montserrat({
@@ -39,10 +37,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${montserrat.variable} antialiased`}>
         <AOSProvider />
-        <Navbar />
-        <SideLinks />
-        <main>{children}</main>
-        <Footer />
+        <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
   );
