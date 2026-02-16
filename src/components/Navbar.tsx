@@ -29,8 +29,17 @@ export default function Navbar() {
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    };
   }, [mobileOpen]);
 
   return (
@@ -52,7 +61,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Nav — centered */}
-        <nav className="hidden max-[950px]:!hidden md:flex items-center gap-0">
+        <nav className="hidden min-[951px]:flex items-center gap-0">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -71,7 +80,7 @@ export default function Navbar() {
         {/* Desktop CTA */}
         <Link
           href="/contact"
-          className="hidden max-[950px]:!hidden md:flex items-center px-6 py-2.5 text-[12px] font-semibold uppercase tracking-[2px] border border-primary/60 text-white rounded-full transition-all duration-300 hover:bg-primary hover:border-primary hover:shadow-[0_0_20px_rgba(123,45,54,0.4)]"
+          className="hidden min-[951px]:flex items-center px-6 py-2.5 text-[12px] font-semibold uppercase tracking-[2px] border border-primary/60 text-white rounded-full transition-all duration-300 hover:bg-primary hover:border-primary hover:shadow-[0_0_20px_rgba(123,45,54,0.4)]"
         >
           Get a Quote
         </Link>
@@ -79,7 +88,7 @@ export default function Navbar() {
         {/* Mobile Toggle */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="hidden max-[950px]:!flex items-center justify-center w-10 h-10 text-white/80 bg-transparent border-none cursor-pointer"
+          className="hidden max-[950px]:flex items-center justify-center w-10 h-10 text-white/80 bg-transparent border-none cursor-pointer"
           aria-label="Toggle menu"
         >
           <div className="flex flex-col gap-[5px] items-end">
@@ -91,7 +100,7 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu — full screen overlay */}
-      <div className={`fixed left-0 right-0 bottom-0 top-[72px] max-[480px]:top-[60px] bg-black z-[999] transition-all duration-500 ${mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+      <div className={`fixed inset-0 top-[72px] max-[480px]:top-[60px] bg-black/95 backdrop-blur-xl z-[999] transition-all duration-500 ${mobileOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}>
         <nav className="flex flex-col items-center justify-center h-full gap-4">
           {[...navLinks, { href: "/contact", label: "Contact" }].map((link, i) => (
             <Link

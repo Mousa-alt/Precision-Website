@@ -241,7 +241,7 @@ export default function ProjectsPage() {
               {featuredDisplay.map((project, i) => (
                 <div
                   key={`featured-${project.name}-${i}`}
-                  className="project-card group flex-1 relative aspect-[16/10] bg-[#0a0a0a]"
+                  className="project-card group flex-1 relative aspect-[16/10] bg-[#0a0a0a] cursor-pointer"
                 >
                   {project.coverPhoto ? (
                     <RevealImage
@@ -288,7 +288,7 @@ export default function ProjectsPage() {
                 data-aos="fade-up"
                 data-aos-delay={(index % 3) * 80}
               >
-                <div className="project-card relative bg-[#0a0a0a] aspect-[4/3]">
+                <div className="project-card relative bg-[#0a0a0a] aspect-[4/3] cursor-pointer">
                   {project.coverPhoto ? (
                     <RevealImage
                       src={project.coverPhoto}

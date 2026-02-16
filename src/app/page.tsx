@@ -183,7 +183,7 @@ export default function Home() {
           </div>
 
           {/* Right side: stats */}
-          <div className="hidden max-[768px]:!hidden lg:flex flex-col gap-8 items-end" data-aos="fade-left">
+          <div className="hidden lg:flex flex-col gap-8 items-end" data-aos="fade-left">
             {[
               { value: "75+", label: "Projects" },
               { value: "35.5K", label: "m² Covered" },
@@ -285,9 +285,10 @@ export default function Home() {
           </div>
 
           {featuredProjects.length > 0 ? (
-            <div className="flex flex-col gap-5" data-aos="fade-up">
+            <div className="flex flex-col gap-5 max-[480px]:gap-3" data-aos="fade-up">
               {/* Hero project */}
-              <div className="project-card group relative w-full aspect-[21/9] max-[768px]:aspect-[16/9] max-[480px]:aspect-[4/3] bg-[#0a0a0a]">
+              <div className="project-card group relative w-full aspect-[21/9] max-[768px]:aspect-[16/9] max-[480px]:aspect-[16/9] bg-[#0a0a0a] cursor-pointer">
+                <Link href="/projects" className="absolute inset-0 z-10" aria-label={featuredProjects[0].name} />
                 <RevealImage
                   src={featuredProjects[0].coverPhoto}
                   alt={featuredProjects[0].name}
@@ -310,14 +311,15 @@ export default function Home() {
               </div>
 
               {/* 2 medium projects */}
-              <div className="flex gap-5 max-[480px]:flex-col">
+              <div className="flex gap-5 max-[480px]:gap-3">
                 {featuredProjects.slice(1, 3).map((project, i) => (
                   <div
                     key={`${project.name}-${i}`}
-                    className="project-card group flex-1 relative aspect-[3/2] bg-[#0a0a0a]"
+                    className="project-card group flex-1 relative aspect-[3/2] max-[480px]:aspect-[3/4] bg-[#0a0a0a] cursor-pointer"
                     data-aos="fade-up"
                     data-aos-delay={i * 100}
                   >
+                    <Link href="/projects" className="absolute inset-0 z-10" aria-label={project.name} />
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
@@ -328,26 +330,27 @@ export default function Home() {
                       objectFit={project.coverFit as "cover" | "contain"}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 right-0 p-6 max-[480px]:p-4">
+                    <div className="absolute bottom-0 left-0 right-0 p-6 max-[480px]:p-3">
                       <span className="inline-block px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[1.5px] bg-primary/80 text-white rounded-full mb-2">
                         {project.category}
                       </span>
-                      <h3 className="text-lg font-bold">{project.name}</h3>
-                      {project.location && <p className="text-[12px] text-white/50 mt-0.5">{project.location}</p>}
+                      <h3 className="text-lg max-[480px]:text-sm font-bold">{project.name}</h3>
+                      {project.location && <p className="text-[12px] text-white/50 mt-0.5 max-[480px]:hidden">{project.location}</p>}
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* 3 smaller projects */}
-              <div className="flex gap-5 max-[768px]:flex-wrap">
+              <div className="flex gap-5 max-[480px]:gap-3 max-[768px]:flex-wrap">
                 {featuredProjects.slice(3, 6).map((project, i) => (
                   <div
                     key={`${project.name}-${i}`}
-                    className="project-card group flex-1 min-w-[200px] max-[768px]:min-w-[calc(50%-10px)] max-[480px]:min-w-full relative aspect-[4/3] bg-[#0a0a0a]"
+                    className="project-card group flex-1 min-w-[200px] max-[768px]:min-w-[calc(50%-10px)] max-[480px]:min-w-[calc(50%-10px)] relative aspect-[4/3] bg-[#0a0a0a] cursor-pointer"
                     data-aos="fade-up"
                     data-aos-delay={i * 80}
                   >
+                    <Link href="/projects" className="absolute inset-0 z-10" aria-label={project.name} />
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
@@ -358,11 +361,11 @@ export default function Home() {
                       objectFit={project.coverFit as "cover" | "contain"}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 right-0 p-5 max-[480px]:p-4">
+                    <div className="absolute bottom-0 left-0 right-0 p-5 max-[480px]:p-3">
                       <span className="inline-block px-2 py-0.5 text-[8px] font-semibold uppercase tracking-wider bg-primary/70 text-white rounded-full mb-1.5">
                         {project.category}
                       </span>
-                      <h3 className="text-[15px] font-bold">{project.name}</h3>
+                      <h3 className="text-[15px] max-[480px]:text-xs font-bold">{project.name}</h3>
                     </div>
                   </div>
                 ))}
