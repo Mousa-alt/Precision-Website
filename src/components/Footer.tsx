@@ -106,7 +106,7 @@ export default function Footer() {
               <img
                 src="/images/parsec-logo.png"
                 alt="Parsec"
-                className="h-[18px] w-auto opacity-30 hover:opacity-80 transition-opacity duration-300"
+                className="h-[18px] w-auto opacity-90 hover:opacity-100 transition-opacity duration-300"
               />
             </a>
           </div>

@@ -148,7 +148,7 @@ export default function Home() {
   return (
     <div id="home" className="m-0 p-0">
       {/* ===== HERO ===== */}
-      <section className="relative w-full h-screen min-h-[550px] max-[768px]:h-[75vh] max-[768px]:min-h-[420px] max-[480px]:h-[65vh] max-[480px]:min-h-[360px] flex items-center overflow-hidden">
+      <section className="relative w-full h-[70vh] min-h-[480px] max-[768px]:h-[65vh] max-[768px]:min-h-[420px] max-[480px]:h-[60vh] max-[480px]:min-h-[360px] flex items-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-black via-[#060606] to-[#0d0d0d]" />
         <div className="absolute inset-0 bg-grid-pattern opacity-30" />
         <div className="glow-orb w-[600px] h-[600px] bg-primary top-[-150px] right-[-100px] animate-pulse-glow" />
