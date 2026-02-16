@@ -28,6 +28,12 @@ interface Project {
 const API_KEY = process.env.GOOGLE_DRIVE_API_KEY!;
 const ROOT_FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID!;
 
+// Per-project cover position overrides (folder name substring → position)
+const POSITION_OVERRIDES: Record<string, "top" | "center" | "bottom"> = {
+  "muncai": "top",
+  "kanana": "top",
+};
+
 // Keywords that strongly indicate a good cover photo (branding, exterior, signage)
 const STRONG_PREFERRED = ["logo", "brand", "signage", "sign", "facade", "storefront", "shopfront", "entrance", "exterior", "front", "hero", "cover", "main"];
 // Keywords that mildly indicate a good cover photo
@@ -171,11 +177,15 @@ export async function GET() {
             photoList.unshift(cover);
           }
 
+          // Check for per-project position overrides
+          const folderLower = projFolder.name.toLowerCase();
+          const overridePos = Object.entries(POSITION_OVERRIDES).find(([key]) => folderLower.includes(key));
+
           projects.push({
             folderName: projFolder.name,
             category,
             photos: photoList,
-            coverPosition,
+            coverPosition: overridePos ? overridePos[1] : coverPosition,
           });
         }
       }
