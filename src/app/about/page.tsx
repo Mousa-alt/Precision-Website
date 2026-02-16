@@ -35,7 +35,7 @@ export default function AboutPage() {
   return (
     <div className="bg-black text-white">
       {/* Hero */}
-      <section className="relative w-full min-h-[600px] max-[768px]:min-h-[400px] flex items-center justify-center overflow-hidden">
+      <section className="relative w-full min-h-[400px] max-[768px]:min-h-[300px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] to-black" />
         <div className="absolute inset-0 bg-grid-pattern opacity-30" />
         <div className="glow-orb w-[500px] h-[500px] bg-primary top-[-100px] right-[-100px] animate-pulse-glow" />
