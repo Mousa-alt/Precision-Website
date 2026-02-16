@@ -35,6 +35,7 @@ interface DriveProject {
   folderName: string;
   category: string;
   photos: { id: string; url: string; thumbnailUrl: string; name: string }[];
+  coverPosition?: string;
 }
 
 export default function Home() {
