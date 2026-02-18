@@ -85,6 +85,7 @@ a {
   filter: blur(80px);
   opacity: 0.15;
   pointer-events: none;
+  will-change: opacity;
 }
 
 /* Animated border gradient */
@@ -225,7 +226,7 @@ a {
 .img-glow-wrap {
   position: relative;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: inherit;
 }
 .img-glow-wrap::after {
   content: '';
@@ -233,8 +234,8 @@ a {
   inset: -2px;
   border-radius: inherit;
   opacity: 0;
-  box-shadow: 0 0 30px rgba(123,45,54,0.4), inset 0 0 30px rgba(123,45,54,0.1);
-  transition: opacity 0.8s ease;
+  box-shadow: 0 0 20px rgba(123,45,54,0.3), inset 0 0 15px rgba(123,45,54,0.08);
+  transition: opacity 0.6s ease;
   pointer-events: none;
 }
 .img-glow-wrap:hover::after,

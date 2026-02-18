@@ -18,7 +18,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -44,9 +44,9 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-[1000] transition-all duration-500 ${
+      className={`fixed top-0 left-0 w-full z-[1000] transition-[background-color,box-shadow,border-color] duration-500 ${
         scrolled
-          ? "bg-black/90 backdrop-blur-xl shadow-[0_1px_30px_rgba(0,0,0,0.6)] border-b border-white/[0.03]"
+          ? "bg-black/90 backdrop-blur-md shadow-[0_1px_30px_rgba(0,0,0,0.6)] border-b border-white/[0.03]"
           : "bg-transparent"
       }`}
     >
@@ -80,7 +80,7 @@ export default function Navbar() {
         {/* Desktop CTA */}
         <Link
           href="/contact"
-          className="hidden min-[951px]:flex items-center px-6 py-2.5 text-[12px] font-semibold uppercase tracking-[2px] border border-primary/60 text-white rounded-full transition-all duration-300 hover:bg-primary hover:border-primary hover:shadow-[0_0_20px_rgba(123,45,54,0.4)]"
+          className="hidden min-[951px]:flex items-center px-6 py-2.5 text-[12px] font-semibold uppercase tracking-[2px] border border-primary/60 text-white rounded-full transition-[background-color,border-color,box-shadow] duration-300 hover:bg-primary hover:border-primary hover:shadow-[0_0_20px_rgba(123,45,54,0.4)]"
         >
           Get a Quote
         </Link>
@@ -88,7 +88,7 @@ export default function Navbar() {
         {/* Mobile Toggle */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="hidden max-[950px]:flex items-center justify-center w-10 h-10 text-white/80 bg-transparent border-none cursor-pointer"
+          className="flex min-[951px]:hidden items-center justify-center w-10 h-10 relative z-[1001] text-white/80 bg-transparent border-none cursor-pointer"
           aria-label="Toggle menu"
         >
           <div className="flex flex-col gap-[5px] items-end">
@@ -100,14 +100,14 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu — full screen overlay */}
-      <div className={`fixed inset-0 top-[72px] max-[480px]:top-[60px] bg-black/95 backdrop-blur-xl z-[999] transition-all duration-500 ${mobileOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}>
+      <div className={`fixed left-0 right-0 bottom-0 top-[72px] max-[480px]:top-[60px] bg-black/98 z-[999] transition-[opacity,visibility] duration-300 ${mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}>
         <nav className="flex flex-col items-center justify-center h-full gap-4">
           {[...navLinks, { href: "/contact", label: "Contact" }].map((link, i) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className={`text-[28px] max-[480px]:text-[24px] font-light uppercase tracking-[4px] py-3 transition-all duration-300 ${
+              className={`text-[28px] max-[480px]:text-[24px] font-light uppercase tracking-[4px] py-3 transition-colors duration-300 ${
                 pathname === link.href
                   ? "text-primary"
                   : "text-white/50 hover:text-white"

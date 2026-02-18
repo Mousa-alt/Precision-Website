@@ -82,8 +82,8 @@ export default function Home() {
           const name = dp.displayName || fallbackParts[0].trim().replace(/\b\w/g, (c) => c.toUpperCase());
           const location = dp.displayLocation ?? (fallbackParts.length > 1 ? fallbackParts.slice(1).join(", ").trim() : "");
           const coverPhoto = overrideCover
-            ? `https://lh3.googleusercontent.com/d/${overrideCover}=w2000`
-            : dp.photos[0]?.url || "";
+            ? `https://lh3.googleusercontent.com/d/${overrideCover}=w1200`
+            : dp.photos[0]?.thumbnailUrl || "";
           return {
             name,
             location,
