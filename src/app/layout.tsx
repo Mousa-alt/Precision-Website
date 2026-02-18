@@ -26,6 +26,20 @@ export const metadata: Metadata = {
     "Egypt",
     "Cairo",
   ],
+  openGraph: {
+    title: "Precision | Contracting & MEP Solutions in Egypt",
+    description:
+      "A forward-thinking contracting and MEP solutions company dedicated to innovation, precision, and delivering excellence in every project.",
+    type: "website",
+    locale: "en_US",
+    siteName: "Precision Contractors",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Precision | Contracting & MEP Solutions in Egypt",
+    description:
+      "A forward-thinking contracting and MEP solutions company dedicated to innovation, precision, and delivering excellence in every project.",
+  },
 };
 
 export default function RootLayout({

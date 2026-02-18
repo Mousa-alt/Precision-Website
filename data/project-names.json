@@ -1,66 +1,75 @@
 {
-  "Muncai-ZED ELSheikh Zayed": {
-    "name": "Muncai Medical",
-    "location": "ZED, El Sheikh Zayed"
+  "names": {
+    "Muncai-ZED ELSheikh Zayed": {
+      "name": "Muncai Medical",
+      "location": "ZED, El Sheikh Zayed",
+      "coverPosition": "50% 38%"
+    },
+    "BOSS-CAIRO FESTIVAL CITY": {
+      "name": "Boss",
+      "location": "Cairo Festival City"
+    },
+    "Antoushka mall of egypt": {
+      "name": "Antoushka",
+      "location": "Mall of Egypt"
+    },
+    "Casio- Cairo fesival city": {
+      "name": "Casio",
+      "location": "Cairo Festival City"
+    },
+    "Dechathlon - Green Plaza - Alexandria": {
+      "name": "Decathlon",
+      "location": "Green Plaza, Alexandria"
+    },
+    "KNANA - LAKE TOWN": {
+      "name": "Kanana",
+      "location": "Lake Town"
+    },
+    "CRED DEVELOPMENT - New Cairo": {
+      "name": "Cred Development",
+      "location": "New Cairo"
+    },
+    "BAYER-HEAD OFFICE-Mivida BP": {
+      "name": "Bayer Head Office",
+      "location": "Mivida Business Park"
+    },
+    "Cheil-District 5 Marakez": {
+      "name": "Cheil Head Office",
+      "location": "District 5, Marakez"
+    },
+    "Soil  Spaces -Mivida BP": {
+      "name": "Soil Spaces",
+      "location": "Mivida Business Park"
+    },
+    "Intelicia Head Office - El Sheikh Zayed": {
+      "name": "Intelcia Head Office",
+      "location": "Ivory Business, El Sheikh Zayed"
+    },
+    "Raya - Crystal Plaza Maadi": {
+      "name": "Raya",
+      "location": "Crystal Plaza, Maadi"
+    },
+    "Antakha": {
+      "name": "Antakha",
+      "location": "District 5"
+    },
+    "Beano's Cafe - U Venues": {
+      "name": "Beano's",
+      "location": "U Venues Mall"
+    },
+    "Beano`s - Lake Town": {
+      "name": "Beano's",
+      "location": "Lake Town"
+    },
+    "Odriko - Arkan plaza": {
+      "name": "Odoriko",
+      "location": "Arkan Plaza"
+    }
   },
-  "BOSS-CAIRO FESTIVAL CITY": {
-    "name": "Boss",
-    "location": "Cairo Festival City"
-  },
-  "Antoushka mall of egypt": {
-    "name": "Antoushka",
-    "location": "Mall of Egypt"
-  },
-  "Casio- Cairo fesival city": {
-    "name": "Casio",
-    "location": "Cairo Festival City"
-  },
-  "Dechathlon - Green Plaza - Alexandria": {
-    "name": "Decathlon",
-    "location": "Green Plaza, Alexandria"
-  },
-  "KNANA - LAKE TOWN": {
-    "name": "Kanana",
-    "location": "Lake Town"
-  },
-  "CRED DEVELOPMENT - New Cairo": {
-    "name": "Cred Development",
-    "location": "New Cairo"
-  },
-  "BAYER-HEAD OFFICE-Mivida BP": {
-    "name": "Bayer Head Office",
-    "location": "Mivida Business Park"
-  },
-  "Cheil-District 5 Marakez": {
-    "name": "Cheil Head Office",
-    "location": "District 5, Marakez"
-  },
-  "Soil  Spaces -Mivida BP": {
-    "name": "Soil Spaces",
-    "location": "Mivida Business Park"
-  },
-  "Intelicia Head Office - El Sheikh Zayed": {
-    "name": "Intelcia Head Office",
-    "location": "Ivory Business, El Sheikh Zayed"
-  },
-  "Raya - Crystal Plaza Maadi": {
-    "name": "Raya",
-    "location": "Crystal Plaza, Maadi"
-  },
-  "Antakha": {
-    "name": "Antakha",
-    "location": "District 5"
-  },
-  "Beano's Cafe - U Venues": {
-    "name": "Beano's",
-    "location": "U Venues Mall"
-  },
-  "Beano`s - Lake Town": {
-    "name": "Beano's",
-    "location": "Lake Town"
-  },
-  "Odriko - Arkan plaza": {
-    "name": "Odoriko",
-    "location": "Arkan Plaza"
+  "layout": {
+    "order": [],
+    "sizes": {
+      "Muncai-ZED ELSheikh Zayed": "hero"
+    }
   }
 }

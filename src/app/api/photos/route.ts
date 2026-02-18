@@ -244,8 +244,8 @@ export async function GET() {
         if (images.length > 0) {
           const photoList = images.map((img) => ({
             id: img.id,
-            url: `https://lh3.googleusercontent.com/d/${img.id}=w1200`,
-            thumbnailUrl: `https://lh3.googleusercontent.com/d/${img.id}=w400`,
+            url: `https://lh3.googleusercontent.com/d/${img.id}=w2000`,
+            thumbnailUrl: `https://lh3.googleusercontent.com/d/${img.id}=w800`,
             name: img.name.replace(/\.[^/.]+$/, ""),
           }));
 

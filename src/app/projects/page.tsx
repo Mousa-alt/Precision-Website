@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import RevealImage from "@/components/RevealImage";
+import PhotoLightbox from "@/components/PhotoLightbox";
 
 const categories = ["All", "Administrative", "Retail", "Food & Beverage", "Medical", "Design & Supervision", "Commercial", "Entertainment"];
 
@@ -16,21 +17,6 @@ const categoryMap: Record<string, string> = {
   "Entertainment": "Entertainment",
 };
 
-const fallbackProjects = [
-  { name: "Intelcia Head Office", location: "Ivory Business, El Sheikh Zayed", category: "Administrative" },
-  { name: "Bayer Head Office", location: "Mivida Business Park", category: "Administrative" },
-  { name: "Soil Spaces", location: "Mivida Business Park", category: "Administrative" },
-  { name: "Cheil Head Office", location: "District 5", category: "Administrative" },
-  { name: "Boss", location: "City Center Almaza", category: "Retail" },
-  { name: "Antoushka", location: "Mall of Egypt", category: "Retail" },
-  { name: "Casio", location: "Cairo Festival City", category: "Retail" },
-  { name: "Decathlon", location: "Green Plaza, Alexandria", category: "Retail" },
-  { name: "Beano's", location: "U Venues Mall", category: "Food & Beverage" },
-  { name: "Antakha", location: "District 5", category: "Food & Beverage" },
-  { name: "Odoriko", location: "Arkan Plaza", category: "Food & Beverage" },
-  { name: "Muncai Medical", location: "ZED El Sheikh Zayed", category: "Medical" },
-];
-
 interface DriveProject {
   folderName: string;
   category: string;
@@ -39,6 +25,7 @@ interface DriveProject {
   photos: { id: string; url: string; thumbnailUrl: string; name: string }[];
   coverPosition?: string;
   coverFit?: string;
+  coverZoom?: number;
 }
 
 interface ProjectDisplay {
@@ -48,7 +35,10 @@ interface ProjectDisplay {
   coverPhoto?: string;
   coverPosition: string;
   coverFit: "cover" | "contain";
+  coverZoom?: number;
+  displaySize: "hero" | "featured" | "regular";
   photoCount: number;
+  photos: { id: string; url: string; thumbnailUrl: string; name: string }[];
 }
 
 function cleanFolderName(folderName: string): { name: string; location: string } {
@@ -70,80 +60,86 @@ function cleanFolderName(folderName: string): { name: string; location: string }
 
 export default function ProjectsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [projects, setProjects] = useState<ProjectDisplay[]>(
-    fallbackProjects.map((p) => ({ ...p, photoCount: 0, coverPosition: "center", coverFit: "cover" as const }))
-  );
+  const [projects, setProjects] = useState<ProjectDisplay[]>([]);
   const [loading, setLoading] = useState(true);
-  const [featuredCount, setFeaturedCount] = useState(2);
+  const [lightboxProject, setLightboxProject] = useState<ProjectDisplay | null>(null);
 
   useEffect(() => {
     async function loadPhotos() {
       try {
-        // Fetch photos and homepage config in parallel
-        const [photosRes, configRes] = await Promise.all([
+        const [photosRes, namesRes] = await Promise.all([
           fetch("/api/photos"),
-          fetch("/api/admin/homepage").catch(() => null),
+          fetch("/api/admin/project-names").catch(() => null),
         ]);
 
         const data = await photosRes.json();
         const driveProjects: DriveProject[] = data.projects || [];
 
         if (driveProjects.length > 0) {
-          // Get featured project names from homepage config
-          let featuredNames: string[] = [];
+          // Load project-name overrides + layout (order, sizes)
+          let projectOverrides: Record<string, { name: string; location: string; coverPosition?: string; coverFit?: string; coverZoom?: number }> = {};
+          let savedOrder: string[] = [];
+          let savedSizes: Record<string, string> = {};
           try {
-            if (configRes?.ok) {
-              const cfgData = await configRes.json();
-              if (cfgData.config?.slots?.length > 0) {
-                featuredNames = cfgData.config.slots.map(
-                  (s: { folderName: string }) => s.folderName.toLowerCase()
-                );
+            if (namesRes?.ok) {
+              const namesData = await namesRes.json();
+              projectOverrides = namesData.names || {};
+              if (namesData.layout) {
+                savedOrder = namesData.layout.order || [];
+                savedSizes = namesData.layout.sizes || {};
               }
             }
           } catch {
-            // No config, featured stays empty
+            // No overrides
           }
 
           const toDisplay = (dp: DriveProject): ProjectDisplay => {
-            const name = dp.displayName || cleanFolderName(dp.folderName).name;
-            const location = dp.displayLocation ?? cleanFolderName(dp.folderName).location;
+            const override = projectOverrides[dp.folderName];
+            const name = override?.name || dp.displayName || cleanFolderName(dp.folderName).name;
+            const location = override?.location ?? dp.displayLocation ?? cleanFolderName(dp.folderName).location;
             const category = categoryMap[dp.category] || dp.category;
+            const size = (savedSizes[dp.folderName] || "regular") as "hero" | "featured" | "regular";
             return {
               name,
               location,
               category,
               coverPhoto: dp.photos[0]?.url,
-              coverPosition: dp.coverPosition || "center",
-              coverFit: (dp.coverFit as "cover" | "contain") || "cover",
+              coverPosition: override?.coverPosition || dp.coverPosition || "center",
+              coverFit: (override?.coverFit as "cover" | "contain") || (dp.coverFit as "cover" | "contain") || "cover",
+              coverZoom: override?.coverZoom,
+              displaySize: size,
               photoCount: dp.photos.length,
+              photos: dp.photos,
             };
           };
 
-          // Sort: featured first (in config order), then new/other projects
-          const featured: ProjectDisplay[] = [];
-          const rest: ProjectDisplay[] = [];
-
-          // First pass: pick featured in config order
-          for (const fname of featuredNames) {
-            const match = driveProjects.find(
-              (dp) => dp.folderName.toLowerCase() === fname
-            );
-            if (match) featured.push(toDisplay(match));
+          // Apply saved order
+          const ordered: DriveProject[] = [];
+          for (const name of savedOrder) {
+            const p = driveProjects.find((dp) => dp.folderName === name);
+            if (p) ordered.push(p);
           }
-
-          // Second pass: everything else (new projects appear here first)
           for (const dp of driveProjects) {
-            const isFeatured = featuredNames.some(
-              (fn) => fn === dp.folderName.toLowerCase()
-            );
-            if (!isFeatured) rest.push(toDisplay(dp));
+            if (!ordered.includes(dp)) ordered.push(dp);
           }
 
-          setProjects([...featured, ...rest]);
-          setFeaturedCount(featured.length > 0 ? Math.min(featured.length, 2) : 2);
+          const allProjects = ordered.map(toDisplay);
+          setProjects(allProjects);
+
+          // Check URL parameter to auto-open a project gallery
+          const params = new URLSearchParams(window.location.search);
+          const projectParam = params.get("project");
+          if (projectParam) {
+            const match = allProjects.find(
+              (p) => p.name.toLowerCase() === projectParam.toLowerCase()
+            );
+            if (match && match.photos.length > 0) {
+              setLightboxProject(match);
+            }
+          }
         }
       } catch {
-        // Keep fallback data on error
+        // Keep empty on error
       } finally {
         setLoading(false);
       }
@@ -156,9 +152,15 @@ export default function ProjectsPage() {
       ? projects
       : projects.filter((p) => p.category === activeCategory);
 
-  // Featured projects shown large at top when viewing All
-  const featuredDisplay = activeCategory === "All" ? filtered.slice(0, featuredCount) : [];
-  const gridProjects = activeCategory === "All" ? filtered.slice(featuredCount) : filtered;
+  const heroProjects = filtered.filter((p) => p.displaySize === "hero");
+  const featuredProjects = filtered.filter((p) => p.displaySize === "featured");
+  const regularProjects = filtered.filter((p) => p.displaySize === "regular");
+
+  function openProject(project: ProjectDisplay) {
+    if (project.photos.length > 0) {
+      setLightboxProject(project);
+    }
+  }
 
   return (
     <div className="bg-black text-white">
@@ -235,13 +237,14 @@ export default function ProjectsPage() {
             </div>
           )}
 
-          {/* Featured projects (only when "All" is selected) */}
-          {featuredDisplay.length > 0 && (
-            <div className="flex gap-5 mb-8 max-[768px]:flex-col" data-aos="fade-up">
-              {featuredDisplay.map((project, i) => (
+          {/* Hero projects — full width */}
+          {heroProjects.length > 0 && (
+            <div className="space-y-5 mb-8" data-aos="fade-up">
+              {heroProjects.map((project, i) => (
                 <div
-                  key={`featured-${project.name}-${i}`}
-                  className="project-card group flex-1 relative aspect-[16/10] bg-[#0a0a0a] cursor-pointer"
+                  key={`hero-${project.name}-${i}`}
+                  className="project-card group relative w-full aspect-[21/9] max-[768px]:aspect-[16/9] bg-[#0a0a0a] cursor-pointer"
+                  onClick={() => openProject(project)}
                 >
                   {project.coverPhoto ? (
                     <RevealImage
@@ -252,26 +255,27 @@ export default function ProjectsPage() {
                       referrerPolicy="no-referrer"
                       objectPosition={project.coverPosition}
                       objectFit={project.coverFit}
+                      zoom={project.coverZoom}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
-                  <div className="absolute top-5 left-5">
-                    <span className="inline-block px-3 py-1 text-[9px] font-semibold uppercase tracking-[1.5px] bg-primary/80 backdrop-blur-sm text-white rounded-full">
-                      Featured
-                    </span>
-                  </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-7 max-[480px]:p-5">
-                    <span className="inline-block px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[1.5px] bg-white/10 backdrop-blur-sm text-white/80 rounded-full mb-2">
+                  <div className="absolute bottom-0 left-0 right-0 p-8 max-[480px]:p-5">
+                    <span className="inline-block px-3 py-1 text-[10px] font-semibold uppercase tracking-[2px] bg-primary/90 text-white rounded-full mb-3">
                       {project.category}
                     </span>
-                    <h3 className="text-xl max-[480px]:text-lg font-bold">{project.name}</h3>
+                    <h3 className="text-[clamp(1.2rem,2vw,1.8rem)] font-bold">{project.name}</h3>
                     {project.location && (
-                      <p className="text-[12px] text-white/50 mt-1">{project.location}</p>
+                      <p className="text-[13px] text-white/50 mt-1">{project.location}</p>
                     )}
                     {project.photoCount > 0 && (
-                      <p className="text-[11px] text-white/30 mt-1">{project.photoCount} photos</p>
+                      <p className="text-[11px] text-white/30 mt-2 flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {project.photoCount} photos — click to view
+                      </p>
                     )}
                   </div>
                 </div>
@@ -279,16 +283,15 @@ export default function ProjectsPage() {
             </div>
           )}
 
-          {/* Grid */}
-          <div className="flex flex-wrap gap-5 max-[768px]:gap-4">
-            {gridProjects.map((project, index) => (
-              <div
-                key={`${project.name}-${project.location}-${index}`}
-                className="w-[calc(33.33%-14px)] max-[950px]:w-[calc(50%-10px)] max-[480px]:w-full group"
-                data-aos="fade-up"
-                data-aos-delay={(index % 3) * 80}
-              >
-                <div className="project-card relative bg-[#0a0a0a] aspect-[4/3] cursor-pointer">
+          {/* Featured projects — 2 per row */}
+          {featuredProjects.length > 0 && (
+            <div className="flex flex-wrap gap-5 mb-8 max-[768px]:gap-4" data-aos="fade-up">
+              {featuredProjects.map((project, i) => (
+                <div
+                  key={`featured-${project.name}-${i}`}
+                  className="project-card group relative w-[calc(50%-10px)] max-[768px]:w-full aspect-[16/10] bg-[#0a0a0a] cursor-pointer"
+                  onClick={() => openProject(project)}
+                >
                   {project.coverPhoto ? (
                     <RevealImage
                       src={project.coverPhoto}
@@ -298,11 +301,68 @@ export default function ProjectsPage() {
                       referrerPolicy="no-referrer"
                       objectPosition={project.coverPosition}
                       objectFit={project.coverFit}
+                      zoom={project.coverZoom}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 right-0 p-7 max-[480px]:p-5">
+                    <span className="inline-block px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[1.5px] bg-white/10 backdrop-blur-sm text-white/80 rounded-full mb-2">
+                      {project.category}
+                    </span>
+                    <h3 className="text-xl max-[480px]:text-lg font-bold">{project.name}</h3>
+                    {project.location && (
+                      <p className="text-[12px] text-white/50 mt-1">{project.location}</p>
+                    )}
+                    {project.photoCount > 0 && (
+                      <p className="text-[11px] text-white/30 mt-1 flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {project.photoCount} photos — click to view
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Regular projects — 3 per row grid */}
+          <div className="flex flex-wrap gap-5 max-[768px]:gap-4">
+            {regularProjects.map((project, index) => (
+              <div
+                key={`${project.name}-${project.location}-${index}`}
+                className="w-[calc(33.33%-14px)] max-[950px]:w-[calc(50%-10px)] max-[480px]:w-full group cursor-pointer"
+                data-aos="fade-up"
+                data-aos-delay={(index % 3) * 80}
+                onClick={() => openProject(project)}
+              >
+                <div className="project-card relative bg-[#0a0a0a] aspect-[4/3]">
+                  {project.coverPhoto ? (
+                    <RevealImage
+                      src={project.coverPhoto}
+                      alt={project.name}
+                      className={`w-full h-full ${project.coverFit === "contain" ? "object-contain" : "object-cover"}`}
+                      wrapClassName="w-full h-full"
+                      referrerPolicy="no-referrer"
+                      objectPosition={project.coverPosition}
+                      objectFit={project.coverFit}
+                      zoom={project.coverZoom}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d]" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  {project.photoCount > 0 && (
+                    <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full bg-black/60 backdrop-blur-sm text-[10px] text-white/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {project.photoCount}
+                    </div>
+                  )}
                 </div>
                 <div className="mt-4 px-1">
                   <span className="inline-block px-2 py-0.5 text-[8px] font-semibold uppercase tracking-wider bg-primary/15 text-primary rounded-full mb-1.5">
@@ -311,9 +371,6 @@ export default function ProjectsPage() {
                   <h3 className="text-[15px] font-semibold group-hover:text-primary transition-colors duration-300">{project.name}</h3>
                   {project.location && (
                     <p className="text-[12px] text-white/40 mt-0.5">{project.location}</p>
-                  )}
-                  {project.photoCount > 0 && (
-                    <p className="text-[10px] text-white/25 mt-1">{project.photoCount} photos</p>
                   )}
                 </div>
               </div>
@@ -352,6 +409,16 @@ export default function ProjectsPage() {
           </Link>
         </div>
       </section>
+
+      {/* Photo Lightbox */}
+      {lightboxProject && (
+        <PhotoLightbox
+          photos={lightboxProject.photos}
+          projectName={lightboxProject.name}
+          projectLocation={lightboxProject.location}
+          onClose={() => setLightboxProject(null)}
+        />
+      )}
     </div>
   );
 }

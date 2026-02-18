@@ -77,8 +77,8 @@ export async function POST(request: NextRequest) {
     // Map to our photo format with direct image URLs
     const photos = allFiles.map((file, index) => ({
       id: file.id,
-      url: `https://drive.google.com/thumbnail?id=${file.id}&sz=w1200`,
-      thumbnailUrl: `https://drive.google.com/thumbnail?id=${file.id}&sz=w400`,
+      url: `https://drive.google.com/thumbnail?id=${file.id}&sz=w2000`,
+      thumbnailUrl: `https://drive.google.com/thumbnail?id=${file.id}&sz=w800`,
       name: file.name.replace(/\.[^/.]+$/, ""), // strip extension
       mimeType: file.mimeType,
       order: index,

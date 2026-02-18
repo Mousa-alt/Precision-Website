@@ -46,7 +46,7 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [resetKey, setResetKey] = useState(0);
   const [featuredProjects, setFeaturedProjects] = useState<
-    { name: string; location: string; category: string; coverPhoto: string; photoCount: number; coverPosition: string; coverFit: string }[]
+    { name: string; location: string; category: string; coverPhoto: string; photoCount: number; coverPosition: string; coverFit: string; coverZoom?: number }[]
   >([]);
 
   useEffect(() => {
@@ -77,12 +77,12 @@ export default function Home() {
           Medical: "Medical",
         };
 
-        const toDisplay = (dp: DriveProject, overrideCover?: string, overridePosition?: string, overrideFit?: string) => {
+        const toDisplay = (dp: DriveProject, overrideCover?: string, overridePosition?: string, overrideFit?: string, overrideZoom?: number) => {
           const fallbackParts = dp.folderName.split(/\s*[-\u2013]\s*/);
           const name = dp.displayName || fallbackParts[0].trim().replace(/\b\w/g, (c) => c.toUpperCase());
           const location = dp.displayLocation ?? (fallbackParts.length > 1 ? fallbackParts.slice(1).join(", ").trim() : "");
           const coverPhoto = overrideCover
-            ? `https://lh3.googleusercontent.com/d/${overrideCover}=w1200`
+            ? `https://lh3.googleusercontent.com/d/${overrideCover}=w2000`
             : dp.photos[0]?.url || "";
           return {
             name,
@@ -92,6 +92,7 @@ export default function Home() {
             photoCount: dp.photos.length,
             coverPosition: overridePosition || dp.coverPosition || "center",
             coverFit: overrideFit || dp.coverFit || "cover",
+            coverZoom: overrideZoom,
           };
         };
 
@@ -101,14 +102,14 @@ export default function Home() {
           const cfgRes = await fetch("/api/admin/homepage");
           const cfgData = await cfgRes.json();
           if (cfgData.config?.slots?.length > 0) {
-            const slots: { folderName: string; coverPhotoId: string; coverPosition: string; coverFit?: string }[] = cfgData.config.slots;
+            const slots: { folderName: string; coverPhotoId: string; coverPosition: string; coverFit?: string; coverZoom?: number }[] = cfgData.config.slots;
             const results: typeof featuredProjects = [];
             for (const slot of slots) {
               const match = driveProjects.find(
                 (dp) => dp.folderName.toLowerCase() === slot.folderName.toLowerCase()
               );
               if (match) {
-                results.push(toDisplay(match, slot.coverPhotoId || undefined, slot.coverPosition || undefined, slot.coverFit || undefined));
+                results.push(toDisplay(match, slot.coverPhotoId || undefined, slot.coverPosition || undefined, slot.coverFit || undefined, slot.coverZoom || undefined));
               }
             }
             if (results.length > 0) {
@@ -122,7 +123,7 @@ export default function Home() {
 
         if (!usedSavedConfig) {
           // Fallback: curated order
-          const FEATURED_ORDER = ["soil spaces", "cheil", "beano", "cred", "bayer", "odoriko"];
+          const FEATURED_ORDER = ["intelcia", "soil spaces", "cheil", "beano", "bayer", "odoriko"];
           const picked: typeof driveProjects = [];
           for (const keyword of FEATURED_ORDER) {
             const match = driveProjects.find(
@@ -288,7 +289,7 @@ export default function Home() {
             <div className="flex flex-col gap-5 max-[480px]:gap-3" data-aos="fade-up">
               {/* Hero project */}
               <div className="project-card group relative w-full aspect-[21/9] max-[768px]:aspect-[16/9] max-[480px]:aspect-[16/9] bg-[#0a0a0a] cursor-pointer">
-                <Link href="/projects" className="absolute inset-0 z-10" aria-label={featuredProjects[0].name} />
+                <Link href={`/projects?project=${encodeURIComponent(featuredProjects[0].name)}`} className="absolute inset-0 z-10" aria-label={featuredProjects[0].name} />
                 <RevealImage
                   src={featuredProjects[0].coverPhoto}
                   alt={featuredProjects[0].name}
@@ -297,6 +298,7 @@ export default function Home() {
                   referrerPolicy="no-referrer"
                   objectPosition={featuredProjects[0].coverPosition}
                   objectFit={featuredProjects[0].coverFit as "cover" | "contain"}
+                  zoom={featuredProjects[0].coverZoom}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
                 <div className="absolute bottom-0 left-0 right-0 p-8 max-[480px]:p-5">
@@ -319,7 +321,7 @@ export default function Home() {
                     data-aos="fade-up"
                     data-aos-delay={i * 100}
                   >
-                    <Link href="/projects" className="absolute inset-0 z-10" aria-label={project.name} />
+                    <Link href={`/projects?project=${encodeURIComponent(project.name)}`} className="absolute inset-0 z-10" aria-label={project.name} />
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
@@ -328,6 +330,7 @@ export default function Home() {
                       referrerPolicy="no-referrer"
                       objectPosition={project.coverPosition}
                       objectFit={project.coverFit as "cover" | "contain"}
+                      zoom={project.coverZoom}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
                     <div className="absolute bottom-0 left-0 right-0 p-6 max-[480px]:p-3">
@@ -350,7 +353,7 @@ export default function Home() {
                     data-aos="fade-up"
                     data-aos-delay={i * 80}
                   >
-                    <Link href="/projects" className="absolute inset-0 z-10" aria-label={project.name} />
+                    <Link href={`/projects?project=${encodeURIComponent(project.name)}`} className="absolute inset-0 z-10" aria-label={project.name} />
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
@@ -359,6 +362,7 @@ export default function Home() {
                       referrerPolicy="no-referrer"
                       objectPosition={project.coverPosition}
                       objectFit={project.coverFit as "cover" | "contain"}
+                      zoom={project.coverZoom}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
                     <div className="absolute bottom-0 left-0 right-0 p-5 max-[480px]:p-3">
