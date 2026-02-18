@@ -67,9 +67,41 @@
     }
   },
   "layout": {
-    "order": [],
+    "order": [
+      "Intelicia Head Office - El Sheikh Zayed",
+      "Cheil-District 5 Marakez",
+      "Odriko - Arkan plaza",
+      "Soil  Spaces -Mivida BP",
+      "BAYER-HEAD OFFICE-Mivida BP",
+      "Raya - Crystal Plaza Maadi",
+      "BOSS-CAIRO FESTIVAL CITY",
+      "Muncai-ZED ELSheikh Zayed",
+      "Beano's Cafe - U Venues",
+      "Antoushka mall of egypt",
+      "KNANA - LAKE TOWN",
+      "Antakha",
+      "Casio- Cairo fesival city",
+      "CRED DEVELOPMENT - New Cairo",
+      "Dechathlon - Green Plaza - Alexandria",
+      "Beano`s - Lake Town"
+    ],
     "sizes": {
-      "Muncai-ZED ELSheikh Zayed": "hero"
+      "Intelicia Head Office - El Sheikh Zayed": "hero",
+      "Soil  Spaces -Mivida BP": "hero",
+      "Cheil-District 5 Marakez": "featured",
+      "Odriko - Arkan plaza": "featured",
+      "BAYER-HEAD OFFICE-Mivida BP": "featured",
+      "Raya - Crystal Plaza Maadi": "featured",
+      "BOSS-CAIRO FESTIVAL CITY": "regular",
+      "Muncai-ZED ELSheikh Zayed": "regular",
+      "Beano's Cafe - U Venues": "regular",
+      "Antoushka mall of egypt": "regular",
+      "KNANA - LAKE TOWN": "regular",
+      "Antakha": "regular",
+      "Casio- Cairo fesival city": "regular",
+      "CRED DEVELOPMENT - New Cairo": "regular",
+      "Dechathlon - Green Plaza - Alexandria": "regular",
+      "Beano`s - Lake Town": "regular"
     }
   }
 }
