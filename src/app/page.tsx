@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import RevealImage from "@/components/RevealImage";
+import PhotoLightbox from "@/components/PhotoLightbox";
 
 const slides = [
   {
@@ -46,8 +47,11 @@ export default function Home() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [resetKey, setResetKey] = useState(0);
   const [featuredProjects, setFeaturedProjects] = useState<
-    { name: string; location: string; category: string; coverPhoto: string; photoCount: number; coverPosition: string; coverFit: string; coverZoom?: number }[]
+    { name: string; location: string; category: string; coverPhoto: string; photoCount: number; coverPosition: string; coverFit: string; coverZoom?: number; photos: { id: string; url: string; thumbnailUrl: string; name: string }[] }[]
   >([]);
+  const [lightboxPhotos, setLightboxPhotos] = useState<{ id: string; url: string; thumbnailUrl: string; name: string }[] | null>(null);
+  const [lightboxName, setLightboxName] = useState("");
+  const [lightboxLocation, setLightboxLocation] = useState("");
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -93,6 +97,7 @@ export default function Home() {
             coverPosition: overridePosition || dp.coverPosition || "center",
             coverFit: overrideFit || dp.coverFit || "cover",
             coverZoom: overrideZoom,
+            photos: dp.photos,
           };
         };
 
@@ -288,8 +293,7 @@ export default function Home() {
           {featuredProjects.length > 0 ? (
             <div className="flex flex-col gap-5 max-[480px]:gap-3" data-aos="fade-up">
               {/* Hero project */}
-              <div className="project-card group relative w-full aspect-[21/9] max-[768px]:aspect-[16/9] max-[480px]:aspect-[16/9] bg-[#0a0a0a] cursor-pointer">
-                <Link href={`/projects?project=${encodeURIComponent(featuredProjects[0].name)}`} className="absolute inset-0 z-10" aria-label={featuredProjects[0].name} />
+              <div className="project-card group relative w-full aspect-[21/9] max-[768px]:aspect-[16/9] max-[480px]:aspect-[16/9] bg-[#0a0a0a] cursor-pointer" onClick={() => { setLightboxPhotos(featuredProjects[0].photos); setLightboxName(featuredProjects[0].name); setLightboxLocation(featuredProjects[0].location); }}>
                 <RevealImage
                   src={featuredProjects[0].coverPhoto}
                   alt={featuredProjects[0].name}
@@ -321,7 +325,7 @@ export default function Home() {
                     data-aos="fade-up"
                     data-aos-delay={i * 100}
                   >
-                    <Link href={`/projects?project=${encodeURIComponent(project.name)}`} className="absolute inset-0 z-10" aria-label={project.name} />
+                    <div className="absolute inset-0 z-10" onClick={() => { setLightboxPhotos(project.photos); setLightboxName(project.name); setLightboxLocation(project.location); }} />
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
@@ -353,7 +357,7 @@ export default function Home() {
                     data-aos="fade-up"
                     data-aos-delay={i * 80}
                   >
-                    <Link href={`/projects?project=${encodeURIComponent(project.name)}`} className="absolute inset-0 z-10" aria-label={project.name} />
+                    <div className="absolute inset-0 z-10" onClick={() => { setLightboxPhotos(project.photos); setLightboxName(project.name); setLightboxLocation(project.location); }} />
                     <RevealImage
                       src={project.coverPhoto}
                       alt={project.name}
@@ -469,6 +473,16 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      {/* Photo Lightbox */}
+      {lightboxPhotos && lightboxPhotos.length > 0 && (
+        <PhotoLightbox
+          photos={lightboxPhotos}
+          projectName={lightboxName}
+          projectLocation={lightboxLocation}
+          onClose={() => setLightboxPhotos(null)}
+        />
+      )}
     </div>
   );
 }

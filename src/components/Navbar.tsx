@@ -14,29 +14,12 @@ const navLinks = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [hideNav, setHideNav] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
-    let lastY = window.scrollY;
-    let ticking = false;
-    const handleScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const y = window.scrollY;
-        setScrolled(y > 10);
-        // Hide on scroll down, show on scroll up (only after 120px)
-        if (y > 120) {
-          setHideNav(y > lastY && y - lastY > 5);
-        } else {
-          setHideNav(false);
-        }
-        lastY = y;
-        ticking = false;
-      });
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -73,97 +56,99 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   return (
-    <header
-      className={`fixed top-0 left-0 w-full z-[1000] transition-[background-color,box-shadow,border-color,transform] duration-300 will-change-transform ${
-        hideNav && !mobileOpen ? "-translate-y-full" : "translate-y-0"
-      } ${
-        scrolled
-          ? "bg-black/95 shadow-[0_1px_30px_rgba(0,0,0,0.6)] border-b border-white/[0.03]"
-          : "bg-transparent"
-      }`}
-      style={{ WebkitBackfaceVisibility: "hidden", backfaceVisibility: "hidden" }}
-    >
-      <div className="flex justify-between items-center max-w-[1440px] mx-auto px-10 max-[950px]:px-5 max-[480px]:px-4 h-[88px] max-[950px]:h-[72px] max-[480px]:h-[60px]">
-        {/* Logo */}
-        <Link href="/" className="flex items-center shrink-0">
-          <img
-            src="/images/logo-new-white.png"
-            alt="Precision Contractors"
-            className="h-[57px] max-[950px]:h-[48px] max-[480px]:h-[40px] w-auto"
-          />
-        </Link>
+    <>
+      <header
+        className={`fixed top-0 left-0 w-full z-[1000] transition-[background-color,box-shadow,border-color] duration-300 ${
+          scrolled || mobileOpen
+            ? "bg-black/95 shadow-[0_1px_30px_rgba(0,0,0,0.6)] border-b border-white/[0.03]"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="flex justify-between items-center max-w-[1440px] mx-auto px-10 max-[950px]:px-5 max-[480px]:px-4 h-[88px] max-[950px]:h-[72px] max-[480px]:h-[60px]">
+          {/* Logo */}
+          <Link href="/" className="flex items-center shrink-0 relative z-[1002]">
+            <img
+              src="/images/logo-new-white.png"
+              alt="Precision Contractors"
+              className="h-[57px] max-[950px]:h-[48px] max-[480px]:h-[40px] w-auto"
+            />
+          </Link>
 
-        {/* Desktop Nav — centered */}
-        <nav className="hidden min-[951px]:flex items-center gap-0">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`nav-link-underline relative px-5 py-2 text-[13px] font-medium uppercase tracking-[2px] transition-colors duration-300 ${
-                pathname === link.href
-                  ? "text-white nav-link-active"
-                  : "text-white/60 hover:text-white"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+          {/* Desktop Nav — centered */}
+          <nav className="hidden min-[951px]:flex items-center gap-0">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`nav-link-underline relative px-5 py-2 text-[13px] font-medium uppercase tracking-[2px] transition-colors duration-300 ${
+                  pathname === link.href
+                    ? "text-white nav-link-active"
+                    : "text-white/60 hover:text-white"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
-        {/* Desktop CTA */}
-        <Link
-          href="/contact"
-          className="hidden min-[951px]:flex items-center px-6 py-2.5 text-[12px] font-semibold uppercase tracking-[2px] border border-primary/60 text-white rounded-full transition-[background-color,border-color,box-shadow] duration-300 hover:bg-primary hover:border-primary hover:shadow-[0_0_20px_rgba(123,45,54,0.4)]"
-        >
-          Get a Quote
-        </Link>
+          {/* Desktop CTA */}
+          <Link
+            href="/contact"
+            className="hidden min-[951px]:flex items-center px-6 py-2.5 text-[12px] font-semibold uppercase tracking-[2px] border border-primary/60 text-white rounded-full transition-[background-color,border-color,box-shadow] duration-300 hover:bg-primary hover:border-primary hover:shadow-[0_0_20px_rgba(123,45,54,0.4)]"
+          >
+            Get a Quote
+          </Link>
 
-        {/* Mobile Toggle */}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="flex min-[951px]:hidden items-center justify-center w-10 h-10 relative z-[1001] text-white/80 bg-transparent border-none cursor-pointer"
-          aria-label="Toggle menu"
-        >
-          <div className="flex flex-col gap-[5px] items-end">
-            <span className={`block h-[1.5px] bg-white transition-all duration-300 ${mobileOpen ? "w-6 translate-y-[6.5px] rotate-45" : "w-6"}`} />
-            <span className={`block h-[1.5px] bg-white transition-all duration-300 ${mobileOpen ? "opacity-0 w-4" : "w-4"}`} />
-            <span className={`block h-[1.5px] bg-white transition-all duration-300 ${mobileOpen ? "w-6 -translate-y-[6.5px] -rotate-45" : "w-5"}`} />
-          </div>
-        </button>
-      </div>
+          {/* Mobile Toggle */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="flex min-[951px]:hidden items-center justify-center w-10 h-10 relative z-[1002] text-white/80 bg-transparent border-none cursor-pointer"
+            aria-label="Toggle menu"
+          >
+            <div className="flex flex-col gap-[5px] items-end">
+              <span className={`block h-[1.5px] bg-white transition-all duration-300 ${mobileOpen ? "w-6 translate-y-[6.5px] rotate-45" : "w-6"}`} />
+              <span className={`block h-[1.5px] bg-white transition-all duration-300 ${mobileOpen ? "opacity-0 w-4" : "w-4"}`} />
+              <span className={`block h-[1.5px] bg-white transition-all duration-300 ${mobileOpen ? "w-6 -translate-y-[6.5px] -rotate-45" : "w-5"}`} />
+            </div>
+          </button>
+        </div>
+      </header>
 
-      {/* Mobile Menu — full screen overlay */}
-      <div className={`fixed inset-0 top-[72px] max-[480px]:top-[60px] bg-black z-[999] transition-[opacity,visibility] duration-200 ${mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}>
+      {/* Mobile Menu — OUTSIDE header to avoid transform containment */}
+      <div
+        className={`fixed top-[72px] max-[480px]:top-[60px] left-0 right-0 bottom-0 z-[999] bg-black transition-[opacity,visibility] duration-200 ${
+          mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+        }`}
+      >
         <nav className="flex flex-col items-center justify-center h-full gap-3 pb-[72px]">
           {[...navLinks, { href: "/contact", label: "Contact" }].map((link, i) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className={`text-[26px] max-[480px]:text-[22px] font-light uppercase tracking-[4px] py-2.5 transition-[color,transform] duration-200 ${
+              className={`text-[26px] max-[480px]:text-[22px] font-light uppercase tracking-[4px] py-2.5 transition-[color,opacity] duration-200 ${
                 pathname === link.href
                   ? "text-primary"
                   : "text-white/50 active:text-white"
-              } ${mobileOpen ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}
-              style={{ transitionDelay: mobileOpen ? `${i * 30}ms` : "0ms" }}
+              }`}
+              style={{
+                opacity: mobileOpen ? 1 : 0,
+                transitionDelay: mobileOpen ? `${i * 30}ms` : "0ms",
+              }}
             >
               {link.label}
             </Link>
           ))}
           <div className="mt-6 flex gap-6">
-
-
             <a href="https://www.instagram.com/precision.mep.smart.solutions" target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-primary transition-colors" aria-label="Instagram">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" /></svg>
             </a>
-
-
             <a href="https://wa.me/201115005060" target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-primary transition-colors" aria-label="WhatsApp">
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
             </a>
           </div>
         </nav>
       </div>
-    </header>
+    </>
   );
 }

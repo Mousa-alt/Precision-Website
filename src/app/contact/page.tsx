@@ -86,10 +86,15 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-base mb-1">Office Address</h3>
-                  <p className="font-light text-sm text-white/70 leading-[1.8]">
+                  <a
+                    href="https://maps.google.com/?q=29.991810,31.306904"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-light text-sm text-white/70 leading-[1.8] block hover:text-primary transition-colors duration-200"
+                  >
                     33 Taqsim Al-Mustaqbal, Modern University Street<br />
                     Al-Mokatam, Cairo, Egypt
-                  </p>
+                  </a>
                 </div>
               </div>
 

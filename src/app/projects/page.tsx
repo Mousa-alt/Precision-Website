@@ -289,7 +289,7 @@ export default function ProjectsPage() {
               {featuredProjects.map((project, i) => (
                 <div
                   key={`featured-${project.name}-${i}`}
-                  className="project-card group relative w-[calc(50%-10px)] max-[768px]:w-full aspect-[16/10] bg-[#0a0a0a] cursor-pointer"
+                  className="project-card group relative w-[calc(50%-10px)] max-[768px]:w-[calc(50%-8px)] aspect-[16/10] bg-[#0a0a0a] cursor-pointer"
                   onClick={() => openProject(project)}
                 >
                   {project.coverPhoto ? (
@@ -334,7 +334,7 @@ export default function ProjectsPage() {
             {regularProjects.map((project, index) => (
               <div
                 key={`${project.name}-${project.location}-${index}`}
-                className="w-[calc(33.33%-14px)] max-[950px]:w-[calc(50%-10px)] max-[480px]:w-full group cursor-pointer"
+                className="w-[calc(33.33%-14px)] max-[950px]:w-[calc(50%-10px)] max-[480px]:w-[calc(50%-8px)] group cursor-pointer"
                 data-aos="fade-up"
                 data-aos-delay={(index % 3) * 80}
                 onClick={() => openProject(project)}
