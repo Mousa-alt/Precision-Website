@@ -227,40 +227,40 @@ export default function Home() {
       </section>
 
       {/* ===== WHAT WE DO (compact services strip) ===== */}
-      <section className="relative w-full py-16 bg-[#060606] border-t border-white/[0.03] overflow-hidden">
-        <div className="max-w-[1440px] mx-auto px-10 max-[768px]:px-6">
-          <div className="flex items-start gap-16 max-[950px]:flex-col max-[950px]:gap-10" data-aos="fade-up">
+      <section className="relative w-full py-16 max-[768px]:py-10 max-[480px]:py-8 bg-[#060606] border-t border-white/[0.03] overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-10 max-[768px]:px-5 max-[480px]:px-4">
+          <div className="flex items-start gap-16 max-[950px]:flex-col max-[950px]:gap-6" data-aos="fade-up">
             {/* Left: heading */}
             <div className="shrink-0 max-w-[300px] max-[950px]:max-w-full">
-              <p className="text-primary text-[11px] font-semibold uppercase tracking-[3px] mb-3">What We Do</p>
-              <h2 className="text-[clamp(1.3rem,2.5vw,1.8rem)] font-bold uppercase leading-[1.3]">
+              <p className="text-primary text-[11px] font-semibold uppercase tracking-[3px] mb-2">What We Do</p>
+              <h2 className="text-[clamp(1.2rem,2.5vw,1.8rem)] font-bold uppercase leading-[1.3]">
                 Comprehensive MEP <span className="text-primary">Solutions</span>
               </h2>
-              <p className="text-white/40 text-[13px] leading-[1.7] mt-4">
+              <p className="text-white/40 text-[13px] leading-[1.7] mt-3 max-[480px]:hidden">
                 End-to-end contracting and MEP services for commercial, retail, medical, and administrative spaces.
               </p>
-              <Link href="/services" className="inline-flex items-center gap-2 mt-6 text-[12px] text-primary uppercase tracking-[2px] font-semibold hover:gap-3 transition-all duration-300">
+              <Link href="/services" className="inline-flex items-center gap-2 mt-4 max-[480px]:mt-2 text-[12px] text-primary uppercase tracking-[2px] font-semibold hover:gap-3 transition-all duration-300">
                 All Services
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
               </Link>
             </div>
 
-            {/* Right: service cards in 2 rows of 3 */}
-            <div className="flex-1 flex flex-wrap gap-4 max-[480px]:gap-3">
+            {/* Right: service cards — 3 cols desktop, 2 cols tablet, 3x2 grid mobile */}
+            <div className="flex-1 flex flex-wrap gap-4 max-[480px]:gap-2.5">
               {servicesList.map((service, i) => (
-                <Link href="/services" key={service.title} className="flex w-[calc(33.33%-11px)] max-[950px]:w-[calc(50%-8px)] max-[480px]:w-full">
+                <Link href="/services" key={service.title} className="flex w-[calc(33.33%-11px)] max-[950px]:w-[calc(50%-8px)] max-[480px]:w-[calc(50%-5px)]">
                   <div
-                    className="w-full bg-white/[0.02] rounded-2xl p-5 border border-white/[0.04] transition-all duration-300 cursor-pointer group hover:bg-white/[0.04] hover:border-primary/20"
+                    className="w-full bg-white/[0.02] rounded-2xl max-[480px]:rounded-xl p-5 max-[480px]:p-3 border border-white/[0.04] transition-colors duration-300 cursor-pointer group hover:bg-white/[0.04] hover:border-primary/20"
                     data-aos="fade-up"
-                    data-aos-delay={i * 60}
+                    data-aos-delay={i * 40}
                   >
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-3 transition-all duration-300 group-hover:from-primary group-hover:to-primary-dark">
-                      <svg className="w-5 h-5 text-primary group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-10 h-10 max-[480px]:w-8 max-[480px]:h-8 rounded-xl max-[480px]:rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-3 max-[480px]:mb-1.5 transition-colors duration-300 group-hover:from-primary group-hover:to-primary-dark">
+                      <svg className="w-5 h-5 max-[480px]:w-4 max-[480px]:h-4 text-primary group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={service.icon} />
                       </svg>
                     </div>
-                    <h3 className="text-[14px] font-semibold mb-1 group-hover:text-primary transition-colors duration-300">{service.title}</h3>
-                    <p className="text-[12px] text-white/40 leading-[1.6]">{service.desc}</p>
+                    <h3 className="text-[14px] max-[480px]:text-[12px] font-semibold mb-1 group-hover:text-primary transition-colors duration-300">{service.title}</h3>
+                    <p className="text-[12px] text-white/40 leading-[1.6] max-[480px]:hidden">{service.desc}</p>
                   </div>
                 </Link>
               ))}
@@ -270,9 +270,9 @@ export default function Home() {
       </section>
 
       {/* ===== FEATURED PROJECTS ===== */}
-      <section className="relative w-full py-20 bg-black overflow-hidden">
-        <div className="max-w-[1440px] mx-auto px-10 max-[768px]:px-6">
-          <div className="flex items-end justify-between mb-12 max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-4" data-aos="fade-up">
+      <section className="relative w-full py-20 max-[768px]:py-12 max-[480px]:py-8 bg-black overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-10 max-[768px]:px-5 max-[480px]:px-4">
+          <div className="flex items-end justify-between mb-10 max-[768px]:mb-6 max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-3 max-[480px]:mb-5" data-aos="fade-up">
             <div>
               <p className="text-primary text-[11px] font-semibold uppercase tracking-[3px] mb-3">Portfolio</p>
               <h2 className="text-[clamp(1.3rem,2.5vw,1.8rem)] font-bold uppercase">
@@ -388,7 +388,7 @@ export default function Home() {
       </section>
 
       {/* ===== ABOUT + MISSION/VISION (combined, compact) ===== */}
-      <section className="relative w-full py-20 bg-[#060606] border-t border-white/[0.03] overflow-hidden">
+      <section className="relative w-full py-20 max-[768px]:py-12 max-[480px]:py-8 bg-[#060606] border-t border-white/[0.03] overflow-hidden">
         <div className="glow-orb w-[400px] h-[400px] bg-primary top-[20%] right-[-100px] animate-pulse-glow" />
         <div className="max-w-[1440px] mx-auto px-10 max-[768px]:px-6">
           <div className="flex gap-16 max-[950px]:flex-col max-[950px]:gap-12" data-aos="fade-up">

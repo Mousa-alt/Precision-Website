@@ -14,10 +14,28 @@ const navLinks = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hideNav, setHideNav] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 30);
+    let lastY = window.scrollY;
+    let ticking = false;
+    const handleScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        setScrolled(y > 10);
+        // Hide on scroll down, show on scroll up (only after 120px)
+        if (y > 120) {
+          setHideNav(y > lastY && y - lastY > 5);
+        } else {
+          setHideNav(false);
+        }
+        lastY = y;
+        ticking = false;
+      });
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -27,28 +45,43 @@ export default function Navbar() {
     setMobileOpen(false);
   }, [pathname]);
 
-  // Lock body scroll when mobile menu is open
+  // Lock body scroll when mobile menu is open (iOS-safe: position fixed)
   useEffect(() => {
     if (mobileOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
       document.body.style.overflow = "hidden";
-      document.body.style.touchAction = "none";
     } else {
+      const top = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.overflow = "";
-      document.body.style.touchAction = "";
+      if (top) window.scrollTo(0, parseInt(top) * -1);
     }
     return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.overflow = "";
-      document.body.style.touchAction = "";
     };
   }, [mobileOpen]);
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full z-[1000] transition-[background-color,box-shadow,border-color] duration-500 ${
+      className={`fixed top-0 left-0 w-full z-[1000] transition-[background-color,box-shadow,border-color,transform] duration-300 will-change-transform ${
+        hideNav && !mobileOpen ? "-translate-y-full" : "translate-y-0"
+      } ${
         scrolled
-          ? "bg-black/90 backdrop-blur-md shadow-[0_1px_30px_rgba(0,0,0,0.6)] border-b border-white/[0.03]"
+          ? "bg-black/95 shadow-[0_1px_30px_rgba(0,0,0,0.6)] border-b border-white/[0.03]"
           : "bg-transparent"
       }`}
+      style={{ WebkitBackfaceVisibility: "hidden", backfaceVisibility: "hidden" }}
     >
       <div className="flex justify-between items-center max-w-[1440px] mx-auto px-10 max-[950px]:px-5 max-[480px]:px-4 h-[88px] max-[950px]:h-[72px] max-[480px]:h-[60px]">
         {/* Logo */}
@@ -100,24 +133,24 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu — full screen overlay */}
-      <div className={`fixed left-0 right-0 bottom-0 top-[72px] max-[480px]:top-[60px] bg-black/98 z-[999] transition-[opacity,visibility] duration-300 ${mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}>
-        <nav className="flex flex-col items-center justify-center h-full gap-4">
+      <div className={`fixed inset-0 top-[72px] max-[480px]:top-[60px] bg-black z-[999] transition-[opacity,visibility] duration-200 ${mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}>
+        <nav className="flex flex-col items-center justify-center h-full gap-3 pb-[72px]">
           {[...navLinks, { href: "/contact", label: "Contact" }].map((link, i) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className={`text-[28px] max-[480px]:text-[24px] font-light uppercase tracking-[4px] py-3 transition-colors duration-300 ${
+              className={`text-[26px] max-[480px]:text-[22px] font-light uppercase tracking-[4px] py-2.5 transition-[color,transform] duration-200 ${
                 pathname === link.href
                   ? "text-primary"
-                  : "text-white/50 hover:text-white"
-              }`}
-              style={{ transitionDelay: mobileOpen ? `${i * 50}ms` : "0ms" }}
+                  : "text-white/50 active:text-white"
+              } ${mobileOpen ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}
+              style={{ transitionDelay: mobileOpen ? `${i * 30}ms` : "0ms" }}
             >
               {link.label}
             </Link>
           ))}
-          <div className="mt-8 flex gap-6">
+          <div className="mt-6 flex gap-6">
 
 
             <a href="https://www.instagram.com/precision.mep.smart.solutions" target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-primary transition-colors" aria-label="Instagram">
