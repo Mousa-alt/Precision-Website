@@ -1,14 +1,22 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import LayoutShell from "@/components/LayoutShell";
 import AOSProvider from "@/components/AOSProvider";
+import RevealProvider from "@/components/RevealProvider";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
   weight: ["300", "400", "500", "700", "800"],
 });
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#000000',
+};
 
 export const metadata: Metadata = {
   title: "Precision | Contracting & MEP Solutions in Egypt",
@@ -61,6 +69,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${montserrat.variable} antialiased`}>
         <AOSProvider />
+        <RevealProvider />
         <LayoutShell>{children}</LayoutShell>
       </body>
     </html>

@@ -7,6 +7,21 @@ import PhotoLightbox from "@/components/PhotoLightbox";
 
 const categories = ["All", "Administrative", "Retail", "Food & Beverage", "Medical", "Design & Supervision", "Commercial", "Entertainment"];
 
+const categoryColors: Record<string, string> = {
+  "All": "bg-primary border-primary",
+  "Administrative": "bg-blue-600 border-blue-600",
+  "Retail": "bg-emerald-600 border-emerald-600",
+  "Food & Beverage": "bg-amber-600 border-amber-600",
+  "Medical": "bg-cyan-600 border-cyan-600",
+  "Design & Supervision": "bg-violet-600 border-violet-600",
+  "Commercial": "bg-rose-600 border-rose-600",
+  "Entertainment": "bg-fuchsia-600 border-fuchsia-600",
+};
+
+function slugify(name: string): string {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
 // Full track record — projects that may or may not have photos in Drive
 const trackRecordData: { category: string; projects: { name: string; location: string }[] }[] = [
   {
@@ -310,11 +325,10 @@ export default function ProjectsPage() {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`px-4 py-2 text-[11px] font-semibold uppercase tracking-[1.5px] cursor-pointer transition-all duration-300 rounded-full border ${
-                    activeCategory === cat
-                      ? "bg-primary border-primary text-white"
-                      : "bg-transparent border-white/10 text-white/50 hover:border-white/30 hover:text-white"
-                  }`}
+                  className={`px-4 py-2 text-[11px] font-semibold uppercase tracking-[1.5px] cursor-pointer transition-all duration-300 rounded-full border ${activeCategory === cat
+                    ? `${categoryColors[cat] || "bg-primary border-primary"} text-white`
+                    : "bg-transparent border-white/10 text-white/50 hover:border-white/30 hover:text-white"
+                    }`}
                 >
                   {cat}
                   {count > 0 && (
@@ -369,12 +383,21 @@ export default function ProjectsPage() {
                       <p className="text-[13px] text-white/50 mt-1">{project.location}</p>
                     )}
                     {project.photoCount > 0 && (
-                      <p className="text-[11px] text-white/30 mt-2 flex items-center gap-1.5">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        {project.photoCount} photos — click to view
-                      </p>
+                      <div className="flex items-center gap-3 mt-2">
+                        <p className="text-[11px] text-white/30 flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          {project.photoCount} photos
+                        </p>
+                        <Link
+                          href={`/projects/${slugify(project.name)}`}
+                          className="text-[11px] text-primary hover:text-primary/80 font-semibold transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          View Details →
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -415,12 +438,21 @@ export default function ProjectsPage() {
                       <p className="text-[12px] text-white/50 mt-1">{project.location}</p>
                     )}
                     {project.photoCount > 0 && (
-                      <p className="text-[11px] text-white/30 mt-1 flex items-center gap-1.5">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        {project.photoCount} photos — click to view
-                      </p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <p className="text-[11px] text-white/30 flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          {project.photoCount} photos
+                        </p>
+                        <Link
+                          href={`/projects/${slugify(project.name)}`}
+                          className="text-[11px] text-primary hover:text-primary/80 font-semibold transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          View Details →
+                        </Link>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -471,6 +503,13 @@ export default function ProjectsPage() {
                   {project.location && (
                     <p className="text-[12px] text-white/40 mt-0.5">{project.location}</p>
                   )}
+                  <Link
+                    href={`/projects/${slugify(project.name)}`}
+                    className="text-[11px] text-primary/60 hover:text-primary font-semibold transition-colors mt-1.5 inline-block"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    View Details →
+                  </Link>
                 </div>
               </div>
             ))}

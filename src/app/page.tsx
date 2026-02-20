@@ -1,9 +1,75 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import RevealImage from "@/components/RevealImage";
 import PhotoLightbox from "@/components/PhotoLightbox";
+
+// Animated counter hook
+function useCountUp(target: string, duration = 2000) {
+  const [count, setCount] = useState("0");
+  const ref = useRef<HTMLDivElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          const numericPart = parseFloat(target.replace(/[^0-9.]/g, ""));
+          const suffix = target.replace(/[0-9.,]/g, "");
+          const isDecimal = target.includes(".");
+          const startTime = performance.now();
+
+          function animate(currentTime: number) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // Ease out cubic
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const currentVal = numericPart * eased;
+
+            if (isDecimal) {
+              setCount(currentVal.toFixed(1) + suffix);
+            } else {
+              setCount(Math.floor(currentVal).toLocaleString() + suffix);
+            }
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              setCount(target);
+            }
+          }
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [target, duration]);
+
+  return { count, ref };
+}
+
+const clientLogos = [
+  "Intelcia", "Bayer", "Cheil", "Roche", "Decathlon", "Boss",
+  "LG", "Casio", "Beano's", "La Poire", "Breadfast", "Huawei",
+  "ABC Bank", "Property Finder", "Raya", "Keys Payroll", "Apetco",
+  "Paxton", "Air Liquide", "Al Baraka Bank", "Elsewedy", "Guru",
+  "Soil Spaces", "Antoushka",
+];
+
+const processSteps = [
+  { num: "01", title: "Consultation", desc: "Understanding your vision, requirements, and project scope through detailed initial meetings." },
+  { num: "02", title: "Design & Planning", desc: "Technical design, MEP coordination, BOQ preparation, and comprehensive project planning." },
+  { num: "03", title: "Execution", desc: "Precision construction with rigorous quality control, safety standards, and timeline management." },
+  { num: "04", title: "Handover", desc: "Final inspections, testing & commissioning, documentation, and seamless project handover." },
+];
 
 const slides = [
   {
@@ -52,6 +118,21 @@ export default function Home() {
   const [lightboxPhotos, setLightboxPhotos] = useState<{ id: string; url: string; thumbnailUrl: string; name: string }[] | null>(null);
   const [lightboxName, setLightboxName] = useState("");
   const [lightboxLocation, setLightboxLocation] = useState("");
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const heroCardRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent, cardIndex: number) => {
+    const el = e.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+    setHoveredCard(cardIndex);
+  }, []);
+
+  // Animated stats
+  const stat1 = useCountUp("75+");
+  const stat2 = useCountUp("35.5K");
+  const stat3 = useCountUp("90%+");
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -188,15 +269,15 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right side: stats */}
+          {/* Right side: animated stats */}
           <div className="hidden lg:flex flex-col gap-8 items-end" data-aos="fade-left">
             {[
-              { value: "75+", label: "Projects" },
-              { value: "35.5K", label: "m² Covered" },
-              { value: "90%+", label: "Satisfaction" },
+              { hook: stat1, label: "Projects" },
+              { hook: stat2, label: "m² Covered" },
+              { hook: stat3, label: "Satisfaction" },
             ].map((stat) => (
-              <div key={stat.label} className="text-right">
-                <div className="text-[2.5rem] font-bold stat-number leading-none">{stat.value}</div>
+              <div key={stat.label} className="text-right" ref={stat.hook.ref}>
+                <div className="text-[2.5rem] font-bold stat-number leading-none">{stat.hook.count}</div>
                 <div className="text-[11px] text-white/40 uppercase tracking-[2px] mt-1">{stat.label}</div>
               </div>
             ))}
@@ -223,9 +304,8 @@ export default function Home() {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer border-none ${
-                index === currentSlide ? "bg-primary scale-125" : "bg-white/20 hover:bg-white/40"
-              }`}
+              className={`w-2 h-2 rounded-full transition-all duration-300 cursor-pointer border-none ${index === currentSlide ? "bg-primary scale-125" : "bg-white/20 hover:bg-white/40"
+                }`}
             />
           ))}
         </div>
@@ -293,7 +373,22 @@ export default function Home() {
           {featuredProjects.length > 0 ? (
             <div className="flex flex-col gap-5 max-[480px]:gap-3" data-aos="fade-up">
               {/* Hero project */}
-              <div className="project-card group relative w-full aspect-[21/9] max-[768px]:aspect-[16/9] max-[480px]:aspect-[16/9] bg-[#0a0a0a] cursor-pointer" onClick={() => { setLightboxPhotos(featuredProjects[0].photos); setLightboxName(featuredProjects[0].name); setLightboxLocation(featuredProjects[0].location); }}>
+              <div
+                ref={heroCardRef}
+                className="project-card group relative w-full aspect-[21/9] max-[768px]:aspect-[16/9] max-[480px]:aspect-[16/9] bg-[#0a0a0a] cursor-pointer"
+                onClick={() => { setLightboxPhotos(featuredProjects[0].photos); setLightboxName(featuredProjects[0].name); setLightboxLocation(featuredProjects[0].location); }}
+                onMouseMove={(e) => handleMouseMove(e, 0)}
+                onMouseLeave={() => setHoveredCard(null)}
+              >
+                {/* Mouse glow effect */}
+                {hoveredCard === 0 && (
+                  <div
+                    className="absolute inset-0 z-[5] pointer-events-none rounded-[20px] transition-opacity duration-500"
+                    style={{
+                      background: `radial-gradient(400px circle at ${mousePos.x}px ${mousePos.y}px, rgba(123,45,54,0.15), transparent 40%)`,
+                    }}
+                  />
+                )}
                 <RevealImage
                   src={featuredProjects[0].coverPhoto}
                   alt={featuredProjects[0].name}
@@ -391,6 +486,27 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== CLIENT LOGOS MARQUEE ===== */}
+      <section className="relative w-full py-10 max-[768px]:py-6 bg-[#030303] border-t border-b border-white/[0.03] overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-10 max-[768px]:px-5 mb-6">
+          <p className="text-center text-[11px] text-white/25 uppercase tracking-[3px] font-semibold">Trusted By Industry Leaders</p>
+        </div>
+        <div className="relative overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#030303] to-transparent z-10" />
+          <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#030303] to-transparent z-10" />
+          <div className="flex animate-marquee whitespace-nowrap">
+            {[...clientLogos, ...clientLogos].map((name, i) => (
+              <span
+                key={`${name}-${i}`}
+                className="inline-flex items-center px-8 max-[480px]:px-5 text-[14px] max-[480px]:text-[12px] font-semibold text-white/20 uppercase tracking-[3px] whitespace-nowrap"
+              >
+                {name}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== VIDEO SHOWCASE ===== */}
       <section className="relative w-full py-20 max-[768px]:py-12 max-[480px]:py-8 bg-black border-t border-white/[0.03] overflow-hidden">
         <div className="max-w-[1440px] mx-auto px-10 max-[768px]:px-5 max-[480px]:px-4">
@@ -421,6 +537,38 @@ export default function Home() {
                   preload="metadata"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== HOW WE WORK (Process) ===== */}
+      <section className="relative w-full py-20 max-[768px]:py-12 max-[480px]:py-8 bg-[#030303] border-t border-white/[0.03] overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-10 max-[768px]:px-5 max-[480px]:px-4">
+          <div className="text-center mb-12 max-[480px]:mb-8" data-aos="fade-up">
+            <p className="text-primary text-[11px] font-semibold uppercase tracking-[3px] mb-3">Our Process</p>
+            <h2 className="text-[clamp(1.3rem,2.5vw,1.8rem)] font-bold uppercase">
+              How We <span className="text-primary">Work</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-4 max-[950px]:grid-cols-2 max-[480px]:grid-cols-1 gap-5 max-[480px]:gap-3">
+            {processSteps.map((step, i) => (
+              <div
+                key={step.num}
+                className="relative bg-white/[0.02] border border-white/[0.04] rounded-2xl max-[480px]:rounded-xl p-7 max-[480px]:p-5 group hover:bg-white/[0.04] hover:border-primary/20 transition-all duration-500"
+                data-aos="fade-up"
+                data-aos-delay={i * 100}
+              >
+                <span className="absolute top-4 right-5 text-[3rem] font-bold text-white/[0.03] select-none pointer-events-none leading-none">
+                  {step.num}
+                </span>
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors duration-300">
+                  <span className="text-primary text-sm font-bold">{step.num}</span>
+                </div>
+                <h3 className="text-[15px] font-bold uppercase mb-2 group-hover:text-primary transition-colors duration-300">{step.title}</h3>
+                <p className="text-[12px] text-white/40 leading-[1.7]">{step.desc}</p>
               </div>
             ))}
           </div>
