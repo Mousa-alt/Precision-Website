@@ -33,12 +33,22 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "Precision Contractors",
+    url: "https://precision-egy.com",
+    images: [
+      {
+        url: "https://precision-egy.com/images/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Precision Contractors - MEP Solutions in Egypt",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Precision | Contracting & MEP Solutions in Egypt",
     description:
       "A forward-thinking contracting and MEP solutions company dedicated to innovation, precision, and delivering excellence in every project.",
+    images: ["https://precision-egy.com/images/og-image.png"],
   },
 };
 

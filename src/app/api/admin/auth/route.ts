@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Percision@admin-2026#";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Precision@admin-2026#";
 const SESSION_TOKEN = "precision-admin-session";
 
 export async function POST(request: NextRequest) {

@@ -7,6 +7,77 @@ import PhotoLightbox from "@/components/PhotoLightbox";
 
 const categories = ["All", "Administrative", "Retail", "Food & Beverage", "Medical", "Design & Supervision", "Commercial", "Entertainment"];
 
+// Full track record — projects that may or may not have photos in Drive
+const trackRecordData: { category: string; projects: { name: string; location: string }[] }[] = [
+  {
+    category: "Retail",
+    projects: [
+      { name: "Guru", location: "ORA Zed, El Sheikh Zayed" },
+      { name: "Boss", location: "City Center Almaza" },
+      { name: "Antoushka", location: "Mall of Egypt" },
+      { name: "LG", location: "Mall of Egypt" },
+      { name: "Knana", location: "Lake Town" },
+      { name: "Casio", location: "Cairo Festival City" },
+      { name: "Bashmina", location: "Maxim Mall" },
+      { name: "Decathlon", location: "Green Plaza" },
+    ],
+  },
+  {
+    category: "Food & Beverage",
+    projects: [
+      { name: "Odoriko", location: "Arkan Plaza" },
+      { name: "Breadfast", location: "Sphinx" },
+      { name: "CAF", location: "Sphinx" },
+      { name: "CAF", location: "Waterway 2" },
+      { name: "Beano's", location: "U Venues Mall" },
+      { name: "Beano's", location: "Lake Town" },
+      { name: "La Poire", location: "City Center Alexandria" },
+      { name: "Al-Abd", location: "Cairo Festival City" },
+      { name: "Al-Abd", location: "Al Obour City" },
+      { name: "Al-Abd", location: "Al Abasia" },
+      { name: "Antakha", location: "District 5" },
+      { name: "929", location: "The Garden" },
+      { name: "Stuffit", location: "The Garden" },
+    ],
+  },
+  {
+    category: "Administrative",
+    projects: [
+      { name: "Intelcia Head Office", location: "Ivory Business" },
+      { name: "Bayer Head Office", location: "Mivida Business Park" },
+      { name: "Soil Spaces", location: "Mivida Business Park" },
+      { name: "Cheil Head Office", location: "District 5" },
+      { name: "Cred Sales Center", location: "New Cairo" },
+      { name: "Raya Call Center", location: "Crystal Plaza, Maadi" },
+      { name: "Keys Payroll HQ", location: "Maadi" },
+      { name: "Apetco HQ", location: "Sidewalk Mall" },
+      { name: "Apetco HQ Extension", location: "Sidewalk Mall" },
+      { name: "Paxton HQ", location: "Hyde Park" },
+      { name: "ABC Bank HO Renovation", location: "" },
+      { name: "Roche", location: "Galleria 40" },
+    ],
+  },
+  {
+    category: "Design & Supervision",
+    projects: [
+      { name: "Air Liquide HQ", location: "Sodic East" },
+      { name: "Al Baraka Bank HQ", location: "Nile City" },
+      { name: "Elsewedy Office", location: "" },
+      { name: "Lazurde & Miss L Shops", location: "" },
+      { name: "Antoushka", location: "Mall of Egypt" },
+      { name: "Knana Shop", location: "" },
+      { name: "CAF Cafe", location: "" },
+      { name: "Paxton Office", location: "" },
+    ],
+  },
+  {
+    category: "Medical",
+    projects: [
+      { name: "Muncai", location: "ORA, Zayed" },
+    ],
+  },
+];
+
 const categoryMap: Record<string, string> = {
   "Administrative": "Administrative",
   "Retail": "Retail",
@@ -156,6 +227,28 @@ export default function ProjectsPage() {
   const featuredProjects = filtered.filter((p) => p.displaySize === "featured");
   const regularProjects = filtered.filter((p) => p.displaySize === "regular");
 
+  // Build track record list, excluding projects that already have photos
+  const photoProjectNames = new Set(
+    projects.map((p) => p.name.toLowerCase())
+  );
+  const filteredTrackRecord = trackRecordData
+    .map((group) => ({
+      category: group.category,
+      projects: group.projects.filter(
+        (p) => !photoProjectNames.has(p.name.toLowerCase())
+      ),
+    }))
+    .filter((group) => group.projects.length > 0)
+    .filter(
+      (group) =>
+        activeCategory === "All" || group.category === activeCategory
+    );
+
+  const trackRecordCount = filteredTrackRecord.reduce(
+    (sum, g) => sum + g.projects.length,
+    0
+  );
+
   function openProject(project: ProjectDisplay) {
     if (project.photos.length > 0) {
       setLightboxProject(project);
@@ -200,10 +293,16 @@ export default function ProjectsPage() {
           {/* Category filters */}
           <div className="flex flex-wrap gap-2 mb-12 max-[480px]:justify-center" data-aos="fade-up">
             {categories.map((cat) => {
-              const count =
+              // Count photo projects + text-only track record projects
+              const photoCount =
                 cat === "All"
                   ? projects.length
                   : projects.filter((p) => p.category === cat).length;
+              const textCount =
+                cat === "All"
+                  ? trackRecordData.reduce((s, g) => s + g.projects.filter((p) => !photoProjectNames.has(p.name.toLowerCase())).length, 0)
+                  : (trackRecordData.find((g) => g.category === cat)?.projects.filter((p) => !photoProjectNames.has(p.name.toLowerCase())).length || 0);
+              const count = photoCount + textCount;
 
               if (count === 0 && cat !== "All") return null;
 
@@ -377,14 +476,55 @@ export default function ProjectsPage() {
             ))}
           </div>
 
-          {/* Empty state */}
-          {filtered.length === 0 && !loading && (
+          {/* Empty state — only when no photo projects AND no track record */}
+          {filtered.length === 0 && trackRecordCount === 0 && !loading && (
             <div className="text-center py-20 text-white/30">
               <svg className="w-14 h-14 mx-auto mb-4 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
               </svg>
               <p className="text-base mb-2">No projects in this category yet</p>
               <p className="text-[13px] text-white/20">Projects will appear here once added to the Drive folder.</p>
+            </div>
+          )}
+
+          {/* Our Track Record — text-only projects */}
+          {trackRecordCount > 0 && !loading && (
+            <div className="mt-16 border-t border-white/[0.05] pt-12" data-aos="fade-up">
+              <div className="mb-10 max-[480px]:text-center">
+                <p className="text-primary text-[11px] font-semibold uppercase tracking-[3px] mb-2">Complete Portfolio</p>
+                <h2 className="text-[clamp(1.2rem,2.5vw,1.6rem)] font-bold uppercase">
+                  Our Track <span className="text-primary">Record</span>
+                </h2>
+              </div>
+
+              <div className="flex flex-wrap gap-8 max-[768px]:gap-6">
+                {filteredTrackRecord.map((group) => (
+                  <div
+                    key={group.category}
+                    className="w-[calc(50%-16px)] max-[768px]:w-full"
+                    data-aos="fade-up"
+                  >
+                    <h3 className="text-[13px] font-semibold uppercase tracking-[2px] text-primary/80 mb-4 flex items-center gap-2">
+                      <span className="w-5 h-[1px] bg-primary/40" />
+                      {group.category}
+                    </h3>
+                    <ul className="space-y-2.5">
+                      {group.projects.map((project, i) => (
+                        <li
+                          key={`${project.name}-${project.location}-${i}`}
+                          className="flex items-baseline gap-2 text-[14px] max-[480px]:text-[13px]"
+                        >
+                          <span className="w-1 h-1 rounded-full bg-white/20 shrink-0 mt-2" />
+                          <span className="text-white/80 font-medium">{project.name}</span>
+                          {project.location && (
+                            <span className="text-white/30 text-[12px]">— {project.location}</span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

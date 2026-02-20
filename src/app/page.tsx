@@ -391,6 +391,42 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ===== VIDEO SHOWCASE ===== */}
+      <section className="relative w-full py-20 max-[768px]:py-12 max-[480px]:py-8 bg-black border-t border-white/[0.03] overflow-hidden">
+        <div className="max-w-[1440px] mx-auto px-10 max-[768px]:px-5 max-[480px]:px-4">
+          <div className="flex items-end justify-between mb-10 max-[768px]:mb-6 max-[480px]:flex-col max-[480px]:items-start max-[480px]:gap-3 max-[480px]:mb-5" data-aos="fade-up">
+            <div>
+              <p className="text-primary text-[11px] font-semibold uppercase tracking-[3px] mb-3">Behind The Scenes</p>
+              <h2 className="text-[clamp(1.3rem,2.5vw,1.8rem)] font-bold uppercase">
+                See Us In <span className="text-primary">Action</span>
+              </h2>
+            </div>
+          </div>
+
+          <div className="flex gap-6 max-[768px]:gap-4 max-[480px]:flex-col max-[480px]:items-center" data-aos="fade-up">
+            {["/videos/showreel-1.mp4", "/videos/showreel-2.mp4"].map((src, i) => (
+              <div
+                key={src}
+                className="relative flex-1 max-w-[400px] max-[480px]:max-w-[300px] aspect-[9/16] bg-[#0a0a0a] rounded-2xl max-[480px]:rounded-xl overflow-hidden group"
+                data-aos="fade-up"
+                data-aos-delay={i * 100}
+              >
+                <video
+                  className="w-full h-full object-cover"
+                  src={src}
+                  muted
+                  loop
+                  playsInline
+                  autoPlay
+                  preload="metadata"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== ABOUT + MISSION/VISION (combined, compact) ===== */}
       <section className="relative w-full py-20 max-[768px]:py-12 max-[480px]:py-8 bg-[#060606] border-t border-white/[0.03] overflow-hidden">
         <div className="glow-orb w-[400px] h-[400px] bg-primary top-[20%] right-[-100px] animate-pulse-glow" />
