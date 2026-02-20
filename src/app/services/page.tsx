@@ -9,6 +9,7 @@ const services = [
     description: "Complete heating, ventilation, and air conditioning solutions for optimal climate control and energy efficiency across residential and commercial buildings.",
     items: ["Air Cooled Chillers", "Water Cooled Chillers", "Cooling Towers", "District Cooling", "Chilled Pipe Network", "Air Conditioning - DX", "Air Conditioning - VRF", "Refrigeration Pipe Network", "Ventilation Systems", "Duct Network"],
     icon: "M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+    image: "/images/services/hvac.jpg",
   },
   {
     id: "electrical",
@@ -16,6 +17,7 @@ const services = [
     description: "Full-spectrum electrical engineering from medium voltage systems to smart automation and building management solutions.",
     items: ["Medium Voltage Systems", "Low Voltage Systems", "Lighting Design & Installation", "Power Systems", "Control Systems", "KNX Automation", "BMS (Building Management System)"],
     icon: "M13 10V3L4 14h7v7l9-11h-7z",
+    image: "/images/services/electrical.jpg",
   },
   {
     id: "plumbing",
@@ -23,6 +25,7 @@ const services = [
     description: "Reliable plumbing infrastructure for domestic, drainage, and sewage systems across all building types.",
     items: ["Domestic Pipe Network", "Drainage Pipe Network", "Sewage Network", "Pumps & Pump Systems"],
     icon: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z",
+    image: "/images/services/plumbing.jpg",
   },
   {
     id: "firefighting",
@@ -30,6 +33,7 @@ const services = [
     description: "Advanced fire protection systems ensuring safety compliance and peace of mind for every building and space.",
     items: ["Stand Pipe System", "Water Sprinkler Systems (Wet, Dry, Precaution & Deluge)", "Water Mist", "Manual Fire Extinguisher", "Automatic Fire Extinguisher", "Gas Systems (CO\u2082, FM 200, Novec, Inergen & Aerosol)", "Hood Suppression System", "Foam System", "Addressable Fire Alarm", "Conventional Fire Alarm"],
     icon: "M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z",
+    image: "/images/services/firefighting.jpg",
   },
   {
     id: "fitout",
@@ -37,6 +41,7 @@ const services = [
     description: "Seamless design and construction of captivating interiors for diverse commercial and residential spaces.",
     items: ["Retail Shops & Showrooms", "Corporate Offices", "Medical Clinics", "Residential Projects", "Food & Beverage Outlets", "Interior Design & Finishing"],
     icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4",
+    image: "/images/services/fitout.jpg",
   },
   {
     id: "communication",
@@ -44,6 +49,7 @@ const services = [
     description: "Modern communication and IT infrastructure for connected, efficient buildings.",
     items: ["Telephone Systems", "Data Networks", "Audio Visual Systems", "MATV (Master Antenna Television)"],
     icon: "M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.858 15.355-5.858 21.213 0",
+    image: "/images/services/communication.jpg",
   },
   {
     id: "security",
@@ -51,6 +57,7 @@ const services = [
     description: "Comprehensive security solutions to protect assets and ensure safety across your premises.",
     items: ["Access Control Systems", "Intrusion Detection", "CCTV Surveillance", "Public Address Systems"],
     icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
+    image: "/images/services/security.jpg",
   },
 ];
 
@@ -120,15 +127,18 @@ export default function ServicesPage() {
                 </Link>
               </div>
 
-              <div className="max-w-[400px] w-full flex items-center justify-center max-[960px]:hidden" data-aos={index % 2 === 0 ? "fade-left" : "fade-right"}>
-                <div className="w-full aspect-square max-w-[320px] relative">
-                  <div className="absolute inset-0 rounded-[30px] bg-gradient-to-br from-primary/10 to-transparent border border-white/5" />
-                  <div className="absolute inset-[15%] rounded-[25px] bg-gradient-to-br from-primary/5 to-transparent border border-primary/10" />
-                  <div className="absolute inset-[30%] rounded-[20px] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
-                    <SvgIcon d={service.icon} className="w-20 h-20 text-primary/40" />
+              <div className="max-w-[400px] w-full max-[960px]:max-w-full" data-aos={index % 2 === 0 ? "fade-left" : "fade-right"}>
+                <div className="relative w-full aspect-[4/3] max-[960px]:aspect-[16/9] rounded-2xl overflow-hidden group">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+                  <div className="absolute bottom-4 left-4 w-12 h-12 rounded-xl bg-primary/20 backdrop-blur-sm flex items-center justify-center border border-primary/30">
+                    <SvgIcon d={service.icon} className="w-6 h-6 text-primary" />
                   </div>
-                  <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-primary/30 rounded-tl-[10px]" />
-                  <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary/30 rounded-br-[10px]" />
                 </div>
               </div>
             </div>
