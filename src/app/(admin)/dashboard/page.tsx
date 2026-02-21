@@ -129,11 +129,14 @@ export default function AdminDashboard() {
     }
   }, [homeLoaded, projects]);
 
-  async function loadProjects() {
+  async function loadProjects(bustCache = false) {
     setLoading(true);
-    setStatus("Loading projects from Drive...");
+    setStatus(bustCache ? "Syncing fresh data from Google Drive..." : "Loading projects from Drive...");
     try {
-      const res = await fetch("/api/photos");
+      if (bustCache) {
+        await fetch("/api/revalidate", { method: "POST" });
+      }
+      const res = await fetch("/api/photos" + (bustCache ? "?t=" + Date.now() : ""));
       const data = await res.json();
       setProjects(data.projects || []);
       setStatus(`Loaded ${(data.projects || []).length} projects`);
@@ -981,7 +984,7 @@ export default function AdminDashboard() {
             </div>
             <div className="flex gap-2">
               <button
-                onClick={loadProjects}
+                onClick={() => loadProjects(true)}
                 disabled={loading}
                 className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all disabled:opacity-50"
               >
@@ -1330,7 +1333,7 @@ export default function AdminDashboard() {
           <div className="bg-[#111] rounded-xl border border-white/5 p-6">
             <h2 className="text-lg font-bold uppercase mb-4">Quick Actions</h2>
             <div className="flex flex-wrap gap-3">
-              <button onClick={loadProjects} className="px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all">Re-sync Drive Photos</button>
+              <button onClick={() => loadProjects(true)} className="px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all">Re-sync Drive Photos</button>
               <a href="/" target="_blank" className="px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all inline-block">Preview Website</a>
             </div>
           </div>
