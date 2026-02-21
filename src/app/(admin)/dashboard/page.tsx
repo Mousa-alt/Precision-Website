@@ -1373,7 +1373,14 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{video.name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium truncate">{video.name}</p>
+                        {video.url.startsWith("/videos/") ? (
+                          <span className="text-[8px] uppercase px-1.5 py-0.5 rounded bg-white/5 text-white/30 border border-white/5 flex-shrink-0">Local file</span>
+                        ) : (
+                          <span className="text-[8px] uppercase px-1.5 py-0.5 rounded bg-primary/10 text-primary/60 border border-primary/10 flex-shrink-0">CDN</span>
+                        )}
+                      </div>
                       <p className="text-[10px] text-white/30 mt-0.5">
                         {(video.size / (1024 * 1024)).toFixed(1)} MB — Slot {i + 1}
                       </p>
@@ -1383,7 +1390,7 @@ export default function AdminDashboard() {
                       onClick={() => deleteVideo(video.url, video.name)}
                       className="px-3 py-1.5 text-xs text-red-400/60 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                     >
-                      Delete
+                      {video.url.startsWith("/videos/") ? "Remove" : "Delete"}
                     </button>
                   </div>
                 ))}

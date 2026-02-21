@@ -66,11 +66,33 @@ async function writeVideos(videos: VideoEntry[]) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(videos, null, 2), "utf-8");
 }
 
-// GET: List all videos
+// Detect local video files in public/videos/
+function getLocalVideos(): VideoEntry[] {
+  const videosDir = path.join(process.cwd(), "public", "videos");
+  if (!fs.existsSync(videosDir)) return [];
+  return fs.readdirSync(videosDir)
+    .filter((f) => /\.(mp4|webm|mov)$/i.test(f))
+    .map((f) => {
+      const stats = fs.statSync(path.join(videosDir, f));
+      return {
+        url: `/videos/${f}`,
+        name: f,
+        size: stats.size,
+        uploadedAt: stats.mtime.toISOString(),
+      };
+    });
+}
+
+// GET: List all videos (saved config + local fallback)
 export async function GET() {
   try {
-    const videos = await readVideos();
-    return NextResponse.json({ videos });
+    const saved = await readVideos();
+    if (saved.length > 0) {
+      return NextResponse.json({ videos: saved });
+    }
+    // No saved config — show local files so they can be managed
+    const local = getLocalVideos();
+    return NextResponse.json({ videos: local });
   } catch {
     return NextResponse.json({ videos: [] });
   }
@@ -155,10 +177,21 @@ export async function DELETE(request: NextRequest) {
       await del(url);
     }
 
-    // Remove from videos list
+    // Delete local file if it's a /videos/ path
+    if (url.startsWith("/videos/")) {
+      const filename = path.basename(url);
+      const filePath = path.join(process.cwd(), "public", "videos", filename);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    // Remove from saved videos list
     const videos = await readVideos();
     const filtered = videos.filter((v) => v.url !== url);
-    await writeVideos(filtered);
+    if (filtered.length !== videos.length) {
+      await writeVideos(filtered);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
