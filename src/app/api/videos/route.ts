@@ -28,22 +28,26 @@ export async function GET() {
         if (blobs.length > 0) {
           const res = await fetch(blobs[0].url);
           const videos = await res.json();
-          const urls = videos.slice(0, maxSlots).map((v: { url: string }) => v.url);
-          return NextResponse.json({ videos: urls, layout });
+          if (videos.length > 0) {
+            const urls = videos.slice(0, maxSlots).map((v: { url: string }) => v.url);
+            return NextResponse.json({ videos: urls, layout });
+          }
         }
       } catch {
         // Fall through
       }
     }
 
-    // Local file (development)
+    // Local config file (development)
     if (fs.existsSync(DATA_FILE)) {
       const videos = JSON.parse(fs.readFileSync(DATA_FILE, "utf-8"));
-      const urls = videos.slice(0, maxSlots).map((v: { url: string }) => v.url);
-      return NextResponse.json({ videos: urls, layout });
+      if (videos.length > 0) {
+        const urls = videos.slice(0, maxSlots).map((v: { url: string }) => v.url);
+        return NextResponse.json({ videos: urls, layout });
+      }
     }
 
-    // Fallback: local video files
+    // Fallback: local video files in public/videos/
     const videosDir = path.join(process.cwd(), "public", "videos");
     if (fs.existsSync(videosDir)) {
       const files = fs.readdirSync(videosDir)
