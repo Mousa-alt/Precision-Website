@@ -101,6 +101,8 @@ export default function AdminDashboard() {
   const [videoUploading, setVideoUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
   const [videoLayout, setVideoLayout] = useState<string>("2-equal");
+  const [vidDragIdx, setVidDragIdx] = useState<number | null>(null);
+  const [vidDragOver, setVidDragOver] = useState<number | null>(null);
 
   useEffect(() => {
     loadProjects();
@@ -273,6 +275,20 @@ export default function AdminDashboard() {
     } catch {
       setStatus("Error deleting video");
     }
+  }
+
+  function moveVideo(fromIdx: number, toIdx: number) {
+    if (fromIdx === toIdx) return;
+    const updated = [...videos];
+    const [moved] = updated.splice(fromIdx, 1);
+    updated.splice(toIdx, 0, moved);
+    setVideos(updated);
+    // Persist order
+    fetch("/api/admin/videos", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ videos: updated }),
+    });
   }
 
   // Auto-populate slots with fallback order when no saved config exists
@@ -1406,102 +1422,162 @@ export default function AdminDashboard() {
 
       {/* VIDEOS TAB */}
       {activeTab === "videos" && (() => {
-        const LAYOUTS: { id: string; label: string; maxSlots: number; desc: string }[] = [
-          { id: "2-equal", label: "2 Equal", maxSlots: 2, desc: "Two vertical videos side by side" },
-          { id: "3-equal", label: "3 Equal", maxSlots: 3, desc: "Three vertical videos in a row" },
-          { id: "4-equal", label: "4 Equal", maxSlots: 4, desc: "Four vertical videos in a row" },
-          { id: "1-large-2-small", label: "1 Large + 2 Small", maxSlots: 3, desc: "One hero video with two smaller ones" },
+        const LAYOUTS: { id: string; label: string; maxSlots: number }[] = [
+          { id: "2-equal", label: "2 Equal", maxSlots: 2 },
+          { id: "3-equal", label: "3 Equal", maxSlots: 3 },
+          { id: "4-equal", label: "4 Equal", maxSlots: 4 },
+          { id: "1-large-2-small", label: "1 Hero + 2 Small", maxSlots: 3 },
         ];
         const activeLayout = LAYOUTS.find((l) => l.id === videoLayout) || LAYOUTS[0];
-        const slotsFilled = videos.length;
-        const slotsAvailable = activeLayout.maxSlots - slotsFilled;
+        const displayVideos = videos.slice(0, activeLayout.maxSlots);
+        const slotsAvailable = activeLayout.maxSlots - displayVideos.length;
+
+        // Renders a single video card (used in both preview and slot list)
+        const videoCard = (src: string, aspectClass: string, extraClass = "") => (
+          <div className={`relative ${aspectClass} bg-[#0a0a0a] rounded-2xl overflow-hidden ${extraClass}`}>
+            <video src={src} className="w-full h-full object-cover" muted loop playsInline autoPlay preload="metadata" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
+          </div>
+        );
+
+        // Empty slot placeholder for preview
+        const emptyCard = (aspectClass: string, extraClass = "") => (
+          <div className={`relative ${aspectClass} bg-[#0a0a0a] rounded-2xl overflow-hidden border-2 border-dashed border-white/5 flex items-center justify-center ${extraClass}`}>
+            <svg className="w-8 h-8 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+        );
+
+        // Build preview slots array (filled + empty)
+        const previewSlots: (string | null)[] = [];
+        for (let i = 0; i < activeLayout.maxSlots; i++) {
+          previewSlots.push(displayVideos[i]?.url || null);
+        }
 
         return (
         <div className="space-y-6">
-          {/* Layout selector */}
+          {/* LIVE PREVIEW — matches homepage rendering */}
           <div className="bg-[#111] rounded-xl border border-white/5 p-6">
-            <h2 className="text-lg font-bold uppercase mb-1">Video Layout</h2>
-            <p className="text-xs text-white/40 mb-5">Choose how videos appear in the &quot;See Us In Action&quot; section</p>
-            <div className="flex gap-3 flex-wrap">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-bold uppercase">Preview</h2>
+                <p className="text-xs text-white/40 mt-0.5">How videos appear on the homepage</p>
+              </div>
+              <span className="text-[10px] text-white/20 uppercase tracking-wider">{activeLayout.label}</span>
+            </div>
+
+            {/* Preview grid */}
+            <div className="bg-black rounded-xl p-5 border border-white/[0.03]">
+              {videoLayout === "1-large-2-small" ? (
+                <div className="flex gap-4 justify-center" style={{ maxHeight: 320 }}>
+                  <div className="flex-[2] max-w-[220px]">
+                    {previewSlots[0] ? videoCard(previewSlots[0], "aspect-[9/16] h-full") : emptyCard("aspect-[9/16] h-full")}
+                  </div>
+                  <div className="flex flex-col gap-4 flex-1 max-w-[130px]">
+                    {previewSlots[1] ? videoCard(previewSlots[1], "flex-1") : emptyCard("flex-1")}
+                    {previewSlots[2] ? videoCard(previewSlots[2], "flex-1") : emptyCard("flex-1")}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-4 justify-center" style={{ maxHeight: 320 }}>
+                  {previewSlots.map((src, i) => (
+                    <div key={i} className="flex-1" style={{ maxWidth: videoLayout === "4-equal" ? 100 : videoLayout === "3-equal" ? 130 : 160 }}>
+                      {src ? videoCard(src, "aspect-[9/16]") : emptyCard("aspect-[9/16]")}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* LAYOUT SELECTOR */}
+          <div className="bg-[#111] rounded-xl border border-white/5 p-6">
+            <h2 className="text-sm font-bold uppercase mb-4">Layout</h2>
+            <div className="flex gap-2 flex-wrap">
               {LAYOUTS.map((layout) => (
                 <button
                   key={layout.id}
                   onClick={() => saveVideoLayout(layout.id)}
-                  className={`flex-1 min-w-[140px] p-4 rounded-xl border-2 transition-all text-left ${
+                  className={`px-4 py-2.5 rounded-lg text-xs font-medium transition-all ${
                     videoLayout === layout.id
-                      ? "border-primary bg-primary/5"
-                      : "border-white/5 bg-black hover:border-white/15"
+                      ? "bg-primary text-white"
+                      : "bg-white/5 text-white/40 hover:text-white hover:bg-white/10"
                   }`}
                 >
-                  {/* Mini layout preview */}
-                  <div className="flex gap-1 mb-3 h-12 items-end">
-                    {layout.id === "2-equal" && (
-                      <><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /></>
-                    )}
-                    {layout.id === "3-equal" && (
-                      <><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /></>
-                    )}
-                    {layout.id === "4-equal" && (
-                      <><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /></>
-                    )}
-                    {layout.id === "1-large-2-small" && (
-                      <><div className="flex-[2] h-full bg-white/10 rounded" /><div className="flex-1 flex flex-col gap-1 h-full"><div className="flex-1 bg-white/10 rounded" /><div className="flex-1 bg-white/10 rounded" /></div></>
-                    )}
-                  </div>
-                  <p className="text-xs font-semibold">{layout.label}</p>
-                  <p className="text-[10px] text-white/30 mt-0.5">{layout.maxSlots} video{layout.maxSlots > 1 ? "s" : ""} max</p>
+                  {layout.label}
+                  <span className="text-[9px] ml-1.5 opacity-60">({layout.maxSlots})</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Video slots */}
+          {/* VIDEO SLOTS — draggable */}
           <div className="bg-[#111] rounded-xl border border-white/5 p-6">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold uppercase">Video Slots</h2>
-              <span className="text-xs text-white/30">{slotsFilled} / {activeLayout.maxSlots} filled</span>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-bold uppercase">Slots</h2>
+              <span className="text-xs text-white/30">{displayVideos.length} / {activeLayout.maxSlots}</span>
             </div>
 
             {videosLoading ? (
-              <div className="text-center py-8 text-white/30 text-sm">Loading videos...</div>
+              <div className="text-center py-8 text-white/30 text-sm">Loading...</div>
             ) : (
-              <div className="space-y-3">
-                {/* Filled slots */}
-                {videos.slice(0, activeLayout.maxSlots).map((video, i) => (
-                  <div key={video.url} className="flex items-center gap-4 bg-black rounded-lg border border-white/5 p-3 group">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-white/30 text-xs font-bold flex-shrink-0">
+              <div className="space-y-2">
+                {/* Filled slots — draggable */}
+                {displayVideos.map((video, i) => (
+                  <div
+                    key={video.url}
+                    draggable
+                    onDragStart={() => setVidDragIdx(i)}
+                    onDragOver={(e) => { e.preventDefault(); setVidDragOver(i); }}
+                    onDragLeave={() => setVidDragOver(null)}
+                    onDrop={() => { if (vidDragIdx !== null) moveVideo(vidDragIdx, i); setVidDragIdx(null); setVidDragOver(null); }}
+                    onDragEnd={() => { setVidDragIdx(null); setVidDragOver(null); }}
+                    className={`flex items-center gap-3 bg-black rounded-lg border p-2.5 group cursor-grab active:cursor-grabbing transition-all ${
+                      vidDragOver === i ? "border-primary/50 bg-primary/5" : vidDragIdx === i ? "border-white/20 opacity-50" : "border-white/5"
+                    }`}
+                  >
+                    {/* Drag handle */}
+                    <div className="flex flex-col gap-0.5 px-1 text-white/15 group-hover:text-white/30 flex-shrink-0">
+                      <div className="flex gap-0.5"><div className="w-1 h-1 rounded-full bg-current" /><div className="w-1 h-1 rounded-full bg-current" /></div>
+                      <div className="flex gap-0.5"><div className="w-1 h-1 rounded-full bg-current" /><div className="w-1 h-1 rounded-full bg-current" /></div>
+                      <div className="flex gap-0.5"><div className="w-1 h-1 rounded-full bg-current" /><div className="w-1 h-1 rounded-full bg-current" /></div>
+                    </div>
+
+                    {/* Slot number */}
+                    <div className="flex items-center justify-center w-6 h-6 rounded bg-white/5 text-white/30 text-[10px] font-bold flex-shrink-0">
                       {i + 1}
                     </div>
-                    <div className="w-14 h-24 bg-[#0a0a0a] rounded-lg overflow-hidden flex-shrink-0 relative">
+
+                    {/* Thumbnail */}
+                    <div className="w-10 h-[70px] bg-[#0a0a0a] rounded overflow-hidden flex-shrink-0 relative">
                       <video src={video.url} className="w-full h-full object-cover" muted preload="metadata" />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <svg className="w-4 h-4 text-white/60" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                      </div>
                     </div>
+
+                    {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium truncate">{video.name}</p>
-                        {video.url.startsWith("/videos/") ? (
-                          <span className="text-[8px] uppercase px-1.5 py-0.5 rounded bg-white/5 text-white/30 border border-white/5 flex-shrink-0">Local</span>
-                        ) : (
-                          <span className="text-[8px] uppercase px-1.5 py-0.5 rounded bg-primary/10 text-primary/60 border border-primary/10 flex-shrink-0">CDN</span>
-                        )}
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-xs font-medium truncate">{video.name}</p>
                         {videoLayout === "1-large-2-small" && i === 0 && (
-                          <span className="text-[8px] uppercase px-1.5 py-0.5 rounded bg-primary/10 text-primary/60 border border-primary/10 flex-shrink-0">Hero</span>
+                          <span className="text-[7px] uppercase px-1 py-px rounded bg-primary/15 text-primary/70 flex-shrink-0">Hero</span>
                         )}
                       </div>
-                      <p className="text-[10px] text-white/30 mt-0.5">{(video.size / (1024 * 1024)).toFixed(1)} MB</p>
+                      <p className="text-[9px] text-white/25 mt-0.5">{(video.size / (1024 * 1024)).toFixed(1)} MB</p>
                     </div>
+
+                    {/* Delete */}
                     <button
                       onClick={() => deleteVideo(video.url, video.name)}
-                      className="px-3 py-1.5 text-xs text-red-400/60 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                      className="p-1.5 text-white/15 hover:text-red-400 hover:bg-red-500/10 rounded transition-all opacity-0 group-hover:opacity-100"
                     >
-                      Remove
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
                     </button>
                   </div>
                 ))}
 
-                {/* Empty slots */}
+                {/* Empty upload slots */}
                 {Array.from({ length: Math.max(0, slotsAvailable) }).map((_, i) => (
                   <div key={`empty-${i}`} className="relative">
                     <input
@@ -1509,39 +1585,28 @@ export default function AdminDashboard() {
                       accept="video/mp4,video/webm,video/quicktime"
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                       disabled={videoUploading}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) uploadVideo(file);
-                        e.target.value = "";
-                      }}
+                      onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadVideo(f); e.target.value = ""; }}
                     />
-                    <div className={`flex items-center gap-4 rounded-lg border-2 border-dashed p-3 transition-all ${videoUploading ? "border-primary/20 bg-primary/5" : "border-white/5 hover:border-primary/30 hover:bg-white/[0.02]"}`}>
-                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-white/15 text-xs font-bold flex-shrink-0">
-                        {slotsFilled + i + 1}
+                    <div className={`flex items-center gap-3 rounded-lg border-2 border-dashed p-2.5 transition-all ${videoUploading ? "border-primary/20 bg-primary/5" : "border-white/5 hover:border-primary/30"}`}>
+                      <div className="w-[18px]" />
+                      <div className="flex items-center justify-center w-6 h-6 rounded bg-white/5 text-white/10 text-[10px] font-bold flex-shrink-0">
+                        {displayVideos.length + i + 1}
                       </div>
-                      <div className="w-14 h-24 bg-[#0a0a0a] rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg className="w-5 h-5 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-10 h-[70px] bg-[#0a0a0a] rounded flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                         </svg>
                       </div>
                       <div className="flex-1">
                         {videoUploading ? (
-                          <p className="text-xs text-primary">{uploadProgress}</p>
+                          <p className="text-[10px] text-primary">{uploadProgress}</p>
                         ) : (
-                          <>
-                            <p className="text-xs text-white/30">Click to upload video</p>
-                            <p className="text-[10px] text-white/15 mt-0.5">MP4, WebM, MOV — auto-compressed if large</p>
-                          </>
+                          <p className="text-[10px] text-white/20">Click to upload — auto-compressed if large</p>
                         )}
                       </div>
                     </div>
                   </div>
                 ))}
-
-                {/* All slots filled message */}
-                {slotsAvailable <= 0 && slotsFilled > 0 && (
-                  <p className="text-xs text-white/25 text-center py-2">All {activeLayout.maxSlots} slots filled. Remove a video to replace it.</p>
-                )}
               </div>
             )}
           </div>

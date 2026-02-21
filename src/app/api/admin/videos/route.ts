@@ -159,6 +159,24 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// PUT: Reorder videos
+export async function PUT(request: NextRequest) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  try {
+    const { videos: newOrder } = await request.json();
+    if (!Array.isArray(newOrder)) {
+      return NextResponse.json({ error: "Invalid videos array" }, { status: 400 });
+    }
+    await writeVideos(newOrder);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Video reorder error:", error);
+    return NextResponse.json({ error: "Reorder failed" }, { status: 500 });
+  }
+}
+
 // DELETE: Remove a video
 export async function DELETE(request: NextRequest) {
   if (!isAuthenticated(request)) {
