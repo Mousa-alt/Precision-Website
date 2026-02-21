@@ -199,15 +199,15 @@ export default function ProjectsPage() {
             };
           };
 
-          // Apply saved order
-          const ordered: DriveProject[] = [];
+          // Apply saved order — NEW projects (not in savedOrder) come FIRST so they appear at the top
+          const savedSet = new Set(savedOrder);
+          const newProjects = driveProjects.filter((dp) => !savedSet.has(dp.folderName));
+          const existingOrdered: DriveProject[] = [];
           for (const name of savedOrder) {
             const p = driveProjects.find((dp) => dp.folderName === name);
-            if (p) ordered.push(p);
+            if (p) existingOrdered.push(p);
           }
-          for (const dp of driveProjects) {
-            if (!ordered.includes(dp)) ordered.push(dp);
-          }
+          const ordered = [...newProjects, ...existingOrdered];
 
           const allProjects = ordered.map(toDisplay);
           setProjects(allProjects);
