@@ -140,25 +140,105 @@ export default function AdminDashboard() {
     }
   }
 
+  function compressVideo(file: File, onProgress: (msg: string) => void): Promise<File> {
+    const MAX_DIM = 720; // Max 720px on the longer side
+    const TARGET_BITRATE = 2_500_000; // 2.5 Mbps
+
+    return new Promise((resolve, reject) => {
+      const video = document.createElement("video");
+      video.muted = true;
+      video.playsInline = true;
+      const url = URL.createObjectURL(file);
+      video.src = url;
+
+      video.onloadedmetadata = () => {
+        const { videoWidth: vw, videoHeight: vh, duration } = video;
+        const longerSide = Math.max(vw, vh);
+
+        // Skip if already small enough
+        if (longerSide <= MAX_DIM && file.size <= 10 * 1024 * 1024) {
+          URL.revokeObjectURL(url);
+          onProgress("Video is already optimized, skipping compression");
+          resolve(file);
+          return;
+        }
+
+        const scale = Math.min(MAX_DIM / longerSide, 1);
+        const w = (Math.round(vw * scale) >> 1) << 1; // Even numbers
+        const h = (Math.round(vh * scale) >> 1) << 1;
+        onProgress(`Compressing ${vw}×${vh} → ${w}×${h}...`);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d")!;
+
+        const stream = canvas.captureStream(30);
+        const mimeType = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm", "video/mp4"]
+          .find((m) => MediaRecorder.isTypeSupported(m)) || "video/webm";
+
+        const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: TARGET_BITRATE });
+        const chunks: Blob[] = [];
+        recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+
+        recorder.onstop = () => {
+          URL.revokeObjectURL(url);
+          const ext = mimeType.includes("mp4") ? ".mp4" : ".webm";
+          const baseName = file.name.replace(/\.[^.]+$/, "");
+          const blob = new Blob(chunks, { type: mimeType.split(";")[0] });
+          const compressed = new File([blob], baseName + ext, { type: mimeType.split(";")[0] });
+          const savings = ((1 - compressed.size / file.size) * 100).toFixed(0);
+          onProgress(`Compressed: ${(compressed.size / 1024 / 1024).toFixed(1)}MB (${savings}% smaller)`);
+          resolve(compressed);
+        };
+
+        recorder.start(100);
+        video.play();
+
+        function draw() {
+          if (video.ended || video.paused) {
+            recorder.stop();
+            return;
+          }
+          ctx.drawImage(video, 0, 0, w, h);
+          const pct = Math.round((video.currentTime / duration) * 100);
+          onProgress(`Compressing... ${pct}%`);
+          requestAnimationFrame(draw);
+        }
+        draw();
+      };
+
+      video.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("Failed to load video"));
+      };
+    });
+  }
+
   async function uploadVideo(file: File) {
     setVideoUploading(true);
-    setUploadProgress(`Uploading ${file.name}...`);
     try {
+      // Compress first
+      setUploadProgress(`Loading ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)...`);
+      const compressed = await compressVideo(file, (msg) => setUploadProgress(msg));
+
+      // Upload
+      setUploadProgress(`Uploading ${compressed.name} (${(compressed.size / 1024 / 1024).toFixed(1)}MB)...`);
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", compressed);
       const res = await fetch("/api/admin/videos", { method: "POST", body: formData });
       const json = await res.json();
       if (json.success) {
-        setUploadProgress(`Uploaded ${file.name} successfully!`);
+        setUploadProgress(`Uploaded successfully!`);
         await loadVideos();
       } else {
         setUploadProgress(`Error: ${json.error}`);
       }
-    } catch {
-      setUploadProgress("Upload failed. Please try again.");
+    } catch (err) {
+      setUploadProgress(`Upload failed: ${err instanceof Error ? err.message : "Please try again."}`);
     } finally {
       setVideoUploading(false);
-      setTimeout(() => setUploadProgress(""), 3000);
+      setTimeout(() => setUploadProgress(""), 4000);
     }
   }
 
