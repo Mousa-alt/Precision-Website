@@ -4,7 +4,7 @@ import path from "path";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 
-const ALLOWED_KEYS = ["homepage", "photo-overrides"];
+const ALLOWED_KEYS = ["homepage", "photo-overrides", "auto-sync"];
 
 function getFilePath(key: string): string {
   return path.join(DATA_DIR, `${key}.json`);

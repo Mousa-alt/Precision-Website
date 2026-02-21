@@ -86,12 +86,32 @@ export default function AdminDashboard() {
 
   // Settings
   const [driveFolderId, setDriveFolderId] = useState("");
+  const [autoSyncEnabled, setAutoSyncEnabled] = useState(true);
 
   useEffect(() => {
     loadProjects();
     loadHomeConfig();
     loadProjectNames();
+    loadSettings();
   }, []);
+
+  async function loadSettings() {
+    try {
+      const res = await fetch("/api/admin/config?key=auto-sync");
+      const json = await res.json();
+      if (json.data !== null && json.data !== undefined) setAutoSyncEnabled(json.data !== false);
+    } catch { /* default to enabled */ }
+  }
+
+  async function toggleAutoSync() {
+    const newVal = !autoSyncEnabled;
+    setAutoSyncEnabled(newVal);
+    await fetch("/api/admin/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: "auto-sync", data: newVal }),
+    });
+  }
 
   // Auto-populate slots with fallback order when no saved config exists
   useEffect(() => {
@@ -136,10 +156,20 @@ export default function AdminDashboard() {
       if (bustCache) {
         await fetch("/api/revalidate", { method: "POST" });
       }
-      const res = await fetch("/api/photos" + (bustCache ? "?t=" + Date.now() : ""));
+      const res = await fetch("/api/photos" + (bustCache ? "?t=" + Date.now() : ""), bustCache ? { cache: "no-store" } : undefined);
       const data = await res.json();
-      setProjects(data.projects || []);
-      setStatus(`Loaded ${(data.projects || []).length} projects`);
+      const freshProjects = data.projects || [];
+      setProjects(freshProjects);
+      if (data.folderId) setDriveFolderId(data.folderId);
+      // Auto-add new projects to the order list
+      if (bustCache && projectsOrder.length > 0) {
+        const existingSet = new Set(projectsOrder);
+        const newFolders = freshProjects.filter((p: DriveProject) => !existingSet.has(p.folderName)).map((p: DriveProject) => p.folderName);
+        if (newFolders.length > 0) {
+          setProjectsOrder([...newFolders, ...projectsOrder]);
+        }
+      }
+      setStatus(`Loaded ${freshProjects.length} projects` + (bustCache ? " (fresh from Drive)" : ""));
     } catch {
       setStatus("Error loading projects");
     } finally {
@@ -1307,9 +1337,42 @@ export default function AdminDashboard() {
           <div className="bg-[#111] rounded-xl border border-white/5 p-6">
             <h2 className="text-lg font-bold uppercase mb-4">Google Drive Configuration</h2>
             <div>
-              <label className="block text-xs text-white/50 mb-1">Drive Folder ID</label>
-              <input value={driveFolderId} onChange={(e) => setDriveFolderId(e.target.value)} placeholder="Enter Google Drive folder ID" className="w-full px-3 py-2 rounded bg-black border border-white/10 text-white text-sm outline-none focus:border-primary" />
-              <p className="text-xs text-white/30 mt-1">The folder ID from your Google Drive URL. Current: configured in .env.local</p>
+              <label className="block text-xs text-white/50 mb-2">Connected Drive Folder</label>
+              {driveFolderId ? (
+                <a
+                  href={`https://drive.google.com/drive/folders/${driveFolderId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-black border border-white/10 text-sm text-primary hover:border-primary/50 transition-all"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l4.58 7.5h13.04l4.58-7.5L17.29 3.5H7.71zm.58 1h8.42l5.5 10h-4.46L12 6.5 6.25 14.5H1.79l6.5-10zM12 8.15l4.04 6.35H7.96L12 8.15zM6.08 15.5h4.38L12 18.35l1.54-2.85h4.38L12 21.5l-5.92-6z"/></svg>
+                  drive.google.com/drive/folders/{driveFolderId.slice(0, 12)}...
+                </a>
+              ) : (
+                <p className="text-sm text-white/30">Loading...</p>
+              )}
+              <p className="text-xs text-white/30 mt-2">This is the root folder being synced. To change it, update GOOGLE_DRIVE_FOLDER_ID in your environment variables.</p>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-white/5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold">Daily Auto-Sync</h3>
+                  <p className="text-xs text-white/30 mt-1">Automatically sync new projects from Google Drive every day at 3:00 AM UTC</p>
+                </div>
+                <button
+                  onClick={toggleAutoSync}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${autoSyncEnabled ? "bg-primary" : "bg-white/10"}`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform ${autoSyncEnabled ? "translate-x-6" : ""}`} />
+                </button>
+              </div>
+              {autoSyncEnabled && (
+                <p className="text-xs text-primary/60 mt-2">Next sync runs at 3:00 AM UTC daily. Use &quot;Re-sync Drive Photos&quot; below for immediate sync.</p>
+              )}
+              {!autoSyncEnabled && (
+                <p className="text-xs text-white/20 mt-2">Auto-sync is off. Use &quot;Re-sync Drive Photos&quot; below to manually sync when needed.</p>
+              )}
             </div>
           </div>
 

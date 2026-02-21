@@ -208,6 +208,65 @@ async function listFolder(folderId: string): Promise<DriveFile[]> {
   return allFiles;
 }
 
+function addProject(
+  projects: Project[],
+  folderName: string,
+  category: string,
+  images: DriveFile[],
+  aiAnalysis: Map<string, { bestCoverId?: string }>,
+  nameOverrides: Record<string, { name?: string; location?: string; coverPosition?: string; coverFit?: string; coverZoom?: number }>
+) {
+  const photoList = images.map((img) => ({
+    id: img.id,
+    url: `https://lh3.googleusercontent.com/d/${img.id}=w3000`,
+    thumbnailUrl: `https://lh3.googleusercontent.com/d/${img.id}=w1600`,
+    name: img.name.replace(/\.[^/.]+$/, ""),
+  }));
+
+  const aiProject = aiAnalysis.get(folderName.toLowerCase());
+  let coverIdx = 0;
+  let coverPosition: "top" | "center" | "bottom" = "center";
+
+  if (aiProject?.bestCoverId) {
+    const aiCoverIdx = photoList.findIndex((p) => p.id === aiProject.bestCoverId);
+    if (aiCoverIdx >= 0) {
+      coverIdx = aiCoverIdx;
+      coverPosition = detectPosition(photoList[aiCoverIdx].name.toLowerCase());
+    } else {
+      const result = pickCover(photoList);
+      coverIdx = result.index;
+      coverPosition = result.position;
+    }
+  } else {
+    const result = pickCover(photoList);
+    coverIdx = result.index;
+    coverPosition = result.position;
+  }
+
+  if (coverIdx > 0) {
+    const cover = photoList[coverIdx];
+    photoList.splice(coverIdx, 1);
+    photoList.unshift(cover);
+  }
+
+  const folderLower = folderName.toLowerCase();
+  const overridePos = Object.entries(POSITION_OVERRIDES).find(([key]) => folderLower.includes(key));
+  const display = getDisplayName(folderName, nameOverrides);
+  const savedSettings = nameOverrides[folderName];
+  const finalPosition = savedSettings?.coverPosition || (overridePos ? overridePos[1] : coverPosition);
+  const finalFit = (savedSettings?.coverFit as "cover" | "contain") || "cover";
+
+  projects.push({
+    folderName,
+    category,
+    displayName: display.name,
+    displayLocation: display.location,
+    photos: photoList,
+    coverPosition: finalPosition,
+    coverFit: finalFit,
+  });
+}
+
 export async function GET() {
   if (!API_KEY || !ROOT_FOLDER_ID) {
     return NextResponse.json({ projects: [], error: "Drive not configured" });
@@ -239,75 +298,36 @@ export async function GET() {
       // Level 3: Get images inside each project folder
       for (const projFolder of subFolders) {
         const files = await listFolder(projFolder.id);
-        const images = files.filter((f) => f.mimeType.startsWith("image/"));
+        const directImages = files.filter((f) => f.mimeType.startsWith("image/"));
+        const innerFolders = files.filter((f) => f.mimeType === "application/vnd.google-apps.folder");
 
-        if (images.length > 0) {
-          const photoList = images.map((img) => ({
-            id: img.id,
-            url: `https://lh3.googleusercontent.com/d/${img.id}=w2000`,
-            thumbnailUrl: `https://lh3.googleusercontent.com/d/${img.id}=w800`,
-            name: img.name.replace(/\.[^/.]+$/, ""),
-          }));
-
-          // Check if AI analysis exists for this project
-          const aiProject = aiAnalysis.get(projFolder.name.toLowerCase());
-          let coverIdx = 0;
-          let coverPosition: "top" | "center" | "bottom" = "center";
-
-          if (aiProject?.bestCoverId) {
-            // AI analysis available — use AI-selected cover
-            const aiCoverIdx = photoList.findIndex(
-              (p) => p.id === aiProject.bestCoverId
-            );
-            if (aiCoverIdx >= 0) {
-              coverIdx = aiCoverIdx;
-              coverPosition = detectPosition(photoList[aiCoverIdx].name.toLowerCase());
-            } else {
-              // AI cover not found in current photos, fall back to keyword
-              const result = pickCover(photoList);
-              coverIdx = result.index;
-              coverPosition = result.position;
+        // If project has sub-folders (locations), each becomes its own project
+        // e.g. "CAF Cafe" > "Sphinx" and "white waterway" → 2 separate projects
+        if (innerFolders.length > 0 && directImages.length === 0) {
+          for (const locFolder of innerFolders) {
+            const locFiles = await listFolder(locFolder.id);
+            const locImages = locFiles.filter((f) => f.mimeType.startsWith("image/"));
+            if (locImages.length > 0) {
+              // Use "Parent - Location" as folder name for the sub-project
+              const subFolderName = `${projFolder.name} - ${locFolder.name}`;
+              addProject(projects, subFolderName, category, locImages, aiAnalysis, nameOverrides);
             }
-          } else {
-            // No AI analysis — use keyword-based selection
-            const result = pickCover(photoList);
-            coverIdx = result.index;
-            coverPosition = result.position;
           }
-
-          // Put cover photo first
-          if (coverIdx > 0) {
-            const cover = photoList[coverIdx];
-            photoList.splice(coverIdx, 1);
-            photoList.unshift(cover);
+        } else {
+          // Normal project: direct images (+ any sub-folder images merged in)
+          const allImages = [...directImages];
+          for (const inner of innerFolders) {
+            const innerFiles = await listFolder(inner.id);
+            allImages.push(...innerFiles.filter((f) => f.mimeType.startsWith("image/")));
           }
-
-          // Check for per-project position overrides
-          const folderLower = projFolder.name.toLowerCase();
-          const overridePos = Object.entries(POSITION_OVERRIDES).find(([key]) => folderLower.includes(key));
-
-          // Get display name and cover settings from overrides
-          const display = getDisplayName(projFolder.name, nameOverrides);
-          const savedSettings = nameOverrides[projFolder.name];
-
-          // Dashboard-saved position takes priority > hardcoded override > auto-detected
-          const finalPosition = savedSettings?.coverPosition || (overridePos ? overridePos[1] : coverPosition);
-          const finalFit = (savedSettings?.coverFit as "cover" | "contain") || "cover";
-
-          projects.push({
-            folderName: projFolder.name,
-            category,
-            displayName: display.name,
-            displayLocation: display.location,
-            photos: photoList,
-            coverPosition: finalPosition,
-            coverFit: finalFit,
-          });
+          if (allImages.length > 0) {
+            addProject(projects, projFolder.name, category, allImages, aiAnalysis, nameOverrides);
+          }
         }
       }
     }
 
-    return NextResponse.json({ projects });
+    return NextResponse.json({ projects, folderId: ROOT_FOLDER_ID });
   } catch (error) {
     console.error("Photos API error:", error);
     return NextResponse.json({ projects: [], error: "Failed to fetch photos" });

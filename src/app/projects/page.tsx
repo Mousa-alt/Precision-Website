@@ -189,7 +189,7 @@ export default function ProjectsPage() {
               name,
               location,
               category,
-              coverPhoto: dp.photos[0]?.thumbnailUrl,
+              coverPhoto: dp.photos[0]?.url,
               coverPosition: override?.coverPosition || dp.coverPosition || "center",
               coverFit: (override?.coverFit as "cover" | "contain") || (dp.coverFit as "cover" | "contain") || "cover",
               coverZoom: override?.coverZoom,

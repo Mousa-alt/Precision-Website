@@ -7,13 +7,16 @@
     },
     {
       "folderName": "Cheil-District 5 Marakez",
-      "coverPhotoId": "1SPF5RlAHcrRExLsxbtWmCRKZsM5-YllV",
-      "coverPosition": "center"
+      "coverPhotoId": "1GFNtgN1PVopWHverZpsXsYacvuZwfRKv",
+      "coverPosition": "78% 0%",
+      "coverZoom": 1.19
     },
     {
       "folderName": "Beano's Cafe - U Venues",
-      "coverPhotoId": "1JgFSppJOmUmvFCU6VwqeWdX5ztgj1dRL",
-      "coverPosition": "center"
+      "coverPhotoId": "1KcN-c4L0bTTWfSEqHH1eANjev_OTNnUq",
+      "coverPosition": "20% 74%",
+      "coverFit": "contain",
+      "coverZoom": 1.17
     },
     {
       "folderName": "Muncai-ZED ELSheikh Zayed",
@@ -21,14 +24,15 @@
       "coverPosition": "top"
     },
     {
-      "folderName": "BOSS-CAIRO FESTIVAL CITY",
-      "coverPhotoId": "1X9RJXcCgD5UQTyL_aUnLcWuA2V5B9Qrv",
+      "folderName": "CAF Cafe - white waterway",
+      "coverPhotoId": "192ineF-N2-OT4x8eZS4GBXcGtCAK5VsW",
       "coverPosition": "center"
     },
     {
-      "folderName": "Antoushka mall of egypt",
-      "coverPhotoId": "1MKYezwERKk4K0CKFKxlSHBJ9t5O5mip_",
-      "coverPosition": "center"
+      "folderName": "El Abd Patisserie - Al Obour City",
+      "coverPhotoId": "1_F7EAYTF-dPqmdrxVEvvJo2gbWhVv2kn",
+      "coverPosition": "51% 1%",
+      "coverZoom": 1.14
     }
   ]
 }
