@@ -159,7 +159,7 @@ export default function Home() {
   useEffect(() => {
     async function loadProjects() {
       try {
-        const res = await fetch("/api/photos");
+        const res = await fetch("/api/photos?t=" + Date.now(), { cache: "no-store" });
         const data = await res.json();
         const driveProjects: DriveProject[] = data.projects || [];
         if (driveProjects.length === 0) return;
@@ -194,7 +194,7 @@ export default function Home() {
         // Try admin-saved config first
         let usedSavedConfig = false;
         try {
-          const cfgRes = await fetch("/api/admin/homepage");
+          const cfgRes = await fetch("/api/admin/homepage?t=" + Date.now(), { cache: "no-store" });
           const cfgData = await cfgRes.json();
           if (cfgData.config?.slots?.length > 0) {
             const slots: { folderName: string; coverPhotoId: string; coverPosition: string; coverFit?: string; coverZoom?: number }[] = cfgData.config.slots;

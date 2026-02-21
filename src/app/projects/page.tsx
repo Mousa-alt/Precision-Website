@@ -154,8 +154,8 @@ export default function ProjectsPage() {
     async function loadPhotos() {
       try {
         const [photosRes, namesRes] = await Promise.all([
-          fetch("/api/photos"),
-          fetch("/api/admin/project-names").catch(() => null),
+          fetch("/api/photos?t=" + Date.now(), { cache: "no-store" }),
+          fetch("/api/admin/project-names?t=" + Date.now(), { cache: "no-store" }).catch(() => null),
         ]);
 
         const data = await photosRes.json();
