@@ -100,6 +100,7 @@ export default function AdminDashboard() {
   const [videosLoading, setVideosLoading] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
+  const [videoLayout, setVideoLayout] = useState<string>("2-equal");
 
   useEffect(() => {
     loadProjects();
@@ -111,10 +112,15 @@ export default function AdminDashboard() {
 
   async function loadSettings() {
     try {
-      const res = await fetch("/api/admin/config?key=auto-sync");
-      const json = await res.json();
-      if (json.data !== null && json.data !== undefined) setAutoSyncEnabled(json.data !== false);
-    } catch { /* default to enabled */ }
+      const [syncRes, layoutRes] = await Promise.all([
+        fetch("/api/admin/config?key=auto-sync"),
+        fetch("/api/admin/config?key=video-layout"),
+      ]);
+      const syncJson = await syncRes.json();
+      const layoutJson = await layoutRes.json();
+      if (syncJson.data !== null && syncJson.data !== undefined) setAutoSyncEnabled(syncJson.data !== false);
+      if (layoutJson.data) setVideoLayout(layoutJson.data);
+    } catch { /* default values */ }
   }
 
   async function toggleAutoSync() {
@@ -124,6 +130,15 @@ export default function AdminDashboard() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key: "auto-sync", data: newVal }),
+    });
+  }
+
+  async function saveVideoLayout(layout: string) {
+    setVideoLayout(layout);
+    await fetch("/api/admin/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: "video-layout", data: layout }),
     });
   }
 
@@ -1390,117 +1405,149 @@ export default function AdminDashboard() {
       )}
 
       {/* VIDEOS TAB */}
-      {activeTab === "videos" && (
+      {activeTab === "videos" && (() => {
+        const LAYOUTS: { id: string; label: string; maxSlots: number; desc: string }[] = [
+          { id: "2-equal", label: "2 Equal", maxSlots: 2, desc: "Two vertical videos side by side" },
+          { id: "3-equal", label: "3 Equal", maxSlots: 3, desc: "Three vertical videos in a row" },
+          { id: "4-equal", label: "4 Equal", maxSlots: 4, desc: "Four vertical videos in a row" },
+          { id: "1-large-2-small", label: "1 Large + 2 Small", maxSlots: 3, desc: "One hero video with two smaller ones" },
+        ];
+        const activeLayout = LAYOUTS.find((l) => l.id === videoLayout) || LAYOUTS[0];
+        const slotsFilled = videos.length;
+        const slotsAvailable = activeLayout.maxSlots - slotsFilled;
+
+        return (
         <div className="space-y-6">
+          {/* Layout selector */}
           <div className="bg-[#111] rounded-xl border border-white/5 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-lg font-bold uppercase">Showreel Videos</h2>
-                <p className="text-xs text-white/40 mt-1">Upload vertical videos (9:16) for the &quot;See Us In Action&quot; section on the homepage</p>
-              </div>
-              <span className="text-xs text-white/30">{videos.length} video{videos.length !== 1 ? "s" : ""}</span>
+            <h2 className="text-lg font-bold uppercase mb-1">Video Layout</h2>
+            <p className="text-xs text-white/40 mb-5">Choose how videos appear in the &quot;See Us In Action&quot; section</p>
+            <div className="flex gap-3 flex-wrap">
+              {LAYOUTS.map((layout) => (
+                <button
+                  key={layout.id}
+                  onClick={() => saveVideoLayout(layout.id)}
+                  className={`flex-1 min-w-[140px] p-4 rounded-xl border-2 transition-all text-left ${
+                    videoLayout === layout.id
+                      ? "border-primary bg-primary/5"
+                      : "border-white/5 bg-black hover:border-white/15"
+                  }`}
+                >
+                  {/* Mini layout preview */}
+                  <div className="flex gap-1 mb-3 h-12 items-end">
+                    {layout.id === "2-equal" && (
+                      <><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /></>
+                    )}
+                    {layout.id === "3-equal" && (
+                      <><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /></>
+                    )}
+                    {layout.id === "4-equal" && (
+                      <><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /><div className="flex-1 h-full bg-white/10 rounded" /></>
+                    )}
+                    {layout.id === "1-large-2-small" && (
+                      <><div className="flex-[2] h-full bg-white/10 rounded" /><div className="flex-1 flex flex-col gap-1 h-full"><div className="flex-1 bg-white/10 rounded" /><div className="flex-1 bg-white/10 rounded" /></div></>
+                    )}
+                  </div>
+                  <p className="text-xs font-semibold">{layout.label}</p>
+                  <p className="text-[10px] text-white/30 mt-0.5">{layout.maxSlots} video{layout.maxSlots > 1 ? "s" : ""} max</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Video slots */}
+          <div className="bg-[#111] rounded-xl border border-white/5 p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-bold uppercase">Video Slots</h2>
+              <span className="text-xs text-white/30">{slotsFilled} / {activeLayout.maxSlots} filled</span>
             </div>
 
-            {/* Upload area */}
-            <div className="relative mb-6">
-              <input
-                type="file"
-                accept="video/mp4,video/webm,video/quicktime"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                disabled={videoUploading}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) uploadVideo(file);
-                  e.target.value = "";
-                }}
-              />
-              <div className={`flex flex-col items-center justify-center py-8 border-2 border-dashed rounded-xl transition-all ${videoUploading ? "border-primary/40 bg-primary/5" : "border-white/10 hover:border-primary/30 hover:bg-white/[0.02]"}`}>
-                <svg className="w-8 h-8 text-white/20 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
-                {videoUploading ? (
-                  <p className="text-sm text-primary">{uploadProgress}</p>
-                ) : (
-                  <>
-                    <p className="text-sm text-white/50">Click or drag to upload video</p>
-                    <p className="text-[10px] text-white/25 mt-1">MP4, WebM, MOV — max 100MB</p>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Video list */}
             {videosLoading ? (
               <div className="text-center py-8 text-white/30 text-sm">Loading videos...</div>
-            ) : videos.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-white/30 text-sm">No videos uploaded yet</p>
-                <p className="text-white/20 text-xs mt-1">The homepage will show videos from public/videos/ as fallback</p>
-              </div>
             ) : (
               <div className="space-y-3">
-                {videos.map((video, i) => (
+                {/* Filled slots */}
+                {videos.slice(0, activeLayout.maxSlots).map((video, i) => (
                   <div key={video.url} className="flex items-center gap-4 bg-black rounded-lg border border-white/5 p-3 group">
-                    <div className="w-16 h-28 bg-[#0a0a0a] rounded-lg overflow-hidden flex-shrink-0 relative">
-                      <video
-                        src={video.url}
-                        className="w-full h-full object-cover"
-                        muted
-                        preload="metadata"
-                      />
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-white/30 text-xs font-bold flex-shrink-0">
+                      {i + 1}
+                    </div>
+                    <div className="w-14 h-24 bg-[#0a0a0a] rounded-lg overflow-hidden flex-shrink-0 relative">
+                      <video src={video.url} className="w-full h-full object-cover" muted preload="metadata" />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                        <svg className="w-5 h-5 text-white/60" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <svg className="w-4 h-4 text-white/60" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium truncate">{video.name}</p>
                         {video.url.startsWith("/videos/") ? (
-                          <span className="text-[8px] uppercase px-1.5 py-0.5 rounded bg-white/5 text-white/30 border border-white/5 flex-shrink-0">Local file</span>
+                          <span className="text-[8px] uppercase px-1.5 py-0.5 rounded bg-white/5 text-white/30 border border-white/5 flex-shrink-0">Local</span>
                         ) : (
                           <span className="text-[8px] uppercase px-1.5 py-0.5 rounded bg-primary/10 text-primary/60 border border-primary/10 flex-shrink-0">CDN</span>
                         )}
+                        {videoLayout === "1-large-2-small" && i === 0 && (
+                          <span className="text-[8px] uppercase px-1.5 py-0.5 rounded bg-primary/10 text-primary/60 border border-primary/10 flex-shrink-0">Hero</span>
+                        )}
                       </div>
-                      <p className="text-[10px] text-white/30 mt-0.5">
-                        {(video.size / (1024 * 1024)).toFixed(1)} MB — Slot {i + 1}
-                      </p>
-                      <p className="text-[9px] text-white/20 mt-0.5 truncate">{video.url}</p>
+                      <p className="text-[10px] text-white/30 mt-0.5">{(video.size / (1024 * 1024)).toFixed(1)} MB</p>
                     </div>
                     <button
                       onClick={() => deleteVideo(video.url, video.name)}
                       className="px-3 py-1.5 text-xs text-red-400/60 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                     >
-                      {video.url.startsWith("/videos/") ? "Remove" : "Delete"}
+                      Remove
                     </button>
                   </div>
                 ))}
+
+                {/* Empty slots */}
+                {Array.from({ length: Math.max(0, slotsAvailable) }).map((_, i) => (
+                  <div key={`empty-${i}`} className="relative">
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm,video/quicktime"
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      disabled={videoUploading}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) uploadVideo(file);
+                        e.target.value = "";
+                      }}
+                    />
+                    <div className={`flex items-center gap-4 rounded-lg border-2 border-dashed p-3 transition-all ${videoUploading ? "border-primary/20 bg-primary/5" : "border-white/5 hover:border-primary/30 hover:bg-white/[0.02]"}`}>
+                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5 text-white/15 text-xs font-bold flex-shrink-0">
+                        {slotsFilled + i + 1}
+                      </div>
+                      <div className="w-14 h-24 bg-[#0a0a0a] rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg className="w-5 h-5 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        {videoUploading ? (
+                          <p className="text-xs text-primary">{uploadProgress}</p>
+                        ) : (
+                          <>
+                            <p className="text-xs text-white/30">Click to upload video</p>
+                            <p className="text-[10px] text-white/15 mt-0.5">MP4, WebM, MOV — auto-compressed if large</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* All slots filled message */}
+                {slotsAvailable <= 0 && slotsFilled > 0 && (
+                  <p className="text-xs text-white/25 text-center py-2">All {activeLayout.maxSlots} slots filled. Remove a video to replace it.</p>
+                )}
               </div>
             )}
           </div>
-
-          <div className="bg-[#111] rounded-xl border border-white/5 p-6">
-            <h3 className="text-sm font-semibold mb-3">How It Works</h3>
-            <ul className="space-y-2 text-xs text-white/40">
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-0.5">1.</span>
-                Upload vertical (9:16) showreel videos here
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-0.5">2.</span>
-                Videos are stored on Vercel Blob CDN for fast global delivery
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-0.5">3.</span>
-                The homepage automatically displays uploaded videos
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-0.5">4.</span>
-                If no videos are uploaded, local files in public/videos/ are used as fallback
-              </li>
-            </ul>
-          </div>
         </div>
-      )}
+        );
+      })()}
 
             {/* CONTENT TAB */}
       {activeTab === "content" && (

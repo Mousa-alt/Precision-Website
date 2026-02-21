@@ -121,6 +121,7 @@ export default function Home() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [videoUrls, setVideoUrls] = useState<string[]>(["/videos/showreel-1.mp4", "/videos/showreel-2.mp4"]);
+  const [videoLayout, setVideoLayout] = useState("2-equal");
   const heroCardRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = useCallback((e: React.MouseEvent, cardIndex: number) => {
@@ -151,6 +152,7 @@ export default function Home() {
   useEffect(() => {
     fetch("/api/videos").then((r) => r.json()).then((d) => {
       if (d.videos?.length > 0) setVideoUrls(d.videos);
+      if (d.layout) setVideoLayout(d.layout);
     }).catch(() => {});
   }, []);
 
@@ -526,28 +528,42 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex gap-6 max-[768px]:gap-4 max-[480px]:flex-col max-[480px]:items-center" data-aos="fade-up">
-            {videoUrls.map((src, i) => (
-              <div
-                key={src}
-                className="relative flex-1 max-w-[400px] max-[480px]:max-w-[300px] aspect-[9/16] bg-[#0a0a0a] rounded-2xl max-[480px]:rounded-xl overflow-hidden group"
-                data-aos="fade-up"
-                data-aos-delay={i * 100}
-              >
-                <video
-                  className="w-full h-full object-cover"
-                  src={src}
-                  muted
-                  loop
-                  playsInline
-                  autoPlay
-                  preload="metadata"
-                  suppressHydrationWarning
-                />
+          {/* Layout: 1-large-2-small */}
+          {videoLayout === "1-large-2-small" && videoUrls.length > 0 ? (
+            <div className="flex gap-5 max-[768px]:gap-4 max-[480px]:flex-col max-[480px]:items-center" data-aos="fade-up">
+              {/* Hero video */}
+              <div className="relative flex-[2] max-w-[550px] max-[480px]:max-w-[300px] aspect-[9/16] bg-[#0a0a0a] rounded-2xl max-[480px]:rounded-xl overflow-hidden">
+                <video className="w-full h-full object-cover" src={videoUrls[0]} muted loop playsInline autoPlay preload="metadata" suppressHydrationWarning />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
               </div>
-            ))}
-          </div>
+              {/* Two smaller videos stacked */}
+              {videoUrls.length > 1 && (
+                <div className="flex flex-col gap-5 max-[768px]:gap-4 max-[480px]:flex-row flex-1">
+                  {videoUrls.slice(1, 3).map((src, i) => (
+                    <div key={src} className="relative flex-1 max-[480px]:max-w-[140px] aspect-[9/16] bg-[#0a0a0a] rounded-2xl max-[480px]:rounded-xl overflow-hidden" data-aos="fade-up" data-aos-delay={(i + 1) * 100}>
+                      <video className="w-full h-full object-cover" src={src} muted loop playsInline autoPlay preload="metadata" suppressHydrationWarning />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Layout: 2-equal, 3-equal, 4-equal */
+            <div className="flex gap-6 max-[768px]:gap-4 max-[480px]:flex-col max-[480px]:items-center" data-aos="fade-up">
+              {videoUrls.map((src, i) => (
+                <div
+                  key={src}
+                  className={`relative flex-1 ${videoUrls.length <= 2 ? "max-w-[400px]" : videoUrls.length === 3 ? "max-w-[350px]" : "max-w-[280px]"} max-[480px]:max-w-[300px] aspect-[9/16] bg-[#0a0a0a] rounded-2xl max-[480px]:rounded-xl overflow-hidden group`}
+                  data-aos="fade-up"
+                  data-aos-delay={i * 100}
+                >
+                  <video className="w-full h-full object-cover" src={src} muted loop playsInline autoPlay preload="metadata" suppressHydrationWarning />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
