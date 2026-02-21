@@ -195,7 +195,7 @@ async function listFolder(folderId: string): Promise<DriveFile[]> {
 
     const res = await fetch(
       `https://www.googleapis.com/drive/v3/files?${params.toString()}`,
-      { next: { revalidate: 300 } }
+      { next: { revalidate: 86400, tags: ['drive-photos'] } }
     );
 
     if (!res.ok) break;
