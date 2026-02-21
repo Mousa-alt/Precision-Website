@@ -17,6 +17,8 @@ interface ProjectNameOverride {
   coverPosition?: string;
   coverFit?: string;
   coverZoom?: number;
+  hidden?: boolean;
+  hiddenPhotos?: string[]; // photo IDs to exclude from the website
 }
 
 interface HomeSlot {
@@ -412,14 +414,39 @@ export default function AdminDashboard() {
     setProjectNames((prev) => ({
       ...prev,
       [folderName]: {
+        ...prev[folderName],
         name: prev[folderName]?.name || "",
         location: prev[folderName]?.location || "",
-        coverPosition: prev[folderName]?.coverPosition,
-        coverFit: prev[folderName]?.coverFit,
-        coverZoom: prev[folderName]?.coverZoom,
         [field]: value,
       },
     }));
+  }
+
+  function toggleProjectHidden(folderName: string) {
+    setProjectNames((prev) => ({
+      ...prev,
+      [folderName]: {
+        ...prev[folderName],
+        name: prev[folderName]?.name || "",
+        location: prev[folderName]?.location || "",
+        hidden: !prev[folderName]?.hidden,
+      },
+    }));
+  }
+
+  function togglePhotoHidden(folderName: string, photoId: string) {
+    setProjectNames((prev) => {
+      const existing = prev[folderName] || { name: "", location: "" };
+      const hiddenPhotos = existing.hiddenPhotos || [];
+      const isHidden = hiddenPhotos.includes(photoId);
+      return {
+        ...prev,
+        [folderName]: {
+          ...existing,
+          hiddenPhotos: isHidden ? hiddenPhotos.filter((id) => id !== photoId) : [...hiddenPhotos, photoId],
+        },
+      };
+    });
   }
 
   const POSITIONS_2D = [
@@ -847,6 +874,26 @@ export default function AdminDashboard() {
             {project.photos.length > 16 && <span className="text-[10px] text-white/30 self-center ml-1">+{project.photos.length - 16}</span>}
           </div>
         </div>
+        {/* Photo Visibility — hide individual photos from the website */}
+        <div className="mb-3">
+          <p className="text-[9px] text-white/30 uppercase tracking-wider mb-1.5">Photo Visibility <span className="text-white/15">— click to hide from website</span></p>
+          <div className="flex gap-1.5 overflow-x-auto pb-1.5">
+            {project.photos.map((photo) => {
+              const isPhotoHidden = (override?.hiddenPhotos || []).includes(photo.id);
+              return (
+                <button key={`vis-${photo.id}`} onClick={() => togglePhotoHidden(expandedProject, photo.id)} className={`relative flex-shrink-0 w-14 h-10 rounded-lg overflow-hidden border-2 transition-all ${isPhotoHidden ? "border-red-500/50 opacity-40 grayscale" : "border-transparent opacity-70 hover:opacity-100"}`} title={isPhotoHidden ? `Show "${photo.name}"` : `Hide "${photo.name}"`}>
+                  <img src={photo.thumbnailUrl} alt={photo.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  {isPhotoHidden && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+                      <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.879L21 21" /></svg>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          {(override?.hiddenPhotos?.length || 0) > 0 && <p className="text-[9px] text-red-400/60 mt-1">{override?.hiddenPhotos?.length} photo{(override?.hiddenPhotos?.length || 0) > 1 ? "s" : ""} hidden from website</p>}
+        </div>
         {/* Position + Zoom + Fit */}
         <div className="flex items-start gap-6 flex-wrap">
           <div className="flex items-start gap-3">
@@ -1236,16 +1283,17 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-2 h-2 rounded-full bg-primary" />
                 <h3 className="text-sm font-bold uppercase tracking-wider">Projects Page Preview</h3>
-                <span className="text-xs text-white/30 ml-auto">Drag to reorder &middot; Click to edit &middot; H/F/R to resize</span>
+                <span className="text-xs text-white/30 ml-auto">Drag to reorder &middot; Click to edit &middot; H/F/R to resize &middot; Eye to hide</span>
               </div>
               <div className="space-y-3 max-w-[900px] mx-auto">
-                {/* Hero projects — full width */}
-                {orderedProjects.filter((p) => (projectsSizes[p.folderName] || "regular") === "hero").map((project) => {
+                {/* Hero projects — full width (excluding hidden) */}
+                {orderedProjects.filter((p) => (projectsSizes[p.folderName] || "regular") === "hero" && !projectNames[p.folderName]?.hidden).map((project) => {
                   const savedPos = projectNames[project.folderName]?.coverPosition || project.coverPosition || "center";
                   const savedFit = projectNames[project.folderName]?.coverFit || "cover";
                   const savedZoom = projectNames[project.folderName]?.coverZoom || 1;
                   const isSelected = expandedProject === project.folderName;
                   const size = projectsSizes[project.folderName] || "regular";
+                  const isHidden = !!projectNames[project.folderName]?.hidden;
                   return (
                     <div key={`preview-h-${project.folderName}`}>
                     <div
@@ -1255,7 +1303,7 @@ export default function AdminDashboard() {
                       onDrop={() => handleProjDrop(project.folderName)}
                       onDragEnd={handleProjDragEnd}
                       onClick={() => setExpandedProject(isSelected ? null : project.folderName)}
-                      className={`relative w-full aspect-[21/9] rounded-xl bg-[#0a0a0a] overflow-hidden cursor-pointer transition-all ${projDragSource === project.folderName ? "opacity-30 scale-[0.97]" : ""} ${projDragOver === project.folderName && projDragSource !== project.folderName && isProjDragging ? "ring-3 ring-primary shadow-[0_0_30px_rgba(123,45,54,0.5)]" : ""} ${isSelected && !isProjDragging ? "ring-2 ring-primary shadow-[0_0_20px_rgba(123,45,54,0.3)]" : !isProjDragging ? "hover:ring-1 hover:ring-white/20" : ""}`}
+                      className={`relative w-full aspect-[21/9] rounded-xl bg-[#0a0a0a] overflow-hidden cursor-pointer transition-all ${isHidden ? "opacity-40 grayscale" : ""} ${projDragSource === project.folderName ? "opacity-30 scale-[0.97]" : ""} ${projDragOver === project.folderName && projDragSource !== project.folderName && isProjDragging ? "ring-3 ring-primary shadow-[0_0_30px_rgba(123,45,54,0.5)]" : ""} ${isSelected && !isProjDragging ? "ring-2 ring-primary shadow-[0_0_20px_rgba(123,45,54,0.3)]" : !isProjDragging ? "hover:ring-1 hover:ring-white/20" : ""}`}
                     >
                       {project.photos[0] && (
                         <img src={project.photos[0].thumbnailUrl} alt="" className={`w-full h-full ${savedFit === "contain" ? "object-contain" : "object-cover"}`} style={{ objectPosition: savedPos, transformOrigin: savedPos, transform: savedZoom > 1 ? `scale(${savedZoom})` : undefined }} referrerPolicy="no-referrer" draggable={false} />
@@ -1278,10 +1326,14 @@ export default function AdminDashboard() {
                           {[{ v: "hero", l: "H" }, { v: "featured", l: "F" }, { v: "regular", l: "R" }].map((s) => (
                             <button key={s.v} onClick={() => setProjectSize(project.folderName, s.v)} className={`w-7 h-7 flex items-center justify-center text-[10px] font-bold rounded-lg backdrop-blur-md transition-all shadow-sm ${size === s.v ? "bg-primary text-white shadow-[0_0_8px_rgba(123,45,54,0.5)]" : "bg-black/70 text-white/70 hover:text-white hover:bg-black/90 border border-white/10"}`}>{s.l}</button>
                           ))}
+                          <button onClick={() => toggleProjectHidden(project.folderName)} className={`w-7 h-7 flex items-center justify-center rounded-lg backdrop-blur-md transition-all shadow-sm ${isHidden ? "bg-red-900/80 text-red-300 border border-red-500/30" : "bg-black/70 text-white/70 hover:text-white hover:bg-black/90 border border-white/10"}`} title={isHidden ? "Show on website" : "Hide from website"}>
+                            {isHidden ? <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.879L21 21" /></svg> : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>}
+                          </button>
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
                       <div className="absolute bottom-0 left-0 right-0 p-5">
+                        {isHidden && <span className="inline-block px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider bg-red-900/80 text-red-300 rounded-full mb-1.5 mr-1">Hidden</span>}
                         <span className="inline-block px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider bg-primary/80 text-white rounded-full mb-1.5">Hero</span>
                         <p className="text-lg font-bold">{projectNames[project.folderName]?.name || project.folderName.split(/\s*[-\u2013]\s*/)[0]}</p>
                       </div>
@@ -1290,9 +1342,9 @@ export default function AdminDashboard() {
                     </div>
                   );
                 })}
-                {/* Featured projects — 2 per row, controls after clicked row */}
+                {/* Featured projects — 2 per row, controls after clicked row (excluding hidden) */}
                 {(() => {
-                  const featured = orderedProjects.filter((p) => (projectsSizes[p.folderName] || "regular") === "featured");
+                  const featured = orderedProjects.filter((p) => (projectsSizes[p.folderName] || "regular") === "featured" && !projectNames[p.folderName]?.hidden);
                   if (featured.length === 0) return null;
                   const rows: typeof featured[] = [];
                   for (let i = 0; i < featured.length; i += 2) rows.push(featured.slice(i, i + 2));
@@ -1307,6 +1359,7 @@ export default function AdminDashboard() {
                             const savedZoom = projectNames[project.folderName]?.coverZoom || 1;
                             const isSelected = expandedProject === project.folderName;
                             const size = projectsSizes[project.folderName] || "regular";
+                            const isHidden = !!projectNames[project.folderName]?.hidden;
                             return (
                               <div
                                 key={`preview-f-${project.folderName}`}
@@ -1316,7 +1369,7 @@ export default function AdminDashboard() {
                                 onDrop={() => handleProjDrop(project.folderName)}
                                 onDragEnd={handleProjDragEnd}
                                 onClick={() => setExpandedProject(isSelected ? null : project.folderName)}
-                                className={`relative w-[calc(50%-6px)] aspect-[16/10] rounded-xl bg-[#0a0a0a] overflow-hidden cursor-pointer transition-all ${projDragSource === project.folderName ? "opacity-30 scale-[0.97]" : ""} ${projDragOver === project.folderName && projDragSource !== project.folderName && isProjDragging ? "ring-3 ring-primary shadow-[0_0_30px_rgba(123,45,54,0.5)]" : ""} ${isSelected && !isProjDragging ? "ring-2 ring-primary shadow-[0_0_20px_rgba(123,45,54,0.3)]" : !isProjDragging ? "hover:ring-1 hover:ring-white/20" : ""}`}
+                                className={`relative w-[calc(50%-6px)] aspect-[16/10] rounded-xl bg-[#0a0a0a] overflow-hidden cursor-pointer transition-all ${isHidden ? "opacity-40 grayscale" : ""} ${projDragSource === project.folderName ? "opacity-30 scale-[0.97]" : ""} ${projDragOver === project.folderName && projDragSource !== project.folderName && isProjDragging ? "ring-3 ring-primary shadow-[0_0_30px_rgba(123,45,54,0.5)]" : ""} ${isSelected && !isProjDragging ? "ring-2 ring-primary shadow-[0_0_20px_rgba(123,45,54,0.3)]" : !isProjDragging ? "hover:ring-1 hover:ring-white/20" : ""}`}
                               >
                                 {project.photos[0] && (
                                   <img src={project.photos[0].thumbnailUrl} alt="" className={`w-full h-full ${savedFit === "contain" ? "object-contain" : "object-cover"}`} style={{ objectPosition: savedPos, transformOrigin: savedPos, transform: savedZoom > 1 ? `scale(${savedZoom})` : undefined }} referrerPolicy="no-referrer" draggable={false} />
@@ -1339,10 +1392,14 @@ export default function AdminDashboard() {
                                     {[{ v: "hero", l: "H" }, { v: "featured", l: "F" }, { v: "regular", l: "R" }].map((s) => (
                                       <button key={s.v} onClick={() => setProjectSize(project.folderName, s.v)} className={`w-7 h-7 flex items-center justify-center text-[10px] font-bold rounded-lg backdrop-blur-md transition-all shadow-sm ${size === s.v ? "bg-primary text-white shadow-[0_0_8px_rgba(123,45,54,0.5)]" : "bg-black/70 text-white/70 hover:text-white hover:bg-black/90 border border-white/10"}`}>{s.l}</button>
                                     ))}
+                                    <button onClick={() => toggleProjectHidden(project.folderName)} className={`w-7 h-7 flex items-center justify-center rounded-lg backdrop-blur-md transition-all shadow-sm ${isHidden ? "bg-red-900/80 text-red-300 border border-red-500/30" : "bg-black/70 text-white/70 hover:text-white hover:bg-black/90 border border-white/10"}`} title={isHidden ? "Show on website" : "Hide from website"}>
+                                      {isHidden ? <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.879L21 21" /></svg> : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>}
+                                    </button>
                                   </div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
                                 <div className="absolute bottom-0 left-0 right-0 p-4">
+                                  {isHidden && <span className="inline-block px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wider bg-red-900/80 text-red-300 rounded-full mb-1 mr-1">Hidden</span>}
                                   <span className="inline-block px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wider bg-primary/60 text-white rounded-full mb-1">Featured</span>
                                   <p className="text-sm font-bold truncate">{projectNames[project.folderName]?.name || project.folderName.split(/\s*[-\u2013]\s*/)[0]}</p>
                                 </div>
@@ -1355,9 +1412,9 @@ export default function AdminDashboard() {
                     );
                   });
                 })()}
-                {/* Regular projects — 3 per row, controls after clicked row */}
+                {/* Regular projects — 3 per row, controls after clicked row (excluding hidden) */}
                 {(() => {
-                  const regular = orderedProjects.filter((p) => (projectsSizes[p.folderName] || "regular") === "regular");
+                  const regular = orderedProjects.filter((p) => (projectsSizes[p.folderName] || "regular") === "regular" && !projectNames[p.folderName]?.hidden);
                   if (regular.length === 0) return null;
                   const rows: typeof regular[] = [];
                   for (let i = 0; i < regular.length; i += 3) rows.push(regular.slice(i, i + 3));
@@ -1372,6 +1429,7 @@ export default function AdminDashboard() {
                             const savedZoom = projectNames[project.folderName]?.coverZoom || 1;
                             const isSelected = expandedProject === project.folderName;
                             const size = projectsSizes[project.folderName] || "regular";
+                            const isHidden = !!projectNames[project.folderName]?.hidden;
                             return (
                               <div
                                 key={`preview-r-${project.folderName}`}
@@ -1381,7 +1439,7 @@ export default function AdminDashboard() {
                                 onDrop={() => handleProjDrop(project.folderName)}
                                 onDragEnd={handleProjDragEnd}
                                 onClick={() => setExpandedProject(isSelected ? null : project.folderName)}
-                                className={`relative w-[calc(33.33%-8px)] aspect-[4/3] rounded-xl bg-[#0a0a0a] overflow-hidden cursor-pointer transition-all ${projDragSource === project.folderName ? "opacity-30 scale-[0.97]" : ""} ${projDragOver === project.folderName && projDragSource !== project.folderName && isProjDragging ? "ring-3 ring-primary shadow-[0_0_30px_rgba(123,45,54,0.5)]" : ""} ${isSelected && !isProjDragging ? "ring-2 ring-primary shadow-[0_0_20px_rgba(123,45,54,0.3)]" : !isProjDragging ? "hover:ring-1 hover:ring-white/20" : ""}`}
+                                className={`relative w-[calc(33.33%-8px)] aspect-[4/3] rounded-xl bg-[#0a0a0a] overflow-hidden cursor-pointer transition-all ${isHidden ? "opacity-40 grayscale" : ""} ${projDragSource === project.folderName ? "opacity-30 scale-[0.97]" : ""} ${projDragOver === project.folderName && projDragSource !== project.folderName && isProjDragging ? "ring-3 ring-primary shadow-[0_0_30px_rgba(123,45,54,0.5)]" : ""} ${isSelected && !isProjDragging ? "ring-2 ring-primary shadow-[0_0_20px_rgba(123,45,54,0.3)]" : !isProjDragging ? "hover:ring-1 hover:ring-white/20" : ""}`}
                               >
                                 {project.photos[0] && (
                                   <img src={project.photos[0].thumbnailUrl} alt="" className={`w-full h-full ${savedFit === "contain" ? "object-contain" : "object-cover"}`} style={{ objectPosition: savedPos, transformOrigin: savedPos, transform: savedZoom > 1 ? `scale(${savedZoom})` : undefined }} referrerPolicy="no-referrer" draggable={false} />
@@ -1404,10 +1462,14 @@ export default function AdminDashboard() {
                                     {[{ v: "hero", l: "H" }, { v: "featured", l: "F" }, { v: "regular", l: "R" }].map((s) => (
                                       <button key={s.v} onClick={() => setProjectSize(project.folderName, s.v)} className={`w-7 h-7 flex items-center justify-center text-[10px] font-bold rounded-lg backdrop-blur-md transition-all shadow-sm ${size === s.v ? "bg-primary text-white shadow-[0_0_8px_rgba(123,45,54,0.5)]" : "bg-black/70 text-white/70 hover:text-white hover:bg-black/90 border border-white/10"}`}>{s.l}</button>
                                     ))}
+                                    <button onClick={() => toggleProjectHidden(project.folderName)} className={`w-7 h-7 flex items-center justify-center rounded-lg backdrop-blur-md transition-all shadow-sm ${isHidden ? "bg-red-900/80 text-red-300 border border-red-500/30" : "bg-black/70 text-white/70 hover:text-white hover:bg-black/90 border border-white/10"}`} title={isHidden ? "Show on website" : "Hide from website"}>
+                                      {isHidden ? <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.879L21 21" /></svg> : <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>}
+                                    </button>
                                   </div>
                                 )}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
                                 <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                                  {isHidden && <span className="inline-block px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wider bg-red-900/80 text-red-300 rounded-full mb-0.5 mr-1">Hidden</span>}
                                   <p className="text-xs font-bold truncate">{projectNames[project.folderName]?.name || project.folderName.split(/\s*[-\u2013]\s*/)[0]}</p>
                                 </div>
                               </div>
@@ -1422,6 +1484,44 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
+
+          {/* Hidden Projects — shown separately below */}
+          {(() => {
+            const hiddenProjects = orderedProjects.filter((p) => !!projectNames[p.folderName]?.hidden);
+            if (hiddenProjects.length === 0) return null;
+            return (
+              <div className="bg-[#111] rounded-xl border border-white/5 p-5">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-4 h-4 text-red-400/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.879L21 21" /></svg>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-white/40">Hidden Projects</h3>
+                  <span className="text-xs text-white/20">({hiddenProjects.length}) — not visible on website</span>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  {hiddenProjects.map((project) => (
+                    <div key={`hidden-${project.folderName}`} className="relative w-[calc(33.33%-8px)] aspect-[4/3] rounded-xl bg-[#0a0a0a] overflow-hidden opacity-50 grayscale hover:opacity-70 hover:grayscale-0 transition-all cursor-pointer" onClick={() => setExpandedProject(expandedProject === project.folderName ? null : project.folderName)}>
+                      {project.photos[0] && (
+                        <img src={project.photos[0].thumbnailUrl} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                      <div className="absolute top-2 left-2" onClick={(e) => e.stopPropagation()}>
+                        <button onClick={() => toggleProjectHidden(project.folderName)} className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-lg bg-green-900/80 text-green-300 border border-green-500/30 hover:bg-green-800 transition-all flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                          Show
+                        </button>
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                        <span className="inline-block px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wider bg-red-900/80 text-red-300 rounded-full mb-0.5">Hidden</span>
+                        <p className="text-xs font-bold truncate">{projectNames[project.folderName]?.name || project.folderName.split(/\s*[-\u2013]\s*/)[0]}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {expandedProject && projectNames[expandedProject]?.hidden && (
+                  <div className="mt-3">{renderProjectInlineControls()}</div>
+                )}
+              </div>
+            );
+          })()}
         </div>
       )}
 

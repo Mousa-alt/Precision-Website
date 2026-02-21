@@ -30,13 +30,17 @@ interface ProjectNameOverride {
   location: string;
   coverPosition?: string;
   coverFit?: string;
+  hidden?: boolean;
+  hiddenPhotos?: string[];
 }
 
 function loadProjectNames(): Record<string, ProjectNameOverride> {
   try {
     const filePath = path.join(process.cwd(), "data", "project-names.json");
     if (fs.existsSync(filePath)) {
-      return JSON.parse(fs.readFileSync(filePath, "utf-8"));
+      const raw = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+      // Handle new format with "names" wrapper
+      return raw.names || raw;
     }
   } catch {
     // No overrides available
@@ -223,12 +227,23 @@ function addProject(
   aiAnalysis: Map<string, { bestCoverId?: string }>,
   nameOverrides: Record<string, ProjectNameOverride>
 ) {
-  const photoList = images.map((img) => ({
-    id: img.id,
-    url: `https://lh3.googleusercontent.com/d/${img.id}=w3000`,
-    thumbnailUrl: `https://lh3.googleusercontent.com/d/${img.id}=w1600`,
-    name: img.name.replace(/\.[^/.]+$/, ""),
-  }));
+  // Skip hidden projects
+  if (nameOverrides[folderName]?.hidden) return;
+
+  // Filter out hidden photos
+  const hiddenPhotos = new Set(nameOverrides[folderName]?.hiddenPhotos || []);
+
+  const photoList = images
+    .filter((img) => !hiddenPhotos.has(img.id))
+    .map((img) => ({
+      id: img.id,
+      url: `https://lh3.googleusercontent.com/d/${img.id}=w3000`,
+      thumbnailUrl: `https://lh3.googleusercontent.com/d/${img.id}=w1600`,
+      name: img.name.replace(/\.[^/.]+$/, ""),
+    }));
+
+  // Skip if all photos are hidden
+  if (photoList.length === 0) return;
 
   const aiProject = aiAnalysis.get(folderName.toLowerCase());
   let coverIdx = 0;
