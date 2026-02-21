@@ -180,6 +180,9 @@ function detectPosition(name: string): "top" | "center" | "bottom" {
   return "center";
 }
 
+// When fresh=true, bypass Next.js cache entirely (used by manual sync)
+let forceFresh = false;
+
 async function listFolder(folderId: string): Promise<DriveFile[]> {
   const allFiles: DriveFile[] = [];
   let pageToken: string | undefined;
@@ -193,9 +196,13 @@ async function listFolder(folderId: string): Promise<DriveFile[]> {
     });
     if (pageToken) params.set("pageToken", pageToken);
 
+    const fetchOptions: RequestInit = forceFresh
+      ? { cache: "no-store" }
+      : { next: { revalidate: 86400, tags: ["drive-photos"] } };
+
     const res = await fetch(
       `https://www.googleapis.com/drive/v3/files?${params.toString()}`,
-      { next: { revalidate: 86400, tags: ['drive-photos'] } }
+      fetchOptions
     );
 
     if (!res.ok) break;
@@ -267,10 +274,14 @@ function addProject(
   });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   if (!API_KEY || !ROOT_FOLDER_ID) {
     return NextResponse.json({ projects: [], error: "Drive not configured" });
   }
+
+  // Check if caller wants fresh data (manual sync from dashboard)
+  const url = new URL(request.url);
+  forceFresh = url.searchParams.get("fresh") === "1";
 
   try {
     // Load AI analysis results and project name overrides

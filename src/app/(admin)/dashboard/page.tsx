@@ -334,7 +334,7 @@ export default function AdminDashboard() {
       if (bustCache) {
         await fetch("/api/revalidate", { method: "POST" });
       }
-      const res = await fetch("/api/photos" + (bustCache ? "?t=" + Date.now() : ""), bustCache ? { cache: "no-store" } : undefined);
+      const res = await fetch("/api/photos" + (bustCache ? "?fresh=1&t=" + Date.now() : ""), bustCache ? { cache: "no-store" } : undefined);
       const data = await res.json();
       const freshProjects = data.projects || [];
       setProjects(freshProjects);
@@ -394,7 +394,9 @@ export default function AdminDashboard() {
         body: JSON.stringify({ names: projectNames, layout: { order: projectsOrder, sizes: projectsSizes } }),
       });
       if (res.ok) {
-        setStatus("Project names saved successfully!");
+        // Revalidate so the website picks up changes immediately
+        await fetch("/api/revalidate", { method: "POST" });
+        setStatus("Changes saved and website updated!");
       } else {
         const data = await res.json();
         setStatus(`Error: ${data.error || "Failed to save"}`);
@@ -442,7 +444,9 @@ export default function AdminDashboard() {
         body: JSON.stringify({ slots: homeSlots }),
       });
       if (res.ok) {
-        setStatus("Homepage configuration saved successfully!");
+        // Revalidate so the website picks up changes immediately
+        await fetch("/api/revalidate", { method: "POST" });
+        setStatus("Homepage saved and website updated!");
       } else {
         const data = await res.json();
         setStatus(`Error: ${data.error || "Failed to save"}`);
@@ -1195,9 +1199,10 @@ export default function AdminDashboard() {
               <button
                 onClick={() => loadProjects(true)}
                 disabled={loading}
-                className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all disabled:opacity-50"
+                className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all disabled:opacity-50 flex items-center gap-2"
               >
-                {loading ? "Syncing..." : "Refresh"}
+                <svg className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                {loading ? "Syncing with Drive..." : "Sync Google Drive"}
               </button>
               <button
                 onClick={saveProjectNames}
@@ -1741,10 +1746,10 @@ export default function AdminDashboard() {
                 </button>
               </div>
               {autoSyncEnabled && (
-                <p className="text-xs text-primary/60 mt-2">Next sync runs at 3:00 AM UTC daily. Use &quot;Re-sync Drive Photos&quot; below for immediate sync.</p>
+                <p className="text-xs text-primary/60 mt-2">Next sync runs at 3:00 AM UTC daily. Use &quot;Sync Google Drive&quot; for immediate sync.</p>
               )}
               {!autoSyncEnabled && (
-                <p className="text-xs text-white/20 mt-2">Auto-sync is off. Use &quot;Re-sync Drive Photos&quot; below to manually sync when needed.</p>
+                <p className="text-xs text-white/20 mt-2">Auto-sync is off. Use &quot;Sync Google Drive&quot; to manually sync when needed.</p>
               )}
             </div>
           </div>
@@ -1769,7 +1774,10 @@ export default function AdminDashboard() {
           <div className="bg-[#111] rounded-xl border border-white/5 p-6">
             <h2 className="text-lg font-bold uppercase mb-4">Quick Actions</h2>
             <div className="flex flex-wrap gap-3">
-              <button onClick={() => loadProjects(true)} className="px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all">Re-sync Drive Photos</button>
+              <button onClick={() => loadProjects(true)} className="px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all flex items-center gap-2">
+                <svg className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                {loading ? "Syncing..." : "Sync Google Drive"}
+              </button>
               <a href="/" target="_blank" className="px-5 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white hover:bg-white/10 transition-all inline-block">Preview Website</a>
             </div>
           </div>
