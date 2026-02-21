@@ -120,6 +120,7 @@ export default function Home() {
   const [lightboxLocation, setLightboxLocation] = useState("");
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [videoUrls, setVideoUrls] = useState<string[]>(["/videos/showreel-1.mp4", "/videos/showreel-2.mp4"]);
   const heroCardRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = useCallback((e: React.MouseEvent, cardIndex: number) => {
@@ -146,6 +147,12 @@ export default function Home() {
     setCurrentSlide(index);
     setResetKey((k) => k + 1);
   };
+
+  useEffect(() => {
+    fetch("/api/videos").then((r) => r.json()).then((d) => {
+      if (d.videos?.length > 0) setVideoUrls(d.videos);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     async function loadProjects() {
@@ -520,7 +527,7 @@ export default function Home() {
           </div>
 
           <div className="flex gap-6 max-[768px]:gap-4 max-[480px]:flex-col max-[480px]:items-center" data-aos="fade-up">
-            {["/videos/showreel-1.mp4", "/videos/showreel-2.mp4"].map((src, i) => (
+            {videoUrls.map((src, i) => (
               <div
                 key={src}
                 className="relative flex-1 max-w-[400px] max-[480px]:max-w-[300px] aspect-[9/16] bg-[#0a0a0a] rounded-2xl max-[480px]:rounded-xl overflow-hidden group"

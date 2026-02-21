@@ -214,7 +214,7 @@ function addProject(
   category: string,
   images: DriveFile[],
   aiAnalysis: Map<string, { bestCoverId?: string }>,
-  nameOverrides: Record<string, { name?: string; location?: string; coverPosition?: string; coverFit?: string; coverZoom?: number }>
+  nameOverrides: Record<string, ProjectNameOverride>
 ) {
   const photoList = images.map((img) => ({
     id: img.id,

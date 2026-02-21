@@ -27,7 +27,14 @@ interface HomeSlot {
   coverZoom?: number;
 }
 
-type Tab = "home" | "projects" | "content" | "settings";
+interface VideoEntry {
+  url: string;
+  name: string;
+  size: number;
+  uploadedAt: string;
+}
+
+type Tab = "home" | "projects" | "videos" | "content" | "settings";
 
 const SLOT_LABELS = ["Hero (Large)", "Medium Left", "Medium Right", "Small", "Small", "Small"];
 
@@ -88,11 +95,18 @@ export default function AdminDashboard() {
   const [driveFolderId, setDriveFolderId] = useState("");
   const [autoSyncEnabled, setAutoSyncEnabled] = useState(true);
 
+  // Videos state
+  const [videos, setVideos] = useState<VideoEntry[]>([]);
+  const [videosLoading, setVideosLoading] = useState(false);
+  const [videoUploading, setVideoUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
+
   useEffect(() => {
     loadProjects();
     loadHomeConfig();
     loadProjectNames();
     loadSettings();
+    loadVideos();
   }, []);
 
   async function loadSettings() {
@@ -111,6 +125,59 @@ export default function AdminDashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ key: "auto-sync", data: newVal }),
     });
+  }
+
+  async function loadVideos() {
+    setVideosLoading(true);
+    try {
+      const res = await fetch("/api/admin/videos");
+      const json = await res.json();
+      setVideos(json.videos || []);
+    } catch {
+      // No videos yet
+    } finally {
+      setVideosLoading(false);
+    }
+  }
+
+  async function uploadVideo(file: File) {
+    setVideoUploading(true);
+    setUploadProgress(`Uploading ${file.name}...`);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/admin/videos", { method: "POST", body: formData });
+      const json = await res.json();
+      if (json.success) {
+        setUploadProgress(`Uploaded ${file.name} successfully!`);
+        await loadVideos();
+      } else {
+        setUploadProgress(`Error: ${json.error}`);
+      }
+    } catch {
+      setUploadProgress("Upload failed. Please try again.");
+    } finally {
+      setVideoUploading(false);
+      setTimeout(() => setUploadProgress(""), 3000);
+    }
+  }
+
+  async function deleteVideo(url: string, name: string) {
+    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    try {
+      const res = await fetch("/api/admin/videos", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setStatus(`Deleted "${name}"`);
+        await loadVideos();
+      }
+    } catch {
+      setStatus("Error deleting video");
+    }
   }
 
   // Auto-populate slots with fallback order when no saved config exists
@@ -710,6 +777,7 @@ export default function AdminDashboard() {
   const tabs: { id: Tab; label: string; icon: string }[] = [
     { id: "home", label: "Homepage", icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" },
     { id: "projects", label: "Projects & Photos", icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" },
+    { id: "videos", label: "Videos", icon: "M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" },
     { id: "content", label: "Site Content", icon: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" },
     { id: "settings", label: "Settings", icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" },
   ];
@@ -1238,6 +1306,112 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* VIDEOS TAB */}
+      {activeTab === "videos" && (
+        <div className="space-y-6">
+          <div className="bg-[#111] rounded-xl border border-white/5 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-lg font-bold uppercase">Showreel Videos</h2>
+                <p className="text-xs text-white/40 mt-1">Upload vertical videos (9:16) for the &quot;See Us In Action&quot; section on the homepage</p>
+              </div>
+              <span className="text-xs text-white/30">{videos.length} video{videos.length !== 1 ? "s" : ""}</span>
+            </div>
+
+            {/* Upload area */}
+            <div className="relative mb-6">
+              <input
+                type="file"
+                accept="video/mp4,video/webm,video/quicktime"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                disabled={videoUploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) uploadVideo(file);
+                  e.target.value = "";
+                }}
+              />
+              <div className={`flex flex-col items-center justify-center py-8 border-2 border-dashed rounded-xl transition-all ${videoUploading ? "border-primary/40 bg-primary/5" : "border-white/10 hover:border-primary/30 hover:bg-white/[0.02]"}`}>
+                <svg className="w-8 h-8 text-white/20 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                {videoUploading ? (
+                  <p className="text-sm text-primary">{uploadProgress}</p>
+                ) : (
+                  <>
+                    <p className="text-sm text-white/50">Click or drag to upload video</p>
+                    <p className="text-[10px] text-white/25 mt-1">MP4, WebM, MOV — max 100MB</p>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Video list */}
+            {videosLoading ? (
+              <div className="text-center py-8 text-white/30 text-sm">Loading videos...</div>
+            ) : videos.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-white/30 text-sm">No videos uploaded yet</p>
+                <p className="text-white/20 text-xs mt-1">The homepage will show videos from public/videos/ as fallback</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {videos.map((video, i) => (
+                  <div key={video.url} className="flex items-center gap-4 bg-black rounded-lg border border-white/5 p-3 group">
+                    <div className="w-16 h-28 bg-[#0a0a0a] rounded-lg overflow-hidden flex-shrink-0 relative">
+                      <video
+                        src={video.url}
+                        className="w-full h-full object-cover"
+                        muted
+                        preload="metadata"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                        <svg className="w-5 h-5 text-white/60" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{video.name}</p>
+                      <p className="text-[10px] text-white/30 mt-0.5">
+                        {(video.size / (1024 * 1024)).toFixed(1)} MB — Slot {i + 1}
+                      </p>
+                      <p className="text-[9px] text-white/20 mt-0.5 truncate">{video.url}</p>
+                    </div>
+                    <button
+                      onClick={() => deleteVideo(video.url, video.name)}
+                      className="px-3 py-1.5 text-xs text-red-400/60 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="bg-[#111] rounded-xl border border-white/5 p-6">
+            <h3 className="text-sm font-semibold mb-3">How It Works</h3>
+            <ul className="space-y-2 text-xs text-white/40">
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">1.</span>
+                Upload vertical (9:16) showreel videos here
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">2.</span>
+                Videos are stored on Vercel Blob CDN for fast global delivery
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">3.</span>
+                The homepage automatically displays uploaded videos
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">4.</span>
+                If no videos are uploaded, local files in public/videos/ are used as fallback
+              </li>
+            </ul>
+          </div>
         </div>
       )}
 
