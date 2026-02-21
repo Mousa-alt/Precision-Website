@@ -210,11 +210,11 @@ a {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translate(-50%, 20px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
   }
 }
 

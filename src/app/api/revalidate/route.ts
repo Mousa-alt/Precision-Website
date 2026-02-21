@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
 
   const isFromCron = cronSecret && authHeader === `Bearer ${cronSecret}`;
-  const isAdmin = request.cookies.get("precision-admin-session")?.value === "authenticated";
+  const isAdmin = !!request.cookies.get("precision-admin-session")?.value;
 
   if (!isFromCron && !isAdmin) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -946,10 +946,12 @@ export default function AdminDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      {/* Toast notification — fixed at bottom, no layout shift */}
+      {/* Toast notification — fixed at bottom center, no layout shift */}
       {status && (
-        <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg backdrop-blur-md transition-all animate-[fadeInUp_0.3s_ease-out] ${status.includes("Error") ? "bg-red-500/90 text-white" : "bg-green-500/90 text-white"}`}>
-          {status}
+        <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
+          <div className={`px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg backdrop-blur-md pointer-events-auto animate-[fadeInUp_0.3s_ease-out] ${status.includes("Error") ? "bg-red-500/90 text-white" : "bg-green-500/90 text-white"}`}>
+            {status}
+          </div>
         </div>
       )}
 
