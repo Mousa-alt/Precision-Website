@@ -535,6 +535,7 @@ export default function Home() {
                   playsInline
                   autoPlay
                   preload="metadata"
+                  suppressHydrationWarning
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
               </div>
